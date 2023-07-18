@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Kabegami",
+    "slug": "Kabegami",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "Kabegami"
+}
