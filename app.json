@@ -5,7 +5,12 @@
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "32f044d3-28e3-474b-bf30-ae57c55b79b0"
+      }
+    }
   },
   "name": "Kabegami"
 }
