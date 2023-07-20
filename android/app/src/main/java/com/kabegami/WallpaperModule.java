@@ -34,7 +34,7 @@ public class WallpaperModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setWallpaper(ReadableMap options, final Callback callback) {
+    public void setWallpaper(ReadableMap options, String targetScreen, final Callback callback) {
         try {
             if (!options.hasKey("uri")) {
                 callback.invoke("Missing 'uri' parameter");
@@ -46,7 +46,14 @@ public class WallpaperModule extends ReactContextBaseJavaModule {
             WallpaperManager wallpaperManager = WallpaperManager.getInstance(reactContext);
 
             if (bitmap != null) {
-                wallpaperManager.setBitmap(bitmap);
+                int flags = WallpaperManager.FLAG_SYSTEM; // Default is home screen
+                if (targetScreen.equals("lock")) {
+                    flags = WallpaperManager.FLAG_LOCK; // Set wallpaper for lock screen
+                } else if (targetScreen.equals("both")) {
+                    flags = WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK; // Set wallpaper for both screens
+                }
+
+                wallpaperManager.setBitmap(bitmap, null, true, flags);
                 callback.invoke(null, "Wallpaper set successfully.");
             } else {
                 callback.invoke("Invalid base64 image data");
@@ -57,7 +64,7 @@ public class WallpaperModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setWallpaperFromUrl(String imageUrl, final Callback callback) {
+    public void setWallpaperFromUrl(String imageUrl, String targetScreen, final Callback callback) {
         try {
             URL url = new URL(imageUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -68,13 +75,15 @@ public class WallpaperModule extends ReactContextBaseJavaModule {
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 
             if (bitmap != null) {
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                byte[] byteArray = byteArrayOutputStream.toByteArray();
-                String base64Image = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                int flags = WallpaperManager.FLAG_SYSTEM; // Default is home screen
+                if (targetScreen.equals("lock")) {
+                    flags = WallpaperManager.FLAG_LOCK; // Set wallpaper for lock screen
+                } else if (targetScreen.equals("both")) {
+                    flags = WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK; // Set wallpaper for both screens
+                }
 
                 WallpaperManager wallpaperManager = WallpaperManager.getInstance(reactContext);
-                wallpaperManager.setBitmap(bitmap);
+                wallpaperManager.setBitmap(bitmap, null, true, flags);
 
                 callback.invoke(null, "Wallpaper set successfully.");
             } else {

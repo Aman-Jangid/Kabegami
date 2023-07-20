@@ -1,18 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import getWallpapers from "../api/getWallpapers";
-import ImageItem from "../components/ImageItem";
-import WallpaperSet from "../components/WallpaperSet";
-
-// search queries --->
-// tagname - search fuzzily for a tag/keyword
-// -tagname - exclude a tag/keyword
-// +tag1 +tag2 - must have tag1 and tag2
-// +tag1 -tag2 - must have tag1 and NOT tag2
-// @username - user uploads
-// id:123 - Exact tag search (can not be combined)
-// type:{png/jpg} - Search for file type (jpg = jpeg)
-// like:wallpaper ID - Find wallpapers with similar tags
+import Categories from "../components/Categories";
+import createURL from "../api/createURL";
+import ImageFlatList from "../components/ImageFlatList";
 
 // search -> order (ascending) ->
 // category (100 -> general,010 -> anime ,001 -> people) ->
@@ -26,631 +17,116 @@ import WallpaperSet from "../components/WallpaperSet";
 // new uploads --> search?sorting&hot&categories=010&resolutions=1080x1920
 // top wallpapers (from given time range) --> search?sorting&toplist&topRange=1M&categories=010&resolutions=1080x1920
 
+const initialCategories = [
+  {
+    title: "Popular",
+    color: "#4a8",
+    value: "hot",
+    background: require("../assets/pictures/new.jpg"),
+  },
+  {
+    title: "Anime",
+    color: "#4a4f7e",
+    value: "anime",
+    background: require("../assets/pictures/anime.jpg"),
+  },
+  {
+    title: "Cars",
+    color: "#0e3254",
+    value: "cars",
+    background: require("../assets/pictures/cars.jpg"),
+  },
+  {
+    title: "Nature",
+    color: "#59b866",
+    value: "nature",
+    background: require("../assets/pictures/nature.jpg"),
+  },
+  {
+    title: "Cats",
+    color: "#282a59",
+    value: "cats",
+    background: require("../assets/thumbnails/cats.jpg"),
+  },
+];
+
 export default function Explore() {
-  // const fetchWall = async () => {
-  // const walls = await getWallpapers(
-  // "search?sorting=hot&categories=010&resolutions=1080x1920"
-  // );
+  const [wallpapers, setWallpapers] = useState();
+  const [categories, setCategories] = useState(initialCategories);
+  const [selectedCategory, setSelectedCategory] = useState("hot");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
-  // console.log(walls);
-  // };
-
-  // useEffect(() => {
-  //   fetchWall();
-  // }, []);
-
-  const [optionsVisible, setOptionsVisible] = useState(false);
-  const [imageUrl, setImageUrl] = useState();
-
-  const wallpapers = [
-    {
-      id: "zy5k5y",
-      url: "https://wallhaven.cc/w/zy5k5y",
-      short_url: "https://whvn.cc/zy5k5y",
-      views: 2496,
-      favorites: 84,
-      source: "https://twitter.com/hayateluc/status/1680789880694005765",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 2048,
-      dimension_y: 1152,
-      resolution: "2048x1152",
-      ratio: "1.78",
-      file_size: 402793,
-      file_type: "image/jpeg",
-      created_at: "2023-07-17 05:40:11",
-      colors: ["#424153", "#999999", "#cccccc", "#996633", "#66cccc"],
-      path: "https://w.wallhaven.cc/full/zy/wallhaven-zy5k5y.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/zy/zy5k5y.jpg",
-        original: "https://th.wallhaven.cc/orig/zy/zy5k5y.jpg",
-        small: "https://th.wallhaven.cc/small/zy/zy5k5y.jpg",
-      },
-    },
-    {
-      id: "jxv2g5",
-      url: "https://wallhaven.cc/w/jxv2g5",
-      short_url: "https://whvn.cc/jxv2g5",
-      views: 1846,
-      favorites: 77,
-      source: "https://www.pixiv.net/artworks/109959619",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 2426,
-      dimension_y: 3352,
-      resolution: "2426x3352",
-      ratio: "0.72",
-      file_size: 3202593,
-      file_type: "image/jpeg",
-      created_at: "2023-07-17 14:35:47",
-      colors: ["#999999", "#424153", "#663399", "#cccccc", "#000000"],
-      path: "https://w.wallhaven.cc/full/jx/wallhaven-jxv2g5.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/jx/jxv2g5.jpg",
-        original: "https://th.wallhaven.cc/orig/jx/jxv2g5.jpg",
-        small: "https://th.wallhaven.cc/small/jx/jxv2g5.jpg",
-      },
-    },
-    {
-      id: "d6wlgg",
-      url: "https://wallhaven.cc/w/d6wlgg",
-      short_url: "https://whvn.cc/d6wlgg",
-      views: 2369,
-      favorites: 82,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 1434,
-      dimension_y: 2559,
-      resolution: "1434x2559",
-      ratio: "0.56",
-      file_size: 306013,
-      file_type: "image/jpeg",
-      created_at: "2023-07-18 02:31:07",
-      colors: ["#424153", "#999999", "#663399", "#cccccc", "#abbcda"],
-      path: "https://w.wallhaven.cc/full/d6/wallhaven-d6wlgg.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/d6/d6wlgg.jpg",
-        original: "https://th.wallhaven.cc/orig/d6/d6wlgg.jpg",
-        small: "https://th.wallhaven.cc/small/d6/d6wlgg.jpg",
-      },
-    },
-    {
-      id: "5gr275",
-      url: "https://wallhaven.cc/w/5gr275",
-      short_url: "https://whvn.cc/5gr275",
-      views: 1965,
-      favorites: 76,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 816,
-      dimension_y: 1456,
-      resolution: "816x1456",
-      ratio: "0.56",
-      file_size: 200395,
-      file_type: "image/jpeg",
-      created_at: "2023-07-18 06:10:08",
-      colors: ["#424153", "#000000", "#663399", "#999999", "#993399"],
-      path: "https://w.wallhaven.cc/full/5g/wallhaven-5gr275.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/5g/5gr275.jpg",
-        original: "https://th.wallhaven.cc/orig/5g/5gr275.jpg",
-        small: "https://th.wallhaven.cc/small/5g/5gr275.jpg",
-      },
-    },
-    {
-      id: "wemzj7",
-      url: "https://wallhaven.cc/w/wemzj7",
-      short_url: "https://whvn.cc/wemzj7",
-      views: 1827,
-      favorites: 59,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 5787,
-      dimension_y: 8185,
-      resolution: "5787x8185",
-      ratio: "0.71",
-      file_size: 4832131,
-      file_type: "image/jpeg",
-      created_at: "2023-07-17 11:11:48",
-      colors: ["#999999", "#ffffff", "#cccccc", "#424153", "#abbcda"],
-      path: "https://w.wallhaven.cc/full/we/wallhaven-wemzj7.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/we/wemzj7.jpg",
-        original: "https://th.wallhaven.cc/orig/we/wemzj7.jpg",
-        small: "https://th.wallhaven.cc/small/we/wemzj7.jpg",
-      },
-    },
-    {
-      id: "vq5wo5",
-      url: "https://wallhaven.cc/w/vq5wo5",
-      short_url: "https://whvn.cc/vq5wo5",
-      views: 1376,
-      favorites: 69,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 1080,
-      dimension_y: 2149,
-      resolution: "1080x2149",
-      ratio: "0.5",
-      file_size: 1409775,
-      file_type: "image/jpeg",
-      created_at: "2023-07-18 11:26:59",
-      colors: ["#424153", "#663399", "#999999", "#000000", "#abbcda"],
-      path: "https://w.wallhaven.cc/full/vq/wallhaven-vq5wo5.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/vq/vq5wo5.jpg",
-        original: "https://th.wallhaven.cc/orig/vq/vq5wo5.jpg",
-        small: "https://th.wallhaven.cc/small/vq/vq5wo5.jpg",
-      },
-    },
-    {
-      id: "d6w17j",
-      url: "https://wallhaven.cc/w/d6w17j",
-      short_url: "https://whvn.cc/d6w17j",
-      views: 1286,
-      favorites: 46,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 2480,
-      dimension_y: 3715,
-      resolution: "2480x3715",
-      ratio: "0.67",
-      file_size: 2408000,
-      file_type: "image/jpeg",
-      created_at: "2023-07-17 14:27:01",
-      colors: ["#ffffff", "#cccccc", "#999999", "#abbcda", "#e7d8b1"],
-      path: "https://w.wallhaven.cc/full/d6/wallhaven-d6w17j.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/d6/d6w17j.jpg",
-        original: "https://th.wallhaven.cc/orig/d6/d6w17j.jpg",
-        small: "https://th.wallhaven.cc/small/d6/d6w17j.jpg",
-      },
-    },
-    {
-      id: "jxv2gw",
-      url: "https://wallhaven.cc/w/jxv2gw",
-      short_url: "https://whvn.cc/jxv2gw",
-      views: 917,
-      favorites: 18,
-      source: "https://twitter.com/sakiyama8ma/status/1680893984368136193",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 1414,
-      dimension_y: 1000,
-      resolution: "1414x1000",
-      ratio: "1.41",
-      file_size: 494675,
-      file_type: "image/jpeg",
-      created_at: "2023-07-17 14:55:58",
-      colors: ["#424153", "#999999", "#000000", "#66cccc", "#663399"],
-      path: "https://w.wallhaven.cc/full/jx/wallhaven-jxv2gw.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/jx/jxv2gw.jpg",
-        original: "https://th.wallhaven.cc/orig/jx/jxv2gw.jpg",
-        small: "https://th.wallhaven.cc/small/jx/jxv2gw.jpg",
-      },
-    },
-    {
-      id: "zy5k6v",
-      url: "https://wallhaven.cc/w/zy5k6v",
-      short_url: "https://whvn.cc/zy5k6v",
-      views: 1019,
-      favorites: 47,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 2866,
-      dimension_y: 2023,
-      resolution: "2866x2023",
-      ratio: "1.42",
-      file_size: 7196078,
-      file_type: "image/png",
-      created_at: "2023-07-17 10:56:37",
-      colors: ["#424153", "#999999", "#abbcda", "#fdadc7", "#66cccc"],
-      path: "https://w.wallhaven.cc/full/zy/wallhaven-zy5k6v.png",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/zy/zy5k6v.jpg",
-        original: "https://th.wallhaven.cc/orig/zy/zy5k6v.jpg",
-        small: "https://th.wallhaven.cc/small/zy/zy5k6v.jpg",
-      },
-    },
-    {
-      id: "6dwvq7",
-      url: "https://wallhaven.cc/w/6dwvq7",
-      short_url: "https://whvn.cc/6dwvq7",
-      views: 1084,
-      favorites: 19,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 1013,
-      dimension_y: 1433,
-      resolution: "1013x1433",
-      ratio: "0.71",
-      file_size: 1167701,
-      file_type: "image/jpeg",
-      created_at: "2023-07-17 23:17:46",
-      colors: ["#424153", "#999999", "#e7d8b1", "#ffffff", "#996633"],
-      path: "https://w.wallhaven.cc/full/6d/wallhaven-6dwvq7.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/6d/6dwvq7.jpg",
-        original: "https://th.wallhaven.cc/orig/6d/6dwvq7.jpg",
-        small: "https://th.wallhaven.cc/small/6d/6dwvq7.jpg",
-      },
-    },
-    {
-      id: "o52om5",
-      url: "https://wallhaven.cc/w/o52om5",
-      short_url: "https://whvn.cc/o52om5",
-      views: 954,
-      favorites: 59,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 3642,
-      dimension_y: 4800,
-      resolution: "3642x4800",
-      ratio: "0.76",
-      file_size: 15241600,
-      file_type: "image/png",
-      created_at: "2023-07-17 10:43:40",
-      colors: ["#424153", "#993399", "#999999", "#663399", "#fdadc7"],
-      path: "https://w.wallhaven.cc/full/o5/wallhaven-o52om5.png",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/o5/o52om5.jpg",
-        original: "https://th.wallhaven.cc/orig/o5/o52om5.jpg",
-        small: "https://th.wallhaven.cc/small/o5/o52om5.jpg",
-      },
-    },
-    {
-      id: "9drqq1",
-      url: "https://wallhaven.cc/w/9drqq1",
-      short_url: "https://whvn.cc/9drqq1",
-      views: 838,
-      favorites: 28,
-      source: "https://twitter.com/hagure_KeG/status/1679469728337915905",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 1013,
-      dimension_y: 1433,
-      resolution: "1013x1433",
-      ratio: "0.71",
-      file_size: 290119,
-      file_type: "image/jpeg",
-      created_at: "2023-07-17 18:20:59",
-      colors: ["#424153", "#999999", "#e7d8b1", "#66cccc", "#333399"],
-      path: "https://w.wallhaven.cc/full/9d/wallhaven-9drqq1.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/9d/9drqq1.jpg",
-        original: "https://th.wallhaven.cc/orig/9d/9drqq1.jpg",
-        small: "https://th.wallhaven.cc/small/9d/9drqq1.jpg",
-      },
-    },
-    {
-      id: "gp2ry7",
-      url: "https://wallhaven.cc/w/gp2ry7",
-      short_url: "https://whvn.cc/gp2ry7",
-      views: 1070,
-      favorites: 29,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 4304,
-      dimension_y: 6117,
-      resolution: "4304x6117",
-      ratio: "0.7",
-      file_size: 17818302,
-      file_type: "image/jpeg",
-      created_at: "2023-07-17 14:36:42",
-      colors: ["#ffffff", "#cccccc", "#e7d8b1", "#999999", "#fdadc7"],
-      path: "https://w.wallhaven.cc/full/gp/wallhaven-gp2ry7.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/gp/gp2ry7.jpg",
-        original: "https://th.wallhaven.cc/orig/gp/gp2ry7.jpg",
-        small: "https://th.wallhaven.cc/small/gp/gp2ry7.jpg",
-      },
-    },
-    {
-      id: "1pr6zw",
-      url: "https://wallhaven.cc/w/1pr6zw",
-      short_url: "https://whvn.cc/1pr6zw",
-      views: 969,
-      favorites: 29,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 3072,
-      dimension_y: 4879,
-      resolution: "3072x4879",
-      ratio: "0.63",
-      file_size: 2145535,
-      file_type: "image/jpeg",
-      created_at: "2023-07-17 14:12:30",
-      colors: ["#424153", "#000000", "#996633", "#999999", "#cccc33"],
-      path: "https://w.wallhaven.cc/full/1p/wallhaven-1pr6zw.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/1p/1pr6zw.jpg",
-        original: "https://th.wallhaven.cc/orig/1p/1pr6zw.jpg",
-        small: "https://th.wallhaven.cc/small/1p/1pr6zw.jpg",
-      },
-    },
-    {
-      id: "x6pqyd",
-      url: "https://wallhaven.cc/w/x6pqyd",
-      short_url: "https://whvn.cc/x6pqyd",
-      views: 779,
-      favorites: 49,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 2362,
-      dimension_y: 1181,
-      resolution: "2362x1181",
-      ratio: "2",
-      file_size: 2231379,
-      file_type: "image/png",
-      created_at: "2023-07-17 10:48:56",
-      colors: ["#cccccc", "#663399", "#abbcda", "#424153", "#ffffff"],
-      path: "https://w.wallhaven.cc/full/x6/wallhaven-x6pqyd.png",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/x6/x6pqyd.jpg",
-        original: "https://th.wallhaven.cc/orig/x6/x6pqyd.jpg",
-        small: "https://th.wallhaven.cc/small/x6/x6pqyd.jpg",
-      },
-    },
-    {
-      id: "o52opl",
-      url: "https://wallhaven.cc/w/o52opl",
-      short_url: "https://whvn.cc/o52opl",
-      views: 724,
-      favorites: 17,
-      source: "https://www.pixiv.net/en/artworks/109550078",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 2996,
-      dimension_y: 4603,
-      resolution: "2996x4603",
-      ratio: "0.65",
-      file_size: 525115,
-      file_type: "image/jpeg",
-      created_at: "2023-07-18 03:52:27",
-      colors: ["#e7d8b1", "#424153", "#999999", "#ffffff", "#000000"],
-      path: "https://w.wallhaven.cc/full/o5/wallhaven-o52opl.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/o5/o52opl.jpg",
-        original: "https://th.wallhaven.cc/orig/o5/o52opl.jpg",
-        small: "https://th.wallhaven.cc/small/o5/o52opl.jpg",
-      },
-    },
-    {
-      id: "x6pv1o",
-      url: "https://wallhaven.cc/w/x6pv1o",
-      short_url: "https://whvn.cc/x6pv1o",
-      views: 866,
-      favorites: 23,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 1013,
-      dimension_y: 1433,
-      resolution: "1013x1433",
-      ratio: "0.71",
-      file_size: 1684905,
-      file_type: "image/jpeg",
-      created_at: "2023-07-17 23:17:46",
-      colors: ["#424153", "#996633", "#cccc33", "#999999", "#77cc33"],
-      path: "https://w.wallhaven.cc/full/x6/wallhaven-x6pv1o.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/x6/x6pv1o.jpg",
-        original: "https://th.wallhaven.cc/orig/x6/x6pv1o.jpg",
-        small: "https://th.wallhaven.cc/small/x6/x6pv1o.jpg",
-      },
-    },
-    {
-      id: "jxvmwq",
-      url: "https://wallhaven.cc/w/jxvmwq",
-      short_url: "https://whvn.cc/jxvmwq",
-      views: 718,
-      favorites: 28,
-      source: "https://twitter.com/banilizo_nft",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 2121,
-      dimension_y: 3000,
-      resolution: "2121x3000",
-      ratio: "0.71",
-      file_size: 7480577,
-      file_type: "image/png",
-      created_at: "2023-07-18 10:13:43",
-      colors: ["#ffffff", "#cccccc", "#999999", "#abbcda", "#424153"],
-      path: "https://w.wallhaven.cc/full/jx/wallhaven-jxvmwq.png",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/jx/jxvmwq.jpg",
-        original: "https://th.wallhaven.cc/orig/jx/jxvmwq.jpg",
-        small: "https://th.wallhaven.cc/small/jx/jxvmwq.jpg",
-      },
-    },
-    {
-      id: "qzl1rd",
-      url: "https://wallhaven.cc/w/qzl1rd",
-      short_url: "https://whvn.cc/qzl1rd",
-      views: 676,
-      favorites: 34,
-      source: "https://twitter.com/inoitoh",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 2400,
-      dimension_y: 1544,
-      resolution: "2400x1544",
-      ratio: "1.55",
-      file_size: 2815324,
-      file_type: "image/jpeg",
-      created_at: "2023-07-18 08:00:46",
-      colors: ["#ffffff", "#fdadc7", "#999999", "#cccccc", "#996633"],
-      path: "https://w.wallhaven.cc/full/qz/wallhaven-qzl1rd.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/qz/qzl1rd.jpg",
-        original: "https://th.wallhaven.cc/orig/qz/qzl1rd.jpg",
-        small: "https://th.wallhaven.cc/small/qz/qzl1rd.jpg",
-      },
-    },
-    {
-      id: "m32xpm",
-      url: "https://wallhaven.cc/w/m32xpm",
-      short_url: "https://whvn.cc/m32xpm",
-      views: 779,
-      favorites: 23,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 1013,
-      dimension_y: 1433,
-      resolution: "1013x1433",
-      ratio: "0.71",
-      file_size: 1425771,
-      file_type: "image/jpeg",
-      created_at: "2023-07-17 23:17:46",
-      colors: ["#fdadc7", "#ea4c88", "#999999", "#e7d8b1", "#424153"],
-      path: "https://w.wallhaven.cc/full/m3/wallhaven-m32xpm.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/m3/m32xpm.jpg",
-        original: "https://th.wallhaven.cc/orig/m3/m32xpm.jpg",
-        small: "https://th.wallhaven.cc/small/m3/m32xpm.jpg",
-      },
-    },
-    {
-      id: "l82loq",
-      url: "https://wallhaven.cc/w/l82loq",
-      short_url: "https://whvn.cc/l82loq",
-      views: 745,
-      favorites: 45,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 4000,
-      dimension_y: 2600,
-      resolution: "4000x2600",
-      ratio: "1.54",
-      file_size: 8780641,
-      file_type: "image/png",
-      created_at: "2023-07-17 10:43:40",
-      colors: ["#ffffff", "#424153", "#cccccc", "#999999", "#000000"],
-      path: "https://w.wallhaven.cc/full/l8/wallhaven-l82loq.png",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/l8/l82loq.jpg",
-        original: "https://th.wallhaven.cc/orig/l8/l82loq.jpg",
-        small: "https://th.wallhaven.cc/small/l8/l82loq.jpg",
-      },
-    },
-    {
-      id: "kx2yg6",
-      url: "https://wallhaven.cc/w/kx2yg6",
-      short_url: "https://whvn.cc/kx2yg6",
-      views: 709,
-      favorites: 25,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 3840,
-      dimension_y: 2160,
-      resolution: "3840x2160",
-      ratio: "1.78",
-      file_size: 7205131,
-      file_type: "image/png",
-      created_at: "2023-07-17 10:48:56",
-      colors: ["#ffffff", "#424153", "#999999", "#333399", "#abbcda"],
-      path: "https://w.wallhaven.cc/full/kx/wallhaven-kx2yg6.png",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/kx/kx2yg6.jpg",
-        original: "https://th.wallhaven.cc/orig/kx/kx2yg6.jpg",
-        small: "https://th.wallhaven.cc/small/kx/kx2yg6.jpg",
-      },
-    },
-    {
-      id: "gp2o5l",
-      url: "https://wallhaven.cc/w/gp2o5l",
-      short_url: "https://whvn.cc/gp2o5l",
-      views: 619,
-      favorites: 22,
-      source: "https://twitter.com/banilizo_nft",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 3000,
-      dimension_y: 1636,
-      resolution: "3000x1636",
-      ratio: "1.83",
-      file_size: 7389803,
-      file_type: "image/png",
-      created_at: "2023-07-18 10:13:43",
-      colors: ["#999999", "#ffffff", "#424153", "#cccccc", "#fdadc7"],
-      path: "https://w.wallhaven.cc/full/gp/wallhaven-gp2o5l.png",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/gp/gp2o5l.jpg",
-        original: "https://th.wallhaven.cc/orig/gp/gp2o5l.jpg",
-        small: "https://th.wallhaven.cc/small/gp/gp2o5l.jpg",
-      },
-    },
-    {
-      id: "rrjmx1",
-      url: "https://wallhaven.cc/w/rrjmx1",
-      short_url: "https://whvn.cc/rrjmx1",
-      views: 666,
-      favorites: 44,
-      source: "",
-      purity: "sfw",
-      category: "anime",
-      dimension_x: 3158,
-      dimension_y: 2232,
-      resolution: "3158x2232",
-      ratio: "1.41",
-      file_size: 5997602,
-      file_type: "image/jpeg",
-      created_at: "2023-07-17 10:48:56",
-      colors: ["#424153", "#999999", "#ffffff", "#fdadc7", "#996633"],
-      path: "https://w.wallhaven.cc/full/rr/wallhaven-rrjmx1.jpg",
-      thumbs: {
-        large: "https://th.wallhaven.cc/lg/rr/rrjmx1.jpg",
-        original: "https://th.wallhaven.cc/orig/rr/rrjmx1.jpg",
-        small: "https://th.wallhaven.cc/small/rr/rrjmx1.jpg",
-      },
-    },
-  ];
-
-  const handleShowOptions = (url) => {
-    setOptionsVisible(!optionsVisible);
-    setImageUrl(url);
+  const fetchWallpapers = async () => {
+    const url = createURL.createURL({
+      q: selectedCategory !== "hot" ? selectedCategory : null,
+      hot: selectedCategory === "hot",
+      sorting: "random",
+      categories: "110",
+      purity: "100",
+      page: currentPage,
+    });
+    const data = await getWallpapers(url);
+    setLoading(false);
+    setWallpapers(data);
   };
 
-  // const images = wallpapers.map((wallpaper) => wallpaper.path);
+  // infinite scroll
+  const fetchNewWallpapers = async () => {
+    const url = createURL.createURL({
+      q: selectedCategory !== "hot" ? selectedCategory : null,
+      hot: selectedCategory === "hot",
+      sorting: "random",
+      categories: "110",
+      purity: "100",
+      page: currentPage,
+    });
+    const data = await getWallpapers(url);
+    setLoading(false);
+
+    setWallpapers([...wallpapers, ...data]);
+  };
+
+  const selectCategory = (selection) => {
+    setLoading(false);
+    setSelectedCategory(selection);
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    fetchWallpapers();
+  }, []);
+
+  // fetch wallpapers whenever a category is selected
+  useEffect(() => {
+    fetchWallpapers();
+  }, [selectedCategory]);
+
+  const handleScrollEnd = async () => {
+    setLoading(true);
+    setCurrentPage((prevPage) => {
+      return prevPage + 1;
+    });
+    fetchNewWallpapers();
+  };
 
   return (
     <View style={styles.container}>
-      {optionsVisible && <WallpaperSet imageUrl={imageUrl} />}
-      <Text>Categories TAB NAV</Text>
-      <FlatList
-        numColumns={3}
-        style={{ alignSelf: "center" }}
+      <Categories categories={categories} selectCategory={selectCategory} />
+      <ImageFlatList
         data={wallpapers}
-        renderItem={({ item }) => (
-          <ImageItem
-            thumbnail={item.thumbs.original}
-            url={item.path}
-            showOptions={handleShowOptions}
-          />
-        )}
-        keyExtractor={(item) => item.id}
+        handleScrollEnd={() => handleScrollEnd()}
       />
+      {loading && (
+        <Text style={{ alignSelf: "center" }}>Loading Please Wait...</Text>
+      )}
     </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: "100%",
     width: "100%",
   },
 });

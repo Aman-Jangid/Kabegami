@@ -13,13 +13,6 @@ export default function HomeStack() {
       }}
     >
       <Stack.Screen name="Explore" component={Explore} />
-      <Stack.Screen
-        options={{
-          navigationBarHidden: true,
-        }}
-        name="ImageDisplay"
-        component={ImageDisplay}
-      />
     </Stack.Navigator>
   );
 }

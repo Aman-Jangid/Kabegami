@@ -1,20 +1,35 @@
-import React from "react";
-import { TextInput } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Alert, TextInput } from "react-native";
 import { StyleSheet, View } from "react-native";
 import IconButton from "./IconButton";
 import color from "../theme/colors";
 
 export default function Search({ textChangeHandle }) {
+  const [value, setValue] = useState();
+
+  const searchIconStyles = {
+    backgroundColor: color.lightGrey,
+  };
+
+  const handleSearch = () => {
+    textChangeHandle(value);
+  };
+
   return (
     <View style={styles.container}>
-      <TextInput onChangeText={textChangeHandle} style={styles.search} />
+      <TextInput
+        onChangeText={(value) => setValue(value)}
+        style={styles.search}
+        value={value}
+      />
       <View style={styles.searchIcon}>
         <IconButton
+          style={searchIconStyles}
           name="image-search"
-          color={color.black}
-          size={35}
+          color={color.grey}
+          size={33}
           iconPack="MI"
-          onPress={() => console.log("searching")}
+          onPress={handleSearch}
         />
       </View>
     </View>
@@ -22,12 +37,13 @@ export default function Search({ textChangeHandle }) {
 }
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    marginLeft: 12,
+    marginRight: 25,
     flexDirection: "row",
     justifyContent: "center",
   },
   search: {
-    width: "80%",
+    flex: 1,
     padding: 5,
     paddingHorizontal: 15,
     fontSize: 18,
@@ -37,7 +53,8 @@ const styles = StyleSheet.create({
     backgroundColor: color.lightGrey,
   },
   searchIcon: {
+    backfaceVisibility: "hidden",
     position: "absolute",
-    right: 42,
+    right: 4,
   },
 });

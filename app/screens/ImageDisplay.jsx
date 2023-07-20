@@ -12,7 +12,7 @@ export default function ImageDisplay({}) {
   const [liked, setLiked] = useState(true);
   const [optionsVisible, setOptionsVisible] = useState(false);
 
-  const { navigate } = useNavigation();
+  const { goBack } = useNavigation();
   const route = useRoute();
 
   const handleShowOptions = () => {
@@ -21,7 +21,7 @@ export default function ImageDisplay({}) {
   };
 
   const handleCloseViewer = () => {
-    navigate("Explore");
+    goBack();
   };
 
   const buttonContainer = {

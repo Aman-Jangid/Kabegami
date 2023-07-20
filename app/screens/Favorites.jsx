@@ -597,9 +597,10 @@ export default function Favorites() {
 const styles = StyleSheet.create({
   container: {
     paddingTop: 40,
-    padding: 12,
-    width: "100%",
+    // padding: 8,
+    flex: 1,
     height: "100%",
+    width: "100%",
     backgroundColor: "yellowgreen",
   },
   paths: {

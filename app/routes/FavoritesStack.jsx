@@ -1,5 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Favorites from "../screens/Favorites";
+import ImageDisplay from "../screens/ImageDisplay";
 
 const Stack = createNativeStackNavigator();
 

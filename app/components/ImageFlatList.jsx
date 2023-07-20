@@ -2,29 +2,34 @@ import React, { useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import ImageItem from "./ImageItem";
 
-export default function ImageFlatList({ data }) {
-  const [optionsVisible, setOptionsVisible] = useState(false);
+import WallpaperSet from "./WallpaperSet";
 
-  const handleShowOptions = (id) => {
+export default function ImageFlatList({ data, handleScrollEnd, loading }) {
+  const [optionsVisible, setOptionsVisible] = useState(false);
+  const [imageUrl, setImageUrl] = useState();
+
+  const handleShowOptions = (url) => {
     setOptionsVisible(!optionsVisible);
+    setImageUrl(url);
   };
 
   return (
-    <FlatList
-      numColumns={3}
-      style={{ alignSelf: "center" }}
-      data={data}
-      renderItem={({ item }) => (
-        <ImageItem
-          thumbnail={item.thumbs.original}
-          url={item.path}
-          showOptions={() => handleShowOptions(item.id)}
-        />
-      )}
-      keyExtractor={(item) => item.id}
-    />
+    <>
+      {optionsVisible && <WallpaperSet imageUrl={imageUrl} />}
+      <FlatList
+        onEndReached={handleScrollEnd}
+        numColumns={3}
+        style={{ alignSelf: "center" }}
+        data={data}
+        renderItem={({ item }) => (
+          <ImageItem
+            thumbnail={item.thumbs.original}
+            url={item.path}
+            showOptions={() => handleShowOptions(item.path)}
+          />
+        )}
+        keyExtractor={(item) => item.id}
+      />
+    </>
   );
 }
-const styles = StyleSheet.create({
-  container: {},
-});

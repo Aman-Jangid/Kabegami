@@ -1,10 +1,12 @@
 const createURL = (
   options = {
+    q: "",
     sorting: "",
     categories: "",
     purity: "",
     resolutions: "",
-    top: false,
+    toplist: false,
+    // topRange: "1M",
     hot: false,
     seed: "",
     page: "",

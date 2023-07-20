@@ -21,7 +21,7 @@ export default function WallpaperSet({ imageUrl, hideDownload }) {
         size={40}
         iconPack="MI"
         style={round}
-        onPress={() => setWallpaper(imageUrl)}
+        onPress={() => setWallpaper(imageUrl, "home")}
       />
       <IconButton
         name="lock"
@@ -29,6 +29,7 @@ export default function WallpaperSet({ imageUrl, hideDownload }) {
         size={40}
         iconPack="MI"
         style={round}
+        onPress={() => setWallpaper(imageUrl, "lock")}
       />
       <IconButton
         name="home-lock"
@@ -36,6 +37,7 @@ export default function WallpaperSet({ imageUrl, hideDownload }) {
         size={40}
         iconPack="MCI"
         style={round}
+        onPress={() => setWallpaper(imageUrl, "both")}
       />
       {!hideDownload && (
         <IconButton

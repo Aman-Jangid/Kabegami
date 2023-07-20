@@ -2,7 +2,12 @@ import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { Image, StyleSheet, TouchableOpacity } from "react-native";
 
-export default function ImageItem({ thumbnail, url, showOptions }) {
+export default function ImageItem({
+  thumbnail,
+  url,
+  showOptions,
+  showImageViewer,
+}) {
   // implement long press to open a modal (WallpaperSet.jsx)
 
   const { navigate, setParams } = useNavigation();
