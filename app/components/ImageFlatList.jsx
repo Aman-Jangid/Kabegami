@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList } from "react-native";
 import ImageItem from "./ImageItem";
-
+import Loading from "./Loading";
 import WallpaperSet from "./WallpaperSet";
+import color from "../theme/colors";
 
-export default function ImageFlatList({ data, handleScrollEnd, loading }) {
+const ImageFlatList = ({ data, handleScrollEnd, loading, marginBottom }) => {
   const [optionsVisible, setOptionsVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState();
 
@@ -15,8 +16,11 @@ export default function ImageFlatList({ data, handleScrollEnd, loading }) {
 
   return (
     <>
-      {optionsVisible && <WallpaperSet imageUrl={imageUrl} />}
+      {optionsVisible && (
+        <WallpaperSet marginBottom={marginBottom} imageUrl={imageUrl} />
+      )}
       <FlatList
+        refreshing={true}
         onEndReached={handleScrollEnd}
         numColumns={3}
         style={{ alignSelf: "center" }}
@@ -25,11 +29,24 @@ export default function ImageFlatList({ data, handleScrollEnd, loading }) {
           <ImageItem
             thumbnail={item.thumbs.original}
             url={item.path}
+            active={imageUrl === item.path}
             showOptions={() => handleShowOptions(item.path)}
           />
         )}
         keyExtractor={(item) => item.id}
+        ListFooterComponent={loading && Loading}
+        ListFooterComponentStyle={{
+          position: "absolute",
+          backgroundColor: color.colorPrimary,
+          paddingTop: 4,
+          bottom: 0,
+          width: "100%",
+          height: 14,
+          justifyContent: "flex-start",
+        }}
       />
     </>
   );
-}
+};
+
+export default React.memo(ImageFlatList);

@@ -9,6 +9,8 @@ export default function IconButton({
   onPress,
   iconPack,
   style,
+  disabled,
+  disabledColor,
 }) {
   const IconPacks = {
     MI: Icons.MaterialIcons,
@@ -31,12 +33,12 @@ export default function IconButton({
   const Icon = IconPacks[iconPack];
 
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={onPress} disabled={disabled}>
       <View style={styles.buttonContainer}>
         <Icon
           name={name}
           size={size}
-          color={color}
+          color={disabled ? disabledColor : color}
           style={styles.buttonContainer}
         />
       </View>

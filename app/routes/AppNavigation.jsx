@@ -14,20 +14,8 @@ export default function AppNavigation() {
       }}
       initialRouteName="App"
     >
-      <Stack.Screen
-        options={{
-          navigationBarHidden: true,
-        }}
-        name="ImageDisplay"
-        component={ImageDisplay}
-      />
-      <Stack.Screen
-        options={{
-          navigationBarHidden: true,
-        }}
-        name="App"
-        component={Navigation}
-      />
+      <Stack.Screen name="ImageDisplay" component={ImageDisplay} />
+      <Stack.Screen name="App" component={Navigation} />
     </Stack.Navigator>
   );
 }

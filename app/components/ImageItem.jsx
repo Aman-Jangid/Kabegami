@@ -1,13 +1,14 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { Image, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  TouchableWi,
+  TouchableWithoutFeedback,
+} from "react-native";
+import color from "../theme/colors";
 
-export default function ImageItem({
-  thumbnail,
-  url,
-  showOptions,
-  showImageViewer,
-}) {
+export default function ImageItem({ thumbnail, url, showOptions, active }) {
   // implement long press to open a modal (WallpaperSet.jsx)
 
   const { navigate, setParams } = useNavigation();
@@ -21,9 +22,22 @@ export default function ImageItem({
 
   return (
     <>
-      <TouchableOpacity onLongPress={handleLongPress} onPress={handlePress}>
-        <Image source={{ uri: thumbnail }} style={styles.image} />
-      </TouchableOpacity>
+      <TouchableWithoutFeedback
+        onLongPress={handleLongPress}
+        onPress={handlePress}
+      >
+        <Image
+          source={{ uri: thumbnail }}
+          style={[
+            styles.image,
+            {
+              borderWidth: active ? 3 : 0,
+              borderColor: color.color9,
+              borderRadius: active ? 2 : 5,
+            },
+          ]}
+        />
+      </TouchableWithoutFeedback>
     </>
   );
 }
@@ -32,6 +46,5 @@ const styles = StyleSheet.create({
     minHeight: 200,
     width: 120,
     margin: 5,
-    borderRadius: 5,
   },
 });

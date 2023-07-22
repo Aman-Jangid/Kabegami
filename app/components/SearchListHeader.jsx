@@ -11,16 +11,20 @@ export default function SearchListHeader({ onPress }) {
         name="delete"
         iconPack="ADI"
         size={25}
-        color={color.grey}
+        color={color.color6}
         onPress={onPress}
       />
     </View>
   );
 }
 const styles = StyleSheet.create({
-  container: { flexDirection: "row", justifyContent: "space-between" },
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 2,
+  },
   recentText: {
     fontSize: 18,
-    color: color.grey2,
+    color: color.color5,
   },
 });

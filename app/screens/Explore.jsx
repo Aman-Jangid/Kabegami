@@ -4,6 +4,8 @@ import getWallpapers from "../api/getWallpapers";
 import Categories from "../components/Categories";
 import createURL from "../api/createURL";
 import ImageFlatList from "../components/ImageFlatList";
+import color from "../theme/colors";
+import Screen from "./Screen";
 
 // search -> order (ascending) ->
 // category (100 -> general,010 -> anime ,001 -> people) ->
@@ -46,7 +48,7 @@ const initialCategories = [
     title: "Cats",
     color: "#282a59",
     value: "cats",
-    background: require("../assets/thumbnails/cats.jpg"),
+    background: require("../assets/pictures/cats.jpg"),
   },
 ];
 
@@ -111,20 +113,25 @@ export default function Explore() {
   };
 
   return (
-    <View style={styles.container}>
-      <Categories categories={categories} selectCategory={selectCategory} />
-      <ImageFlatList
-        data={wallpapers}
-        handleScrollEnd={() => handleScrollEnd()}
-      />
-      {loading && (
-        <Text style={{ alignSelf: "center" }}>Loading Please Wait...</Text>
-      )}
-    </View>
+    <Screen>
+      <View style={styles.container}>
+        <Categories
+          categories={categories}
+          selectedCategory={selectedCategory}
+          selectCategory={selectCategory}
+        />
+        <ImageFlatList
+          loading={loading}
+          data={wallpapers}
+          handleScrollEnd={() => handleScrollEnd()}
+        />
+      </View>
+    </Screen>
   );
 }
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: color.colorPrimary,
     flex: 1,
     height: "100%",
     width: "100%",

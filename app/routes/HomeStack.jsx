@@ -9,15 +9,10 @@ export default function HomeStack() {
     <Stack.Navigator
       screenOptions={{
         navigationBarHidden: true,
+        headerShown: false,
       }}
     >
-      <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
-        name="Home"
-        component={Home}
-      />
+      <Stack.Screen options={{}} name="Home" component={Home} />
       <Stack.Screen name="Customize" component={Customize} />
     </Stack.Navigator>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { PureComponent, useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import Search from "../components/Search";
 import TouchableListItem from "../components/TouchableListItem";
@@ -11,101 +11,140 @@ import ImageFlatList from "../components/ImageFlatList";
 import getWallpapers from "../api/getWallpapers";
 import IconButton from "../components/IconButton";
 import SearchListHeader from "../components/SearchListHeader";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Screen from "./Screen";
 
 export default function Home() {
   const { navigate } = useNavigation();
-  const [wallpapers, setWallpapers] = useState(null);
-  const [fetching, setFetching] = useState(true);
+  const [wallpapers, setWallpapers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [recentSearches, setRecentSearches] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [query, setQuery] = useState(null);
 
-  const initiateSearch = async (query) => {
-    setRecentSearches((prevSearches) => {
-      const newSeachArray = [...prevSearches];
-      newSeachArray.push(query);
+  const initiateSearch = async (term) => {
+    setLoading(true);
+    if (!query) setQuery(term);
 
-      return newSeachArray;
-    });
-    setFetching(true);
+    if (!recentSearches.includes(term)) {
+      setRecentSearches((prevSearches) => {
+        const newSearchArray = [...prevSearches];
+        newSearchArray.push(term);
+        return newSearchArray;
+      });
+    }
+
     const url = createURL.createURL({
-      q: query,
+      q: term,
       sorting: "random",
       top: true,
       purity: "100",
       categories: "111",
+      page: currentPage,
     });
-    console.log(url);
+
     try {
       const response = await getWallpapers(url);
-      setWallpapers(response);
+      setWallpapers([...wallpapers, ...response]);
       console.log("Fetched data successfully.");
-      setFetching(false);
+      setLoading(false);
     } catch (error) {
       console.log("Failed to fetch data", error);
-      setFetching(false);
+      setLoading(false);
     }
   };
 
-  const removeSeachListItem = () => {};
+  const handleScrollEnd = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+    initiateSearch(query);
+  };
+
+  // const removeSeachListItem = () => {};
 
   const emptySearchList = () => {
     setRecentSearches([]);
   };
 
+  const handleGoBack = () => {
+    setWallpapers([]);
+    setQuery(null);
+  };
+
+  const handleSearch = (term) => {
+    setWallpapers([]);
+    setCurrentPage(1);
+    initiateSearch(term);
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.searchBar}>
-        <IconButton
-          name={!wallpapers ? "circle-thin" : "chevron-with-circle-left"}
-          iconPack={!wallpapers ? "FAI" : "EI"}
-          size={!wallpapers ? 32 : 28}
-          onPress={() => setWallpapers(null)}
-        />
-        <Search textChangeHandle={initiateSearch} />
-      </View>
-      {wallpapers && (
-        <View style={styles.listContainer}>
-          <ImageFlatList data={wallpapers} />
-        </View>
-      )}
-      {!wallpapers && (
-        <>
-          <FlatList
-            style={styles.history}
-            data={recentSearches}
-            renderItem={({ item }) => (
-              <TouchableListItem
-                text={item}
-                handlePress={() => initiateSearch(item)}
+    <Screen>
+      <GestureHandlerRootView>
+        <View style={styles.container}>
+          <View style={styles.searchBar}>
+            <IconButton
+              name={!query ? "circle-thin" : "chevron-with-circle-left"}
+              iconPack={!query ? "FAI" : "EI"}
+              size={!query ? 32 : 28}
+              color={!query ? color.color3 : color.color9}
+              onPress={() => handleGoBack()}
+            />
+            <Search textChangeHandle={handleSearch} />
+          </View>
+          {query && (
+            <View style={styles.listContainer}>
+              <ImageFlatList
+                marginBottom={90}
+                data={wallpapers}
+                loading={loading}
+                handleScrollEnd={handleScrollEnd}
               />
-            )}
-            keyExtractor={({ item }) => item}
-            contentContainerStyle={{ alignItems: "center" }}
-            ItemSeparatorComponent={<ItemSeparator />}
-            ListHeaderComponent={<SearchListHeader onPress={emptySearchList} />}
-            ListHeaderComponentStyle={{
-              justifyContent: "flex-start",
-              width: "100%",
-              padding: 5,
-              paddingHorizontal: 10,
-            }}
-          />
-          <Button
-            title="Add Custom Tags"
-            onPress={() => navigate("Customize")}
-            color={color.lightGrey}
-            width="80%"
-          />
-        </>
-      )}
-    </View>
+            </View>
+          )}
+          {!query && (
+            <>
+              <FlatList
+                style={styles.history}
+                data={recentSearches}
+                renderItem={({ item }) => (
+                  <TouchableListItem
+                    text={item}
+                    handlePress={() => initiateSearch(item)}
+                  />
+                )}
+                keyExtractor={({ item }) => item}
+                contentContainerStyle={{ alignItems: "center" }}
+                ItemSeparatorComponent={<ItemSeparator />}
+                ListHeaderComponent={
+                  <SearchListHeader onPress={emptySearchList} />
+                }
+                ListHeaderComponentStyle={{
+                  justifyContent: "flex-start",
+                  width: "100%",
+                  padding: 5,
+                  paddingHorizontal: 10,
+                }}
+              />
+              <Button
+                title="configure api"
+                onPress={() => navigate("Customize")}
+                color={color.color4}
+                textColor={color.color8}
+                width="80%"
+              />
+            </>
+          )}
+        </View>
+      </GestureHandlerRootView>
+    </Screen>
   );
 }
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 30,
+    // paddingTop: 30,
     height: "100%",
     width: "100%",
     alignItems: "center",
+    backgroundColor: color.colorPrimary,
     gap: 10,
   },
   searchBar: {
@@ -116,12 +155,16 @@ const styles = StyleSheet.create({
   },
   history: {
     width: "90%",
-    maxHeight: 300,
-    borderRadius: 10,
-    backgroundColor: "rgba(0,0,0,0.1)",
+    maxHeight: 250,
+    borderRadius: 20,
+    overflow: "hidden",
+    backgroundColor: color.colorPrimary,
+    marginBottom: 30,
   },
   listContainer: {
     width: "100%",
-    height: "100%",
+    marginBottom: -20,
+    height: "94%",
+    // marginBottom: 30,
   },
 });

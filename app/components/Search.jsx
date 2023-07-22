@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, TextInput } from "react-native";
+import { Alert, Keyboard, TextInput } from "react-native";
 import { StyleSheet, View } from "react-native";
 import IconButton from "./IconButton";
 import color from "../theme/colors";
@@ -8,11 +8,13 @@ export default function Search({ textChangeHandle }) {
   const [value, setValue] = useState();
 
   const searchIconStyles = {
-    backgroundColor: color.lightGrey,
+    backgroundColor: color.color3,
   };
 
   const handleSearch = () => {
+    if (!value) return;
     textChangeHandle(value);
+    Keyboard.dismiss();
   };
 
   return (
@@ -26,7 +28,7 @@ export default function Search({ textChangeHandle }) {
         <IconButton
           style={searchIconStyles}
           name="image-search"
-          color={color.grey}
+          color={color.color10}
           size={33}
           iconPack="MI"
           onPress={handleSearch}
@@ -41,16 +43,18 @@ const styles = StyleSheet.create({
     marginRight: 25,
     flexDirection: "row",
     justifyContent: "center",
+    overflow: "hidden",
+    borderRadius: 15,
   },
   search: {
     flex: 1,
     padding: 5,
     paddingHorizontal: 15,
-    fontSize: 18,
-    color: color.grey,
-    borderRadius: 15,
+    fontSize: 20,
+    color: color.color7,
+    letterSpacing: 1.4,
     fontWeight: "bold",
-    backgroundColor: color.lightGrey,
+    backgroundColor: color.color3,
   },
   searchIcon: {
     backfaceVisibility: "hidden",

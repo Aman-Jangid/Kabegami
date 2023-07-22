@@ -1,6 +1,8 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Favorites from "../screens/Favorites";
-import ImageDisplay from "../screens/ImageDisplay";
+import Collections from "../screens/Collections";
+import Saved from "../screens/Saved";
+import SavedTab from "./SavedTab";
 
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +15,8 @@ export default function HomeStack() {
       }}
     >
       <Stack.Screen name="Favorite" component={Favorites} />
+      <Stack.Screen name="Collections" component={Collections} />
+      <Stack.Screen name="SavedTab" component={SavedTab} />
     </Stack.Navigator>
   );
 }

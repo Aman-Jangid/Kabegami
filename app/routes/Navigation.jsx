@@ -7,8 +7,19 @@ import Icon from "../components/Icon";
 import FavoritesStack from "./FavoritesStack";
 import HomeStack from "./HomeStack";
 import ExploreStack from "./ExploreStack";
+import color from "../theme/colors";
+import IconButton from "../components/IconButton";
 
 const Tab = createBottomTabNavigator();
+
+const activeButton = {
+  backgroundColor: color.colorPrimary,
+  borderRadius: 50,
+  flex: 1,
+  textAlignVertical: "center",
+  paddingHorizontal: 8.9,
+  alignItems: "center",
+};
 
 const Navigation = () => (
   <Tab.Navigator
@@ -16,22 +27,39 @@ const Navigation = () => (
     screenOptions={{
       tabBarShowLabel: false,
       tabBarStyle: {
-        width: 200,
-        height: 40,
-        marginBottom: 10,
+        width: 190,
+        height: 45,
+        marginBottom: 15,
         left: "50%",
         transform: [{ translateX: -100 }],
-        backgroundColor: "darksalmon",
+        backgroundColor: color.color5,
         shadowColor: "transparent",
+        borderWidth: 0,
+        borderTopWidth: 0,
+        borderTopColor: color.color7,
+        backfaceVisibility: "hidden",
+        borderColor: color.color7,
         borderRadius: 50,
         position: "absolute",
       },
+      tabBarHideOnKeyboard: true,
+      tabBarActiveTintColor: color.color9,
+      tabBarInactiveTintColor: color.colorPrimary,
     }}
   >
     <Tab.Screen
       options={{
         headerShown: false,
-        tabBarIcon: () => <Icon name="heart" iconPack="FAI" size={25} />,
+        tabBarIcon: ({ color, focused, size }) => (
+          <IconButton
+            disabled
+            style={focused ? activeButton : null}
+            name="heart"
+            iconPack="FAI"
+            size={28}
+            disabledColor={color}
+          />
+        ),
       }}
       name="Favorites"
       component={FavoritesStack}
@@ -39,7 +67,17 @@ const Navigation = () => (
     <Tab.Screen
       options={{
         headerShown: false,
-        tabBarIcon: () => <Icon name="home" iconPack="FAI" size={25} />,
+        tabBarHideOnKeyboard: true,
+        tabBarIcon: ({ color, focused, size }) => (
+          <IconButton
+            disabled
+            style={focused ? activeButton : null}
+            name="home"
+            iconPack="FAI"
+            size={30}
+            disabledColor={color}
+          />
+        ),
       }}
       name="HomeStack"
       component={HomeStack}
@@ -47,31 +85,21 @@ const Navigation = () => (
     <Tab.Screen
       options={{
         headerShown: false,
-        tabBarIcon: () => <Icon name="wpexplorer" iconPack="FAI" size={25} />,
+        tabBarIcon: ({ color, focused, size }) => (
+          <IconButton
+            disabled
+            style={focused ? activeButton : null}
+            name="explore"
+            iconPack="MI"
+            size={32}
+            disabledColor={color}
+          />
+        ),
       }}
-      name="Explore"
+      name="ExploreStack"
       component={ExploreStack}
     />
   </Tab.Navigator>
 );
-
-const styles = StyleSheet.create({
-  tabContainer: {
-    flexDirection: "row",
-    height: 40,
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
-  tabItem: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  activeTab: {
-    transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
-    backgroundColor: "#4CAF50",
-    borderRadius: 25,
-  },
-});
 
 export default Navigation;
