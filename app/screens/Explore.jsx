@@ -6,6 +6,7 @@ import createURL from "../api/createURL";
 import ImageFlatList from "../components/ImageFlatList";
 import color from "../theme/colors";
 import Screen from "./Screen";
+import DismissGesture from "../components/DismissGesture";
 
 // search -> order (ascending) ->
 // category (100 -> general,010 -> anime ,001 -> people) ->
@@ -58,6 +59,7 @@ export default function Explore() {
   const [selectedCategory, setSelectedCategory] = useState("hot");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [scrollToTop, setScrollToTop] = useState(false);
 
   const fetchWallpapers = async () => {
     const url = createURL.createURL({
@@ -90,8 +92,10 @@ export default function Explore() {
   };
 
   const selectCategory = (selection) => {
+    setScrollToTop(true);
     setLoading(false);
     setSelectedCategory(selection);
+    setScrollToTop(false);
   };
 
   useEffect(() => {
@@ -112,6 +116,11 @@ export default function Explore() {
     fetchNewWallpapers();
   };
 
+  const switchCategory = () => {
+    // console.log(categories.includes(selectedCategory));
+    console.log(selectedCategory);
+  };
+
   return (
     <Screen>
       <View style={styles.container}>
@@ -121,6 +130,7 @@ export default function Explore() {
           selectCategory={selectCategory}
         />
         <ImageFlatList
+          scrollToTop={scrollToTop}
           loading={loading}
           data={wallpapers}
           handleScrollEnd={() => handleScrollEnd()}

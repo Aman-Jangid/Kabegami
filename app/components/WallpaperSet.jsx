@@ -22,48 +22,51 @@ export default function WallpaperSet({
 
   const handleCloseOptions = () => {
     setHidden(true);
+    console.log(hidden);
   };
 
   return (
     <View style={[{ marginBottom }, styles.container]}>
-      <DismissGesture onDismiss={() => handleCloseOptions()}>
-        <View style={[styles.content]}>
-          <IconButton
-            name="home"
-            color={color.color8}
-            size={40}
-            iconPack="MI"
-            style={round}
-            onPress={() => setWallpaper(imageUrl, "home")}
-          />
-          <IconButton
-            name="lock"
-            color={color.color8}
-            size={40}
-            iconPack="MI"
-            style={round}
-            onPress={() => setWallpaper(imageUrl, "lock")}
-          />
-          <IconButton
-            name="home-lock"
-            color={color.color8}
-            size={40}
-            iconPack="MCI"
-            style={round}
-            onPress={() => setWallpaper(imageUrl, "both")}
-          />
-          {!hideDownload && (
+      {!hidden && (
+        <DismissGesture onDismiss={() => handleCloseOptions()}>
+          <View style={[styles.content]}>
             <IconButton
-              name="file-download"
+              name="home"
               color={color.color8}
               size={40}
               iconPack="MI"
               style={round}
-              onPress={() => downloadImage(imageUrl)}
+              onPress={() => setWallpaper(imageUrl, "home")}
             />
-          )}
-        </View>
-      </DismissGesture>
+            <IconButton
+              name="lock"
+              color={color.color8}
+              size={40}
+              iconPack="MI"
+              style={round}
+              onPress={() => setWallpaper(imageUrl, "lock")}
+            />
+            <IconButton
+              name="home-lock"
+              color={color.color8}
+              size={40}
+              iconPack="MCI"
+              style={round}
+              onPress={() => setWallpaper(imageUrl, "both")}
+            />
+            {!hideDownload && (
+              <IconButton
+                name="file-download"
+                color={color.color8}
+                size={40}
+                iconPack="MI"
+                style={round}
+                onPress={() => downloadImage(imageUrl)}
+              />
+            )}
+          </View>
+        </DismissGesture>
+      )}
     </View>
   );
 }

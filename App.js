@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import AppNavigation from "./app/routes/AppNavigation";
-import { View } from "react-native";
+import { Button, View } from "react-native";
 import color from "./app/theme/colors";
+import ManageStorage from "./app/services/ManageStorage";
 export default function App() {
+  // const selectionLocation = async (name) => {
+  //   await ManageStorage.createFolder(name);
+  // };
+
   return (
     <View
       style={{

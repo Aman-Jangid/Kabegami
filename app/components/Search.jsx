@@ -15,6 +15,7 @@ export default function Search({ textChangeHandle }) {
     if (!value) return;
     textChangeHandle(value);
     Keyboard.dismiss();
+    setValue(null);
   };
 
   return (

@@ -10,47 +10,31 @@ import ButtonSelection from "../components/ButtonSelection";
 import LinkButton from "../components/LinkButton";
 import BackButton from "../components/BackButton";
 import Screen from "./Screen";
+import PathSelector from "../components/PathSelector";
+import ManageStorage from "../services/ManageStorage";
 
-export default function Customize() {
-  const [showLink, setShowLink] = useState(false);
-  const toggleLink = () => {
-    setShowLink(!showLink);
+export default function Settings() {
+  const [path, setPath] = useState("");
+
+  const handleDirectorySelection = async () => {
+    const path = await ManageStorage.selectDirectory();
+    setPath(path);
   };
 
   return (
     <Screen>
       <View style={styles.container}>
         <BackButton goTo="Home" />
-        <DropDownMenu />
-        <Input
-          backgroundColor={color.color3}
-          color={color.color7}
-          placeholder="API KEY"
-          placeholderColor={color.color5}
-          displayHelp={true}
-          iconColor={color.color4}
-          toggleLink={toggleLink}
+        <PathSelector
+          path={path}
+          placeholder="select kabegami directory"
+          onPress={handleDirectorySelection}
         />
-        {showLink && (
-          <LinkButton
-            description="get an Api-key from the following provider to gain access to all features."
-            title="open Wallhaven.cc"
-            url={"https://www.wallhaven.cc/help/api"}
-          />
-        )}
-        <Input
-          lines={6}
-          backgroundColor={color.color3}
-          color={color.color7}
-          placeholder="Tags (separate using , or space )"
-          placeholderColor={color.color5}
-        />
-        <ButtonSelection />
         <Button
           title="confirm"
-          color={color.color9}
+          color={color.color10}
           textColor={color.white}
-          width="80%"
+          width="90%"
         />
       </View>
     </Screen>

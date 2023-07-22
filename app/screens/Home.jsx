@@ -1,4 +1,4 @@
-import React, { PureComponent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import Search from "../components/Search";
 import TouchableListItem from "../components/TouchableListItem";
@@ -13,17 +13,24 @@ import IconButton from "../components/IconButton";
 import SearchListHeader from "../components/SearchListHeader";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Screen from "./Screen";
+import Loading from "../components/Loading";
 
 export default function Home() {
   const { navigate } = useNavigation();
   const [wallpapers, setWallpapers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [searching, setSearching] = useState(false);
   const [recentSearches, setRecentSearches] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [end, setEnd] = useState(false);
   const [query, setQuery] = useState(null);
 
+  // useEffect(() => {}, [searching]);
+
   const initiateSearch = async (term) => {
-    setLoading(true);
+    setSearching(true);
+    setWallpapers([]);
+
     if (!query) setQuery(term);
 
     if (!recentSearches.includes(term)) {
@@ -45,6 +52,31 @@ export default function Home() {
 
     try {
       const response = await getWallpapers(url);
+      setWallpapers(response);
+      console.log("Fetched data successfully.");
+      setSearching(false);
+    } catch (error) {
+      console.log("Failed to fetch data", error);
+      setSearching(false);
+    }
+  };
+
+  const loadMore = async (term) => {
+    setLoading(true);
+    if (!query) setQuery(term);
+
+    const url = createURL.createURL({
+      q: term,
+      sorting: "random",
+      top: true,
+      purity: "100",
+      categories: "111",
+      page: currentPage,
+    });
+
+    try {
+      const response = await getWallpapers(url);
+      setEnd(response.length === 0);
       setWallpapers([...wallpapers, ...response]);
       console.log("Fetched data successfully.");
       setLoading(false);
@@ -56,7 +88,7 @@ export default function Home() {
 
   const handleScrollEnd = () => {
     setCurrentPage((prevPage) => prevPage + 1);
-    initiateSearch(query);
+    loadMore(query);
   };
 
   // const removeSeachListItem = () => {};
@@ -68,11 +100,13 @@ export default function Home() {
   const handleGoBack = () => {
     setWallpapers([]);
     setQuery(null);
+    setLoading(false);
+    setSearching(false);
   };
 
   const handleSearch = (term) => {
-    setWallpapers([]);
     setCurrentPage(1);
+    setSearching(true);
     initiateSearch(term);
   };
 
@@ -90,9 +124,14 @@ export default function Home() {
             />
             <Search textChangeHandle={handleSearch} />
           </View>
+          {searching && (
+            <Loading source={require("../assets/animations/searching.json")} />
+          )}
           {query && (
             <View style={styles.listContainer}>
               <ImageFlatList
+                end={end}
+                scrollToTop={searching}
                 marginBottom={90}
                 data={wallpapers}
                 loading={loading}
@@ -123,6 +162,13 @@ export default function Home() {
                   padding: 5,
                   paddingHorizontal: 10,
                 }}
+              />
+              <Button
+                title="settings"
+                onPress={() => navigate("Settings")}
+                color={color.color4}
+                textColor={color.color8}
+                width="80%"
               />
               <Button
                 title="configure api"

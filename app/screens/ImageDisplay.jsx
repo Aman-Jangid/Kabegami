@@ -104,8 +104,9 @@ const styles = StyleSheet.create({
   },
   gestureIndicator: {
     position: "absolute",
+    backgroundColor: "rgba(0,0,0,0.15)",
     top: -10,
-    paddingTop: 20,
+    paddingTop: 30,
     paddingHorizontal: 5,
     borderRadius: 10,
     alignSelf: "center",

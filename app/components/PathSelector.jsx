@@ -1,36 +1,26 @@
 import React from "react";
 import { StyleSheet, TextInput, View } from "react-native";
+import Input from "./Input";
 import IconButton from "./IconButton";
+import color from "../theme/colors";
 
-export default function Input({
-  lines,
-  backgroundColor,
-  color,
-  placeholder,
-  placeholderColor,
-  iconName = "help-circle-outline",
-  iconColor,
-  displayHelp,
-  toggleLink,
-}) {
+export default function PathSelector({ path, placeholder, onPress }) {
   return (
     <View style={styles.inputContainer}>
       <TextInput
-        style={[styles.input, { backgroundColor, color }]}
+        value={path}
+        style={styles.input}
         multiline
-        numberOfLines={lines}
         placeholder={placeholder}
-        placeholderTextColor={placeholderColor}
+        placeholderTextColor={color.color5}
       />
-      {displayHelp && (
-        <IconButton
-          color={iconColor}
-          name={iconName}
-          iconPack="II"
-          size={35}
-          onPress={toggleLink}
-        />
-      )}
+      <IconButton
+        color={color.color10}
+        name="folder-outline"
+        iconPack="II"
+        size={26}
+        onPress={onPress}
+      />
     </View>
   );
 }
@@ -52,5 +42,7 @@ const styles = StyleSheet.create({
     padding: 5,
     textAlignVertical: "top",
     paddingHorizontal: 10,
+    backgroundColor: color.color3,
+    color: color.color7,
   },
 });

@@ -1,18 +1,39 @@
-import React, { useState } from "react";
-import { FlatList } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { FlatList, Text } from "react-native";
 import ImageItem from "./ImageItem";
 import Loading from "./Loading";
 import WallpaperSet from "./WallpaperSet";
 import color from "../theme/colors";
 
-const ImageFlatList = ({ data, handleScrollEnd, loading, marginBottom }) => {
+const ImageFlatList = ({
+  data,
+  handleScrollEnd,
+  scrollToTop,
+  loading,
+  marginBottom,
+  end,
+}) => {
   const [optionsVisible, setOptionsVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState();
+
+  const flatlistRef = useRef(null);
+
+  const handleScrollToTop = () => {
+    if (flatlistRef.current) {
+      flatlistRef.current.scrollToOffset({ animated: true, offset: 0 });
+    }
+  };
+
+  useEffect(() => {
+    handleScrollToTop();
+  }, [scrollToTop]);
 
   const handleShowOptions = (url) => {
     setOptionsVisible(!optionsVisible);
     setImageUrl(url);
   };
+
+  useEffect;
 
   return (
     <>
@@ -20,10 +41,14 @@ const ImageFlatList = ({ data, handleScrollEnd, loading, marginBottom }) => {
         <WallpaperSet marginBottom={marginBottom} imageUrl={imageUrl} />
       )}
       <FlatList
+        ref={flatlistRef}
+        scrollToTop={scrollToTop}
         refreshing={true}
         onEndReached={handleScrollEnd}
         numColumns={3}
-        style={{ alignSelf: "center" }}
+        style={{
+          alignSelf: "center",
+        }}
         data={data}
         renderItem={({ item }) => (
           <ImageItem
@@ -34,7 +59,33 @@ const ImageFlatList = ({ data, handleScrollEnd, loading, marginBottom }) => {
           />
         )}
         keyExtractor={(item) => item.id}
-        ListFooterComponent={loading && Loading}
+        ListFooterComponent={
+          end ? (
+            <Text
+              style={{
+                position: "absolute",
+                padding: 10,
+                fontSize: 18,
+                alignSelf: "center",
+                width: "66%",
+                bottom: 60,
+                color: "white",
+                textAlignVertical: "top",
+                fontWeight: "bold",
+                height: 50,
+                flex: 1,
+              }}
+            >
+              ~ that's it ~
+            </Text>
+          ) : (
+            loading && (
+              <Loading
+                source={require("../assets/animations/loadingBar.json")}
+              />
+            )
+          )
+        }
         ListFooterComponentStyle={{
           position: "absolute",
           backgroundColor: color.colorPrimary,

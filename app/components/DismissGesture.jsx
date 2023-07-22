@@ -5,16 +5,13 @@ import {
   PanGestureHandler,
   State,
 } from "react-native-gesture-handler";
-import Button from "./Button";
-import color from "../theme/colors";
-import WallpaperSet from "./WallpaperSet";
 
 export default function DismissGesture({ onDismiss, children }) {
   const onGestureEvent = (event) => {
-    if (event.nativeEvent.translationX > 50) {
+    if (event.nativeEvent.translationX > 150) {
       onDismiss();
     }
-    if (event.nativeEvent.translationX < 50) {
+    if (event.nativeEvent.translationX < 150) {
       onDismiss();
     }
   };
