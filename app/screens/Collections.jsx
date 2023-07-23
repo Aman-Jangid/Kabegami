@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, FlatList, TouchableOpacity } from "react-native";
 import ImageButton from "../components/ImageButton";
 import Screen from "./Screen";
 import color from "../theme/colors";
 import BackButton from "../components/BackButton";
 import Icon from "../components/Icon";
+import storage from "../services/storage";
+import ManageStorage from "../services/ManageStorage";
 
 const collectionsArray = [
   {
@@ -42,6 +44,22 @@ const collectionsArray = [
 
 export default function Collections() {
   const [collections, setCollections] = useState(collectionsArray);
+  const [parentDir, setParentDir] = useState(null);
+  const [collectionDir, setCollectionDir] = useState(null);
+  const [directory, setDirectory] = useState(null);
+  // const getData = async () => {
+  // setDirectory(path);
+  // };
+
+  const createFolder = async (name) => {
+    const path = await storage.getData("DIRECTORY_PATH");
+    ManageStorage.createFolder(name, path);
+    setDirectory(path + "/" + name);
+  };
+
+  useEffect(() => {
+    createFolder(".Collections");
+  }, []);
 
   const newItem = {
     title: "OnePiece Fanarts",

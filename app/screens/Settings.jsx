@@ -1,23 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import DropDownMenu from "../components/DropDownMenu";
-import Input from "../components/Input";
 import Button from "../components/Button";
 import color from "../theme/colors";
-import { useNavigation } from "@react-navigation/native";
-import IconButton from "../components/IconButton";
-import ButtonSelection from "../components/ButtonSelection";
-import LinkButton from "../components/LinkButton";
 import BackButton from "../components/BackButton";
 import Screen from "./Screen";
 import PathSelector from "../components/PathSelector";
 import ManageStorage from "../services/ManageStorage";
+import storage from "../services/storage";
 
 export default function Settings() {
-  const [path, setPath] = useState("");
+  const [path, setPath] = useState(null);
+
+  const getSettings = async () => {
+    setPath(await storage.getData("PATH"));
+  };
+
+  useEffect(() => {
+    getSettings();
+  }, []);
 
   const handleDirectorySelection = async () => {
+    if (path) return;
+
     const path = await ManageStorage.selectDirectory();
+    await storage.setData("PATH", path);
     setPath(path);
   };
 
@@ -27,7 +33,7 @@ export default function Settings() {
         <BackButton goTo="Home" />
         <PathSelector
           path={path}
-          placeholder="select kabegami directory"
+          placeholder="kabegami directory"
           onPress={handleDirectorySelection}
         />
         <Button

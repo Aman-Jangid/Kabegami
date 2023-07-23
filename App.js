@@ -4,12 +4,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import AppNavigation from "./app/routes/AppNavigation";
 import { Button, View } from "react-native";
 import color from "./app/theme/colors";
-import ManageStorage from "./app/services/ManageStorage";
-export default function App() {
-  // const selectionLocation = async (name) => {
-  //   await ManageStorage.createFolder(name);
-  // };
 
+export default function App() {
   return (
     <View
       style={{

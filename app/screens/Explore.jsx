@@ -7,6 +7,7 @@ import ImageFlatList from "../components/ImageFlatList";
 import color from "../theme/colors";
 import Screen from "./Screen";
 import DismissGesture from "../components/DismissGesture";
+import Loading from "../components/Loading";
 
 // search -> order (ascending) ->
 // category (100 -> general,010 -> anime ,001 -> people) ->
@@ -59,9 +60,11 @@ export default function Explore() {
   const [selectedCategory, setSelectedCategory] = useState("hot");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(false);
   const [scrollToTop, setScrollToTop] = useState(false);
 
   const fetchWallpapers = async () => {
+    setFetching(true);
     const url = createURL.createURL({
       q: selectedCategory !== "hot" ? selectedCategory : null,
       hot: selectedCategory === "hot",
@@ -71,12 +74,13 @@ export default function Explore() {
       page: currentPage,
     });
     const data = await getWallpapers(url);
-    setLoading(false);
+    setFetching(false);
     setWallpapers(data);
   };
 
   // infinite scroll
   const fetchNewWallpapers = async () => {
+    setLoading(true);
     const url = createURL.createURL({
       q: selectedCategory !== "hot" ? selectedCategory : null,
       hot: selectedCategory === "hot",
@@ -93,13 +97,13 @@ export default function Explore() {
 
   const selectCategory = (selection) => {
     setScrollToTop(true);
+    setFetching(true);
     setLoading(false);
     setSelectedCategory(selection);
     setScrollToTop(false);
   };
 
   useEffect(() => {
-    setLoading(true);
     fetchWallpapers();
   }, []);
 
@@ -109,7 +113,6 @@ export default function Explore() {
   }, [selectedCategory]);
 
   const handleScrollEnd = async () => {
-    setLoading(true);
     setCurrentPage((prevPage) => {
       return prevPage + 1;
     });
@@ -129,12 +132,16 @@ export default function Explore() {
           selectedCategory={selectedCategory}
           selectCategory={selectCategory}
         />
-        <ImageFlatList
-          scrollToTop={scrollToTop}
-          loading={loading}
-          data={wallpapers}
-          handleScrollEnd={() => handleScrollEnd()}
-        />
+        {fetching ? (
+          <Loading source={require("../assets/animations/searching.json")} />
+        ) : (
+          <ImageFlatList
+            scrollToTop={scrollToTop}
+            loading={loading}
+            data={wallpapers}
+            handleScrollEnd={() => handleScrollEnd()}
+          />
+        )}
       </View>
     </Screen>
   );

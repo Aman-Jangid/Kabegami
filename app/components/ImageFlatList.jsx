@@ -33,8 +33,6 @@ const ImageFlatList = ({
     setImageUrl(url);
   };
 
-  useEffect;
-
   return (
     <>
       {optionsVisible && (
@@ -52,9 +50,11 @@ const ImageFlatList = ({
         data={data}
         renderItem={({ item }) => (
           <ImageItem
+            key={item.id}
             thumbnail={item.thumbs.original}
+            id={item.id}
             url={item.path}
-            active={imageUrl === item.path}
+            active={item.path === imageUrl}
             showOptions={() => handleShowOptions(item.path)}
           />
         )}

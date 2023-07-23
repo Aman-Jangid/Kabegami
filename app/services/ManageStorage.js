@@ -1,23 +1,22 @@
 import RNFS from "react-native-fs";
 import RNFetchBlob from "rn-fetch-blob";
 import * as ScopedStorage from "react-native-scoped-storage";
+import storage from "./storage";
 
 const { fs } = RNFetchBlob;
 
 const selectDirectory = async () => {
   let dir = await ScopedStorage.openDocumentTree(true);
   const res = await fs.stat(dir.uri);
+  await storage.setData("DIRECTORY_PATH", res.path);
+
   return res.path;
 };
 
-const createFolder = async (name) => {
-  // const { fs } = RNFetchBlob;
-  // // returns uri to selected directory
-  // let dir = await ScopedStorage.openDocumentTree(true);
-  // // returns path and other properties
-  // const res = await fs.stat(dir.uri);
-
-  const folderPath = (await selectDirectory()) + "/" + name.trim();
+const createFolder = async (name, path = null) => {
+  const folderPath = path
+    ? path + "/" + name
+    : (await selectDirectory()) + "/" + name.trim();
   const folderExists = await RNFS.exists(folderPath);
 
   if (!folderExists) {
@@ -26,6 +25,8 @@ const createFolder = async (name) => {
   } else {
     console.log("User-specified folder already exists:", folderPath);
   }
+
+  return folderPath;
 };
 
 export default { createFolder, selectDirectory };

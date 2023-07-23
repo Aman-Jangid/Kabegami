@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import Search from "../components/Search";
 import TouchableListItem from "../components/TouchableListItem";
 import ItemSeparator from "../components/ItemSeparator";
@@ -14,6 +14,7 @@ import SearchListHeader from "../components/SearchListHeader";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Screen from "./Screen";
 import Loading from "../components/Loading";
+import storage from "../services/storage";
 
 export default function Home() {
   const { navigate } = useNavigation();
@@ -25,7 +26,26 @@ export default function Home() {
   const [end, setEnd] = useState(false);
   const [query, setQuery] = useState(null);
 
-  // useEffect(() => {}, [searching]);
+  const getData = async () => {
+    const searches = await storage.getData("RECENT_SEARCHES");
+    setRecentSearches(searches);
+  };
+
+  const setData = async () => {
+    await storage.setData("RECENT_SEARCHES", recentSearches);
+  };
+
+  const deleteData = async () => {
+    await storage.deleteData("RECENT_SEARCHES");
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  useEffect(() => {
+    setData();
+  }, [recentSearches]);
 
   const initiateSearch = async (term) => {
     setSearching(true);
@@ -91,10 +111,11 @@ export default function Home() {
     loadMore(query);
   };
 
-  // const removeSeachListItem = () => {};
+  // const removeSearchListItem = () => {};
 
   const emptySearchList = () => {
     setRecentSearches([]);
+    deleteData();
   };
 
   const handleGoBack = () => {
@@ -211,6 +232,5 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: -20,
     height: "94%",
-    // marginBottom: 30,
   },
 });

@@ -21,6 +21,9 @@ export default function Search({ textChangeHandle }) {
   return (
     <View style={styles.container}>
       <TextInput
+        onSubmitEditing={handleSearch}
+        placeholder="Search"
+        placeholderTextColor={color.color5}
         onChangeText={(value) => setValue(value)}
         style={styles.search}
         value={value}

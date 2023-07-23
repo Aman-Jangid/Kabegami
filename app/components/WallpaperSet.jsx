@@ -6,6 +6,7 @@ import color from "../theme/colors";
 import setWallpaper from "../services/setWallpaper";
 import downloadImage from "../services/downloadImage";
 import DismissGesture from "./DismissGesture";
+import LoadCursor from "./LoadCursor";
 
 export default function WallpaperSet({
   imageUrl,
@@ -13,6 +14,7 @@ export default function WallpaperSet({
   marginBottom = 90,
 }) {
   const [hidden, setHidden] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   const round = {
     borderRadius: 50,
@@ -23,6 +25,12 @@ export default function WallpaperSet({
   const handleCloseOptions = () => {
     setHidden(true);
     console.log(hidden);
+  };
+
+  const wallpaperSetter = async (url, screen) => {
+    setProcessing(true);
+    await setWallpaper(url, screen);
+    setProcessing(false);
   };
 
   return (
@@ -36,7 +44,7 @@ export default function WallpaperSet({
               size={40}
               iconPack="MI"
               style={round}
-              onPress={() => setWallpaper(imageUrl, "home")}
+              onPress={() => wallpaperSetter(imageUrl, "home")}
             />
             <IconButton
               name="lock"
@@ -44,7 +52,7 @@ export default function WallpaperSet({
               size={40}
               iconPack="MI"
               style={round}
-              onPress={() => setWallpaper(imageUrl, "lock")}
+              onPress={() => wallpaperSetter(imageUrl, "lock")}
             />
             <IconButton
               name="home-lock"
@@ -52,7 +60,7 @@ export default function WallpaperSet({
               size={40}
               iconPack="MCI"
               style={round}
-              onPress={() => setWallpaper(imageUrl, "both")}
+              onPress={() => wallpaperSetter(imageUrl, "both")}
             />
             {!hideDownload && (
               <IconButton

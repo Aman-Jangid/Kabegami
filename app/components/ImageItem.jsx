@@ -1,31 +1,34 @@
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
-import {
-  Image,
-  StyleSheet,
-  TouchableWi,
-  TouchableWithoutFeedback,
-} from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Image, StyleSheet, TouchableOpacity } from "react-native";
 import color from "../theme/colors";
+import LoadCursor from "./LoadCursor";
 
-export default function ImageItem({ thumbnail, url, showOptions, active }) {
-  // implement long press to open a modal (WallpaperSet.jsx)
-
-  const { navigate, setParams } = useNavigation();
+export default function ImageItem({ thumbnail, id, url, showOptions, active }) {
+  const { navigate } = useNavigation();
+  const [progress, setProgress] = useState(0);
+  const [isLongPressing, setIsLongPressing] = useState(false);
 
   const handleLongPress = () => {
-    showOptions(url);
-  };
-  const handlePress = () => {
-    navigate("ImageDisplay", { url });
+    if (active) return;
+    showOptions();
   };
 
   return (
-    <>
-      <TouchableWithoutFeedback
-        onLongPress={handleLongPress}
-        onPress={handlePress}
-      >
+    <TouchableOpacity
+      onPress={() =>
+        navigate("ImageDisplay", {
+          path: url,
+          thumbs: { original: thumbnail },
+          id,
+        })
+      }
+      onLongPress={handleLongPress}
+      delayLongPress={300}
+      activeOpacity={1}
+    >
+      <>
+        {isLongPressing && <LoadCursor progress={progress} />}
         <Image
           source={{ uri: thumbnail }}
           style={[
@@ -37,8 +40,8 @@ export default function ImageItem({ thumbnail, url, showOptions, active }) {
             },
           ]}
         />
-      </TouchableWithoutFeedback>
-    </>
+      </>
+    </TouchableOpacity>
   );
 }
 const styles = StyleSheet.create({

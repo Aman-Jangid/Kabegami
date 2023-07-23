@@ -1,8 +1,7 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
-  Modal,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -11,8 +10,8 @@ import Button from "../components/Button";
 import IconButton from "../components/IconButton";
 import color from "../theme/colors";
 import WallpaperSet from "../components/WallpaperSet";
-import Icon from "../components/Icon";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import storage from "../services/storage";
 
 export default function ImageDisplay({}) {
   const [liked, setLiked] = useState(false);
@@ -21,9 +20,19 @@ export default function ImageDisplay({}) {
   const { goBack } = useNavigation();
   const route = useRoute();
 
+  const af = async () => {
+    const images = await storage.getData("LIKED_IMAGES");
+    if (images.find((image) => image.path === route.params.path)) {
+      setLiked(true);
+    }
+  };
+
+  useEffect(() => {
+    af();
+  }, [liked]);
+
   const handleShowOptions = () => {
     setOptionsVisible(!optionsVisible);
-    // setImageUrl(url);
   };
 
   const handleHideOptions = () => {
@@ -34,9 +43,13 @@ export default function ImageDisplay({}) {
     goBack();
   };
 
+  const handleLike = async () => {
+    setLiked(true);
+
+    await storage.addArrayData("LIKED_IMAGES", route.params);
+  };
+
   const buttonContainer = {
-    // borderWidth: 1.5,
-    // borderColor: color.color9,
     textAlignVertical: "center",
     textAlign: "center",
     alignItems: "center",
@@ -58,7 +71,7 @@ export default function ImageDisplay({}) {
         <Image
           style={styles.image}
           resizeMode="cover"
-          source={{ uri: route.params.url }}
+          source={{ uri: route.params.path }}
         />
         <View style={styles.gestureIndicator}>
           <IconButton
@@ -89,7 +102,7 @@ export default function ImageDisplay({}) {
             size={32}
             color={color.color9}
             style={buttonContainer}
-            onPress={() => setLiked(!liked)}
+            onPress={handleLike}
           />
         </View>
         <StatusBar style="inverted" />
