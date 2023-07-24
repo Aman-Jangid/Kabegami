@@ -12,18 +12,27 @@ export default function ImageButton({
   width = 120,
   height = 45,
   quantity,
+  uri,
   collection,
+  disabled,
 }) {
   const buttonStyles = active
     ? [styles.container, styles.active, { width, height }]
     : [styles.container, { width, height }];
 
   return (
-    <TouchableOpacity onPress={onPress} style={buttonStyles}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={buttonStyles}
+      disabled={disabled}
+    >
       <Text style={[styles.title, { color: !textColor && "#fff" }]}>
         {title}
       </Text>
-      <Image source={background} style={styles.background} />
+      <Image
+        source={uri ? { uri: uri } : background}
+        style={styles.background}
+      />
       {collection && (
         <View style={styles.quantity}>
           <Icon name="images" iconPack="II" size={20} color={color.color6} />

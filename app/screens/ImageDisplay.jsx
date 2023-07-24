@@ -12,6 +12,7 @@ import color from "../theme/colors";
 import WallpaperSet from "../components/WallpaperSet";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import storage from "../services/storage";
+import values from "../values";
 
 export default function ImageDisplay({}) {
   const [liked, setLiked] = useState(false);
@@ -21,7 +22,7 @@ export default function ImageDisplay({}) {
   const route = useRoute();
 
   const af = async () => {
-    const images = await storage.getData("LIKED_IMAGES");
+    const images = await storage.getData(values.LIKED_IMAGES);
     if (images.find((image) => image.path === route.params.path)) {
       setLiked(true);
     }
@@ -46,7 +47,7 @@ export default function ImageDisplay({}) {
   const handleLike = async () => {
     setLiked(true);
 
-    await storage.addArrayData("LIKED_IMAGES", route.params);
+    await storage.addArrayData(values.LIKED_IMAGES, route.params);
   };
 
   const buttonContainer = {
@@ -87,12 +88,12 @@ export default function ImageDisplay({}) {
             name="collections"
             iconPack="MI"
             size={32}
-            color={color.color9}
+            color={color.color8}
             style={buttonContainer}
           />
           <Button
             title="set as wallpaper"
-            color={color.color9}
+            color={color.color19}
             textColor={color.white}
             onPress={() => handleShowOptions()}
           />
@@ -100,7 +101,7 @@ export default function ImageDisplay({}) {
             name={liked ? "heart" : "hearto"}
             iconPack="ADI"
             size={32}
-            color={color.color9}
+            color={color.color19}
             style={buttonContainer}
             onPress={handleLike}
           />

@@ -6,13 +6,14 @@ import ImageButton from "../components/ImageButton";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import Screen from "./Screen";
 import storage from "../services/storage";
+import values from "../values";
 
 export default function Favorites() {
   const isFocused = useIsFocused();
   const [wallpapers, setWallpapers] = useState([]);
 
   const getImages = async () => {
-    const images = await storage.getData("LIKED_IMAGES");
+    const images = await storage.getData(values.LIKED_IMAGES);
     setWallpapers(images);
   };
 

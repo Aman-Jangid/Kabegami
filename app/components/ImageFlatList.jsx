@@ -43,6 +43,7 @@ const ImageFlatList = ({
         scrollToTop={scrollToTop}
         refreshing={true}
         onEndReached={handleScrollEnd}
+        onEndReachedThreshold={0.4}
         numColumns={3}
         style={{
           alignSelf: "center",

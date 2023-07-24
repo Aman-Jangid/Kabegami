@@ -15,6 +15,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Screen from "./Screen";
 import Loading from "../components/Loading";
 import storage from "../services/storage";
+import values from "../values";
 
 export default function Home() {
   const { navigate } = useNavigation();
@@ -27,16 +28,16 @@ export default function Home() {
   const [query, setQuery] = useState(null);
 
   const getData = async () => {
-    const searches = await storage.getData("RECENT_SEARCHES");
+    const searches = await storage.getData(values.RECENT_SEARCHES);
     setRecentSearches(searches);
   };
 
   const setData = async () => {
-    await storage.setData("RECENT_SEARCHES", recentSearches);
+    await storage.setData(values.RECENT_SEARCHES, recentSearches);
   };
 
   const deleteData = async () => {
-    await storage.deleteData("RECENT_SEARCHES");
+    await storage.deleteData(values.RECENT_SEARCHES);
   };
 
   useEffect(() => {
@@ -53,10 +54,20 @@ export default function Home() {
 
     if (!query) setQuery(term);
 
+    if (recentSearches.includes(term)) {
+      setRecentSearches((prevSearches) => {
+        const newSearchArray = [...prevSearches];
+        const index = newSearchArray.findIndex((value) => value === term);
+        newSearchArray.splice(index, 1);
+        newSearchArray.unshift(term);
+        return newSearchArray;
+      });
+    }
+
     if (!recentSearches.includes(term)) {
       setRecentSearches((prevSearches) => {
         const newSearchArray = [...prevSearches];
-        newSearchArray.push(term);
+        newSearchArray.unshift(term);
         return newSearchArray;
       });
     }
@@ -171,7 +182,7 @@ export default function Home() {
                     handlePress={() => initiateSearch(item)}
                   />
                 )}
-                keyExtractor={({ item }) => item}
+                keyExtractor={(item, index) => item + "_" + index}
                 contentContainerStyle={{ alignItems: "center" }}
                 ItemSeparatorComponent={<ItemSeparator />}
                 ListHeaderComponent={

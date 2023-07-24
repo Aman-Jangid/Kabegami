@@ -4,6 +4,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const addArrayData = async (key, value) => {
   const previousData = await getData(key);
 
+  if (!previousData) {
+    const data = [];
+    data.push(value);
+    await setData(key, data);
+    return;
+  }
   previousData.push(value);
 
   await setData(key, previousData);

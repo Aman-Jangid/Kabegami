@@ -24,6 +24,7 @@ const color = {
   color16: "#4361EE",
   color17: "#4895EF",
   color18: "#4CC9F0",
+  color19: "#DE3535",
 };
 
 export default color;

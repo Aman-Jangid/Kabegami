@@ -24,7 +24,7 @@ export default function ImageItem({ thumbnail, id, url, showOptions, active }) {
         })
       }
       onLongPress={handleLongPress}
-      delayLongPress={300}
+      delayLongPress={250}
       activeOpacity={1}
     >
       <>

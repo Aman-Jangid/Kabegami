@@ -12,6 +12,7 @@ export default function Input({
   iconColor,
   displayHelp,
   toggleLink,
+  value,
 }) {
   return (
     <View style={styles.inputContainer}>
@@ -21,6 +22,7 @@ export default function Input({
         numberOfLines={lines}
         placeholder={placeholder}
         placeholderTextColor={placeholderColor}
+        value={value}
       />
       {displayHelp && (
         <IconButton

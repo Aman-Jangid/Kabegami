@@ -7,79 +7,132 @@ import BackButton from "../components/BackButton";
 import Icon from "../components/Icon";
 import storage from "../services/storage";
 import ManageStorage from "../services/ManageStorage";
-
-const collectionsArray = [
-  {
-    title: "T5",
-    collectionImage: require("../assets/pictures/top.jpg"),
-    numberOfImages: 16,
-    id: 1,
-  },
-  {
-    title: "Wlop",
-    collectionImage: require("../assets/pictures/new.jpg"),
-    numberOfImages: 51,
-    id: 2,
-  },
-  {
-    title: "OnePiece Fanarts",
-    collectionImage: require("../assets/pictures/anime.jpg"),
-    numberOfImages: 72,
-    id: 3,
-  },
-  {
-    title: "SlideShow",
-    collectionImage: require("../assets/pictures/nature.jpg"),
-    numberOfImages: 32,
-    id: 4,
-  },
-  {
-    title: "Kittens",
-    collectionImage: require("../assets/pictures/cats.jpg"),
-    numberOfImages: 131,
-    id: 5,
-  },
-  { title: "add_new_collection", id: 99 },
-];
+import values from "../values";
+import CollectionCreator from "../components/CollectionCreator";
+import ImageSelector from "../components/ImageSelector";
 
 export default function Collections() {
-  const [collections, setCollections] = useState(collectionsArray);
-  const [parentDir, setParentDir] = useState(null);
-  const [collectionDir, setCollectionDir] = useState(null);
+  const [collections, setCollections] = useState([]);
   const [directory, setDirectory] = useState(null);
-  // const getData = async () => {
-  // setDirectory(path);
-  // };
+  const [showCreator, setShowCreator] = useState(false);
+  const [syncNow, setSyncNow] = useState(false);
+
+  const getCollectionsAsync = async () => {
+    const data = await storage.getData(values.COLLECTIONS);
+
+    if (!data) {
+      await storage.setData(values.COLLECTIONS, [
+        {
+          title: "add_new_collection",
+          id: 0,
+        },
+      ]);
+
+      await storage.setData(values.COLLECTION_NAMES, []);
+
+      const data = await storage.getData(values.COLLECTIONS);
+
+      setCollections(data);
+    }
+    if (data) {
+      setCollections(data);
+
+      const nameData = await storage.getData(values.COLLECTION_NAMES);
+
+      const newNameArray = [];
+
+      collections.map((collection) => {
+        if (collection.title !== "add_new_collection") {
+          newNameArray.push(collection.title);
+        }
+      });
+
+      if (newNameArray.length !== nameData.length) {
+        await storage.setData(values.COLLECTION_NAMES, newNameArray);
+      }
+    } else if (!collections.length) {
+      collections.push({ title: "add_new_collection", id: 0 });
+      storage.setData(values.COLLECTIONS, collections);
+    }
+  };
 
   const createFolder = async (name) => {
-    const path = await storage.getData("DIRECTORY_PATH");
+    // check if directory exist -> if yes return
+    if (await storage.getData(values.DIRECTORY_PATH)) {
+      return;
+    }
+
+    // const path = await storage.getData(values.DIRECTORY_PATH);
     ManageStorage.createFolder(name, path);
     setDirectory(path + "/" + name);
   };
 
   useEffect(() => {
+    getCollectionsAsync();
     createFolder(".Collections");
+
+    (async () => {
+      const data = await storage.getData(values.COLLECTION_NAMES);
+      console.log(data);
+    })();
   }, []);
 
-  const newItem = {
-    title: "OnePiece Fanarts",
-    collectionImage: require("../assets/pictures/anime.jpg"),
-    numberOfImages: 72,
-    id: 3,
-  };
+  useEffect(() => {
+    getCollectionsAsync();
 
-  const handleAddCollection = () => {
+    // cleanup
+    return () => {
+      setSyncNow(false);
+    };
+  }, [syncNow]);
+
+  const handleAddCollection = async (item) => {
     const newCollections = [...collections];
     newCollections.pop();
-    newCollections.push(newItem);
-    newCollections.push({ title: "add_new_collection", id: 99 });
 
-    setCollections([...newCollections]);
+    await storage.addArrayData(values.COLLECTIONS, item);
+
+    if (item) {
+      newCollections.push(item);
+      newCollections.push({ title: "add_new_collection", id: 0 });
+      setCollections([...newCollections]);
+      await storage.addArrayData(values.COLLECTION_NAMES, item.title);
+      setSyncNow(true);
+
+      // if (!data || data.length !== collections.length) {
+      // await storage.setData(collections.map((col) => col.title));
+      // } else {
+      // }
+    } else return;
+  };
+
+  // const setCollectionNameArray = async (item) => {
+  //   const data = storage.getData(values.COLLECTION_NAMES);
+  //   if (!data) {
+  //     await storage.setData(collections.map((col) => col.title));
+  //   } else {
+  //     await storage.addArrayData(values.COLLECTION_NAMES,item)
+  //   }
+  // };
+
+  const handleConfirm = async (item) => {
+    setShowCreator(false);
+    handleAddCollection(item);
+  };
+
+  const handleExit = () => {
+    setShowCreator(false);
   };
 
   return (
     <Screen>
       <View style={styles.container}>
+        {showCreator && (
+          <CollectionCreator
+            handleExit={handleExit}
+            handleConfirm={handleConfirm}
+          />
+        )}
         <BackButton goTo="Favorites" />
         <FlatList
           numColumns={2}
@@ -88,7 +141,7 @@ export default function Collections() {
             if (item.title !== "add_new_collection") {
               return (
                 <ImageButton
-                  background={item.collectionImage}
+                  uri={item.collectionImage}
                   title={item.title}
                   width={"48%"}
                   height={100}
@@ -99,7 +152,7 @@ export default function Collections() {
             } else
               return (
                 <TouchableOpacity
-                  onPress={handleAddCollection}
+                  onPress={() => setShowCreator(true)}
                   style={styles.addCollection}
                 >
                   <Icon
@@ -119,7 +172,7 @@ export default function Collections() {
 }
 const styles = StyleSheet.create({
   container: {
-    // paddingTop: 50,
+    padding: 5,
     width: "100%",
     flex: 1,
     height: "100%",
