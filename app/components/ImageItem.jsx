@@ -10,7 +10,6 @@ export default function ImageItem({ thumbnail, id, url, showOptions, active }) {
   const [isLongPressing, setIsLongPressing] = useState(false);
 
   const handleLongPress = () => {
-    if (active) return;
     showOptions();
   };
 
@@ -24,8 +23,8 @@ export default function ImageItem({ thumbnail, id, url, showOptions, active }) {
         })
       }
       onLongPress={handleLongPress}
-      delayLongPress={250}
-      activeOpacity={1}
+      delayLongPress={300}
+      activeOpacity={0.6}
     >
       <>
         {isLongPressing && <LoadCursor progress={progress} />}
@@ -34,9 +33,9 @@ export default function ImageItem({ thumbnail, id, url, showOptions, active }) {
           style={[
             styles.image,
             {
-              borderWidth: active ? 3 : 0,
+              borderWidth: active ? 2 : 0,
               borderColor: color.color9,
-              borderRadius: active ? 2 : 5,
+              borderRadius: active ? 7 : 5,
             },
           ]}
         />

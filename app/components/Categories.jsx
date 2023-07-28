@@ -1,30 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet, View, ScrollView } from "react-native";
 import ImageButton from "./ImageButton";
 import color from "../theme/colors";
+import storage from "../services/storage";
+import values from "../values";
+import { useIsFocused } from "@react-navigation/native";
+import uuid from "react-native-uuid";
 
-export default function Categories({
-  categories,
-  selectedCategory,
-  selectCategory,
-}) {
+export default function Categories({ selectedCategory, selectCategory }) {
+  const [tags, setTags] = useState([]);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    const getTags = async () => {
+      const data = await storage.getData(values.CATEGORIES);
+      setTags(data);
+    };
+    getTags();
+  }, [isFocused]);
+
   return (
     <View style={styles.container}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <FlatList
           showsHorizontalScrollIndicator={false}
-          numColumns={10}
+          numColumns={20}
           style={styles.categories}
-          data={categories}
-          renderItem={({ item }) => (
-            <ImageButton
-              title={item.title}
-              active={selectedCategory === item.value}
-              background={item.background}
-              onPress={() => selectCategory(item.value)}
-            />
-          )}
-          keyExtractor={(item) => item.title + item.color}
+          data={tags}
+          renderItem={({ item }) => {
+            if (item) {
+              return (
+                <ImageButton
+                  title={item.title}
+                  active={selectedCategory === item.value}
+                  uri={item.background}
+                  onPress={() => selectCategory(item.value)}
+                />
+              );
+            }
+          }}
+          keyExtractor={() => uuid.v4()}
         />
       </ScrollView>
       <View style={styles.bottom}></View>

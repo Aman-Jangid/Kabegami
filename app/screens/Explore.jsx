@@ -6,9 +6,7 @@ import createURL from "../api/createURL";
 import ImageFlatList from "../components/ImageFlatList";
 import color from "../theme/colors";
 import Screen from "./Screen";
-import DismissGesture from "../components/DismissGesture";
 import Loading from "../components/Loading";
-
 // search -> order (ascending) ->
 // category (100 -> general,010 -> anime ,001 -> people) ->
 // purity (100/110/111 -- sfw,sketchy,nsfw) -> API key is needed for --1
@@ -21,42 +19,8 @@ import Loading from "../components/Loading";
 // new uploads --> search?sorting&hot&categories=010&resolutions=1080x1920
 // top wallpapers (from given time range) --> search?sorting&toplist&topRange=1M&categories=010&resolutions=1080x1920
 
-const initialCategories = [
-  {
-    title: "Popular",
-    color: "#4a8",
-    value: "hot",
-    background: require("../assets/pictures/new.jpg"),
-  },
-  {
-    title: "Anime",
-    color: "#4a4f7e",
-    value: "anime",
-    background: require("../assets/pictures/anime.jpg"),
-  },
-  {
-    title: "Cars",
-    color: "#0e3254",
-    value: "cars",
-    background: require("../assets/pictures/cars.jpg"),
-  },
-  {
-    title: "Nature",
-    color: "#59b866",
-    value: "nature",
-    background: require("../assets/pictures/nature.jpg"),
-  },
-  {
-    title: "Cats",
-    color: "#282a59",
-    value: "cats",
-    background: require("../assets/pictures/cats.jpg"),
-  },
-];
-
 export default function Explore() {
   const [wallpapers, setWallpapers] = useState();
-  const [categories, setCategories] = useState(initialCategories);
   const [selectedCategory, setSelectedCategory] = useState("hot");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -128,7 +92,6 @@ export default function Explore() {
     <Screen>
       <View style={styles.container}>
         <Categories
-          categories={categories}
           selectedCategory={selectedCategory}
           selectCategory={selectCategory}
         />

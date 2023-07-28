@@ -29,7 +29,9 @@ export default function Home() {
 
   const getData = async () => {
     const searches = await storage.getData(values.RECENT_SEARCHES);
-    setRecentSearches(searches);
+
+    if (!searches) setRecentSearches([]);
+    else setRecentSearches(searches);
   };
 
   const setData = async () => {
@@ -37,7 +39,7 @@ export default function Home() {
   };
 
   const deleteData = async () => {
-    await storage.deleteData(values.RECENT_SEARCHES);
+    await storage.setData(values.RECENT_SEARCHES, []);
   };
 
   useEffect(() => {
@@ -188,9 +190,10 @@ export default function Home() {
                 ListHeaderComponent={
                   <SearchListHeader onPress={emptySearchList} />
                 }
+                horizontal={false}
                 ListHeaderComponentStyle={{
-                  justifyContent: "flex-start",
                   width: "100%",
+                  height: 40,
                   padding: 5,
                   paddingHorizontal: 10,
                 }}
@@ -236,7 +239,6 @@ const styles = StyleSheet.create({
     maxHeight: 250,
     borderRadius: 20,
     overflow: "hidden",
-    backgroundColor: color.colorPrimary,
     marginBottom: 30,
   },
   listContainer: {

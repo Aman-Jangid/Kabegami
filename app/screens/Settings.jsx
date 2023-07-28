@@ -7,24 +7,58 @@ import Screen from "./Screen";
 import PathSelector from "../components/PathSelector";
 import ManageStorage from "../services/ManageStorage";
 import storage from "../services/storage";
+import values from "../values";
 
 export default function Settings() {
   const [path, setPath] = useState(null);
+  const [useCustomDir, setUseCustomDir] = useState(false);
 
-  const getSettings = async () => {
-    setPath(await storage.getData("PATH"));
+  const getButtonState = async () => {
+    const downloadPath = await storage.getData(values.DOWNLOADS_PATH);
+    if (
+      downloadPath.split("/")[downloadPath.split("/").length - 1] ===
+      ".Downloads"
+    ) {
+      setUseCustomDir(true);
+    } else setUseCustomDir(false);
+  };
+
+  const getMainDirectory = async () => {
+    const path = await storage.getData(values.DIRECTORY_PATH);
+    setPath(path);
+  };
+
+  const setDownloadDirectory = async () => {
+    const path = await storage.getData(values.DIRECTORY_PATH);
+    if (!useCustomDir) {
+      await storage.setData(values.DOWNLOADS_PATH, path + "/Downloads");
+    } else {
+      await storage.setData(values.DOWNLOADS_PATH, path + "/.Downloads");
+    }
   };
 
   useEffect(() => {
-    getSettings();
+    setDownloadDirectory();
+  }, [useCustomDir]);
+
+  const handleUseCustomDownloadDir = async () => {
+    setUseCustomDir(!useCustomDir);
+  };
+
+  const setLocalImagesDirectory = () => {};
+
+  useEffect(() => {
+    getButtonState();
+    getMainDirectory();
   }, []);
 
   const handleDirectorySelection = async () => {
     if (path) return;
-
+    // select main directory
     const path = await ManageStorage.selectDirectory();
-    await storage.setData("PATH", path);
-    setPath(path);
+    const mainPath = await ManageStorage.createFolder("Kabegami", path);
+    await storage.setData(values.DIRECTORY_PATH, mainPath);
+    setPath(mainPath);
   };
 
   return (
@@ -36,6 +70,18 @@ export default function Settings() {
           placeholder="kabegami directory"
           onPress={handleDirectorySelection}
         />
+        <View style={styles.DownloadPathSelection}>
+          <Button
+            title={
+              useCustomDir
+                ? "SHOW DOWNLOADS IN GALLERY"
+                : "HIDE DOWNLOADS IN GALLERY"
+            }
+            color={useCustomDir ? color.color2 : color.color10}
+            textColor={useCustomDir ? color.color10 : color.color2}
+            onPress={handleUseCustomDownloadDir}
+          />
+        </View>
         <Button
           title="confirm"
           color={color.color10}
@@ -53,5 +99,9 @@ const styles = StyleSheet.create({
     // paddingTop: 50,
     height: "100%",
     width: "100%",
+  },
+  DownloadPathSelection: {
+    margin: 10,
+    marginBottom: 20,
   },
 });

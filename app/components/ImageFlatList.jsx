@@ -25,6 +25,10 @@ const ImageFlatList = ({
   };
 
   useEffect(() => {
+    console.log("optionsVisible --> ", optionsVisible);
+  }, [optionsVisible]);
+
+  useEffect(() => {
     handleScrollToTop();
   }, [scrollToTop]);
 
@@ -36,7 +40,11 @@ const ImageFlatList = ({
   return (
     <>
       {optionsVisible && (
-        <WallpaperSet marginBottom={marginBottom} imageUrl={imageUrl} />
+        <WallpaperSet
+          marginBottom={marginBottom}
+          imageUrl={imageUrl}
+          handleShowOptions={handleShowOptions}
+        />
       )}
       <FlatList
         ref={flatlistRef}

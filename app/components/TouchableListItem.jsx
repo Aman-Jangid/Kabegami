@@ -1,13 +1,20 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "./Icon";
 import color from "../theme/colors";
 
-export default function TouchableListItem({ text, handlePress }) {
+export default function TouchableListItem({ text, handlePress, icon = true }) {
   return (
     <TouchableOpacity style={styles.touchable} onPress={handlePress}>
       <Text style={styles.text}>{text}</Text>
-      <Icon name="enter" iconPack="ADI" size={20} color={color.color6} />
+      {icon ? (
+        <Icon name="enter" iconPack="ADI" size={20} color={color.color6} />
+      ) : (
+        <View style={styles.subTextContainer}>
+          <Text style={styles.subText}>20</Text>
+          <Icon name="image" iconPack="II" color={color.color10} size={20} />
+        </View>
+      )}
     </TouchableOpacity>
   );
 }
@@ -26,5 +33,14 @@ const styles = StyleSheet.create({
     color: color.color6,
     alignSelf: "center",
     fontSize: 17,
+  },
+  subTextContainer: {
+    paddingVertical: 4,
+    alignSelf: "center",
+    flexDirection: "row",
+    gap: 2,
+  },
+  subText: {
+    color: color.color10,
   },
 });

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, Image, View } from "react-native";
 import Icon from "./Icon";
 import color from "../theme/colors";
@@ -17,8 +17,21 @@ export default function ImageButton({
   disabled,
 }) {
   const buttonStyles = active
-    ? [styles.container, styles.active, { width, height }]
-    : [styles.container, { width, height }];
+    ? [
+        styles.container,
+        styles.active,
+        {
+          minWidth: width,
+          height,
+        },
+      ]
+    : [
+        styles.container,
+        {
+          minWidth: width,
+          height,
+        },
+      ];
 
   return (
     <TouchableOpacity
@@ -44,14 +57,13 @@ export default function ImageButton({
 }
 const styles = StyleSheet.create({
   container: {
-    width: 120,
-    height: 45,
+    flex: 1,
     borderRadius: 10,
     margin: 5,
-
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
+    flexWrap: "nowrap",
   },
   active: {
     borderWidth: 2,

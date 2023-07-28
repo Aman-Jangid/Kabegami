@@ -23,6 +23,7 @@ const activeButton = {
 
 const Navigation = () => (
   <Tab.Navigator
+    backBehavior="history"
     initialRouteName="HomeStack"
     screenOptions={{
       tabBarShowLabel: false,

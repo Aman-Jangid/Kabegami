@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import {
   Image,
+  ScrollView,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -13,30 +14,31 @@ import WallpaperSet from "../components/WallpaperSet";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import storage from "../services/storage";
 import values from "../values";
+import CollectionAccumulator from "../components/CollectionAccumulator";
+import FullScreenImage from "../components/FullScreenImage";
+import DraggableImage from "../components/DraggableImage";
 
 export default function ImageDisplay({}) {
   const [liked, setLiked] = useState(false);
   const [optionsVisible, setOptionsVisible] = useState(false);
+  const [collectionsVisible, setCollectionsVisible] = useState(false);
 
   const { goBack } = useNavigation();
   const route = useRoute();
 
-  const af = async () => {
-    const images = await storage.getData(values.LIKED_IMAGES);
+  const setAlreadyLiked = async () => {
+    const images = Array.from(await storage.getData(values.LIKED_IMAGES));
     if (images.find((image) => image.path === route.params.path)) {
       setLiked(true);
     }
   };
 
   useEffect(() => {
-    af();
+    setAlreadyLiked();
   }, [liked]);
 
-  const handleShowOptions = () => {
-    setOptionsVisible(!optionsVisible);
-  };
-
-  const handleHideOptions = () => {
+  const handleClose = () => {
+    setCollectionsVisible(false);
     setOptionsVisible(false);
   };
 
@@ -63,17 +65,16 @@ export default function ImageDisplay({}) {
       <View style={styles.container}>
         {optionsVisible && (
           <WallpaperSet
-            imageUrl={route.params.url}
+            imageUrl={route.params.path}
             hideDownload
             optionsVisible={optionsVisible}
-            handleHideOptions={handleHideOptions}
+            handleShowOptions={() => setOptionsVisible(!optionsVisible)}
           />
         )}
-        <Image
-          style={styles.image}
-          resizeMode="cover"
-          source={{ uri: route.params.path }}
-        />
+        {collectionsVisible && <CollectionAccumulator />}
+        <TouchableWithoutFeedback onPress={handleClose}>
+          <DraggableImage uri={route.params.path} />
+        </TouchableWithoutFeedback>
         <View style={styles.gestureIndicator}>
           <IconButton
             name="chevron-thin-down"
@@ -87,15 +88,16 @@ export default function ImageDisplay({}) {
           <IconButton
             name="collections"
             iconPack="MI"
-            size={32}
-            color={color.color8}
+            size={35}
+            color={color.color18}
             style={buttonContainer}
+            onPress={() => setCollectionsVisible(!collectionsVisible)}
           />
           <Button
             title="set as wallpaper"
             color={color.color19}
             textColor={color.white}
-            onPress={() => handleShowOptions()}
+            onPress={() => setOptionsVisible(!optionsVisible)}
           />
           <IconButton
             name={liked ? "heart" : "hearto"}
@@ -106,7 +108,7 @@ export default function ImageDisplay({}) {
             onPress={handleLike}
           />
         </View>
-        <StatusBar style="inverted" />
+        <StatusBar style="light" />
       </View>
     </TouchableWithoutFeedback>
   );
@@ -128,6 +130,7 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
+    flex: 1,
   },
   buttons: {
     position: "absolute",

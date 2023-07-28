@@ -8,11 +8,11 @@ import {
 
 export default function DismissGesture({ onDismiss, children }) {
   const onGestureEvent = (event) => {
-    if (event.nativeEvent.translationX > 150) {
-      onDismiss();
+    if (event.nativeEvent.translationX > 0) {
+      onDismiss("r");
     }
-    if (event.nativeEvent.translationX < 150) {
-      onDismiss();
+    if (event.nativeEvent.translationX < 0) {
+      onDismiss("l");
     }
   };
 

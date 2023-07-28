@@ -9,7 +9,6 @@ import storage from "../services/storage";
 import ManageStorage from "../services/ManageStorage";
 import values from "../values";
 import CollectionCreator from "../components/CollectionCreator";
-import ImageSelector from "../components/ImageSelector";
 
 export default function Collections() {
   const [collections, setCollections] = useState([]);
@@ -56,20 +55,35 @@ export default function Collections() {
     }
   };
 
-  const createFolder = async (name) => {
-    // check if directory exist -> if yes return
-    if (await storage.getData(values.DIRECTORY_PATH)) {
-      return;
-    }
+  const createFolder = async () => {
+    const path = await storage.getData(values.COLLECTIONS_PATH);
 
-    // const path = await storage.getData(values.DIRECTORY_PATH);
-    ManageStorage.createFolder(name, path);
-    setDirectory(path + "/" + name);
+    // check if directory exist -> if yes return
+    const exists = await ManageStorage.checkDirectoryExistence(path);
+
+    if (
+      exists &&
+      path.split("/")[path.split("/").length - 1] === ".Collections"
+    ) {
+      console.log("exists");
+      setDirectory(path);
+    } else {
+      const collectionsPath = await ManageStorage.createFolder(
+        ".Collections",
+        path
+      );
+
+      await storage.setData(values.COLLECTIONS_PATH, collectionsPath);
+
+      const location = await storage.getData(values.COLLECTIONS_PATH);
+      console.log("Folder has been created at -> ", location);
+      setDirectory(collectionsPath);
+    }
   };
 
   useEffect(() => {
     getCollectionsAsync();
-    createFolder(".Collections");
+    createFolder();
 
     (async () => {
       const data = await storage.getData(values.COLLECTION_NAMES);

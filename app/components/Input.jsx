@@ -12,11 +12,16 @@ export default function Input({
   iconColor,
   displayHelp,
   toggleLink,
+  handleChange,
   value,
 }) {
+  const handleTextChange = (value) => {
+    handleChange(value);
+  };
   return (
     <View style={styles.inputContainer}>
       <TextInput
+        onChangeText={(value) => handleTextChange(value)}
         style={[styles.input, { backgroundColor, color }]}
         multiline
         numberOfLines={lines}

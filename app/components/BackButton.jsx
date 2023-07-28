@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import IconButton from "./IconButton";
 import color from "../theme/colors";
 export default function BackButton({ goTo }) {
@@ -19,9 +19,9 @@ export default function BackButton({ goTo }) {
         color={color.color9}
         onPress={handleGoBack}
       />
-      <Text onPress={handleGoBack} style={styles.text}>
-        {goTo}
-      </Text>
+      <TouchableOpacity onPress={handleGoBack}>
+        <Text style={styles.text}>{goTo}</Text>
+      </TouchableOpacity>
     </View>
   );
 }
