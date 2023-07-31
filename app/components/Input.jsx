@@ -34,7 +34,7 @@ export default function Input({
           color={iconColor}
           name={iconName}
           iconPack="II"
-          size={35}
+          size={40}
           onPress={toggleLink}
         />
       )}
@@ -46,14 +46,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "center",
-    paddingHorizontal: 12,
     width: "100%",
   },
   input: {
     flex: 1,
     alignSelf: "center",
-    marginVertical: 10,
-    marginHorizontal: 7,
+    marginVertical: 8,
     fontSize: 18,
     borderRadius: 10,
     padding: 5,

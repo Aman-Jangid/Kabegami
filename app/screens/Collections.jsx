@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, FlatList, TouchableOpacity } from "react-native";
-import ImageButton from "../components/ImageButton";
+import { StyleSheet, View } from "react-native";
 import Screen from "./Screen";
 import color from "../theme/colors";
 import BackButton from "../components/BackButton";
-import Icon from "../components/Icon";
 import storage from "../services/storage";
 import ManageStorage from "../services/ManageStorage";
-import values from "../values";
+import keys from "../keys";
 import CollectionCreator from "../components/CollectionCreator";
+import FolderFlatlist from "../components/FolderFlatlist";
 
 export default function Collections() {
   const [collections, setCollections] = useState([]);
@@ -17,26 +16,26 @@ export default function Collections() {
   const [syncNow, setSyncNow] = useState(false);
 
   const getCollectionsAsync = async () => {
-    const data = await storage.getData(values.COLLECTIONS);
+    const data = await storage.getData(keys.COLLECTIONS);
 
     if (!data) {
-      await storage.setData(values.COLLECTIONS, [
+      await storage.setData(keys.COLLECTIONS, [
         {
           title: "add_new_collection",
           id: 0,
         },
       ]);
 
-      await storage.setData(values.COLLECTION_NAMES, []);
+      await storage.setData(keys.COLLECTION_NAMES, []);
 
-      const data = await storage.getData(values.COLLECTIONS);
+      const data = await storage.getData(keys.COLLECTIONS);
 
       setCollections(data);
     }
     if (data) {
       setCollections(data);
 
-      const nameData = await storage.getData(values.COLLECTION_NAMES);
+      const nameData = await storage.getData(keys.COLLECTION_NAMES);
 
       const newNameArray = [];
 
@@ -47,16 +46,16 @@ export default function Collections() {
       });
 
       if (newNameArray.length !== nameData.length) {
-        await storage.setData(values.COLLECTION_NAMES, newNameArray);
+        await storage.setData(keys.COLLECTION_NAMES, newNameArray);
       }
     } else if (!collections.length) {
       collections.push({ title: "add_new_collection", id: 0 });
-      storage.setData(values.COLLECTIONS, collections);
+      storage.setData(keys.COLLECTIONS, collections);
     }
   };
 
   const createFolder = async () => {
-    const path = await storage.getData(values.COLLECTIONS_PATH);
+    const path = await storage.getData(keys.COLLECTIONS_PATH);
 
     // check if directory exist -> if yes return
     const exists = await ManageStorage.checkDirectoryExistence(path);
@@ -73,9 +72,9 @@ export default function Collections() {
         path
       );
 
-      await storage.setData(values.COLLECTIONS_PATH, collectionsPath);
+      await storage.setData(keys.COLLECTIONS_PATH, collectionsPath);
 
-      const location = await storage.getData(values.COLLECTIONS_PATH);
+      const location = await storage.getData(keys.COLLECTIONS_PATH);
       console.log("Folder has been created at -> ", location);
       setDirectory(collectionsPath);
     }
@@ -86,7 +85,7 @@ export default function Collections() {
     createFolder();
 
     (async () => {
-      const data = await storage.getData(values.COLLECTION_NAMES);
+      const data = await storage.getData(keys.COLLECTION_NAMES);
       console.log(data);
     })();
   }, []);
@@ -104,30 +103,16 @@ export default function Collections() {
     const newCollections = [...collections];
     newCollections.pop();
 
-    await storage.addArrayData(values.COLLECTIONS, item);
+    await storage.addArrayData(keys.COLLECTIONS, item);
 
     if (item) {
       newCollections.push(item);
       newCollections.push({ title: "add_new_collection", id: 0 });
       setCollections([...newCollections]);
-      await storage.addArrayData(values.COLLECTION_NAMES, item.title);
+      await storage.addArrayData(keys.COLLECTION_NAMES, item.title);
       setSyncNow(true);
-
-      // if (!data || data.length !== collections.length) {
-      // await storage.setData(collections.map((col) => col.title));
-      // } else {
-      // }
     } else return;
   };
-
-  // const setCollectionNameArray = async (item) => {
-  //   const data = storage.getData(values.COLLECTION_NAMES);
-  //   if (!data) {
-  //     await storage.setData(collections.map((col) => col.title));
-  //   } else {
-  //     await storage.addArrayData(values.COLLECTION_NAMES,item)
-  //   }
-  // };
 
   const handleConfirm = async (item) => {
     setShowCreator(false);
@@ -148,37 +133,9 @@ export default function Collections() {
           />
         )}
         <BackButton goTo="Favorites" />
-        <FlatList
-          numColumns={2}
+        <FolderFlatlist
           data={collections}
-          renderItem={({ item }) => {
-            if (item.title !== "add_new_collection") {
-              return (
-                <ImageButton
-                  uri={item.collectionImage}
-                  title={item.title}
-                  width={"48%"}
-                  height={100}
-                  quantity={item.numberOfImages}
-                  collection
-                />
-              );
-            } else
-              return (
-                <TouchableOpacity
-                  onPress={() => setShowCreator(true)}
-                  style={styles.addCollection}
-                >
-                  <Icon
-                    name="plus"
-                    iconPack="EI"
-                    color={color.color6}
-                    size={80}
-                  />
-                </TouchableOpacity>
-              );
-          }}
-          keyExtractor={(item) => item.id}
+          handleAdd={() => setShowCreator(true)}
         />
       </View>
     </Screen>
@@ -191,14 +148,5 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "100%",
     backgroundColor: color.colorPrimary,
-  },
-  addCollection: {
-    width: "48%",
-    borderRadius: 10,
-    margin: 5,
-    height: 100,
-    backgroundColor: color.color4,
-    alignItems: "center",
-    justifyContent: "center",
   },
 });

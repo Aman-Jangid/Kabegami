@@ -5,10 +5,12 @@ import AppNavigation from "./app/routes/AppNavigation";
 import { PermissionsAndroid, View } from "react-native";
 import color from "./app/theme/colors";
 import storage from "./app/services/storage";
-import values from "./app/values";
-import ManageStorage from "./app/services/ManageStorage";
+import keys from "./app/keys";
+import Welcome from "./app/screens/Welcome";
 
 export default function App({ navigation }) {
+  const [welcome, setWelcome] = useState(true);
+
   const getPermission = async () => {
     PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
@@ -18,7 +20,7 @@ export default function App({ navigation }) {
       .catch((error) => console.log("Failed to ask for permission", error));
   };
 
-  const createFolders = async () => {
+  const initializeTags = async () => {
     const tags = [
       {
         background: "https://th.wallhaven.cc/small/k7/k712e7.jpg",
@@ -42,24 +44,36 @@ export default function App({ navigation }) {
       },
     ];
 
-    const categories = await storage.getData(values.CATEGORIES);
+    const categories = await storage.getData(keys.CATEGORIES);
 
     if (!categories) {
       console.log("Me called");
-      await storage.setData(values.CATEGORIES, tags);
+      await storage.setData(keys.CATEGORIES, tags);
     }
-
-    const path = await storage.getData(values.DIRECTORY_PATH);
-
-    await ManageStorage.createFolder(".Collections", path);
-    await ManageStorage.createFolder(".Downloads", path);
-    await ManageStorage.createFolder("Downloads", path);
   };
 
+  const handleWelcome = async () => {
+    const value = await storage.getData(keys.WELCOME);
+    if (value === false) setWelcome(false);
+  };
+
+  const hideWelcome = async () => {
+    await storage.setData(keys.WELCOME, false);
+    handleWelcome();
+    return welcome;
+  };
+
+  // const getAllKeys = async () => {
+  //   const keys = await AsyncStorage.getAllKeys();
+  //   const keys = await AsyncStorage.multiGet(keys);
+  //   console.log("keys", keys);
+  // };
+
   useEffect(() => {
-    // folderInfo.get();
+    // getAllKeys();
+    handleWelcome();
     getPermission();
-    createFolders();
+    initializeTags();
   }, []);
 
   return (
@@ -71,10 +85,13 @@ export default function App({ navigation }) {
         backgroundColor: color.colorPrimary,
       }}
     >
-      <NavigationContainer>
-        <AppNavigation />
-        <StatusBar style="light" />
-      </NavigationContainer>
+      {welcome && <Welcome hideWelcome={hideWelcome} />}
+      {!welcome && (
+        <NavigationContainer>
+          <AppNavigation />
+          <StatusBar style="light" />
+        </NavigationContainer>
+      )}
     </View>
   );
 }

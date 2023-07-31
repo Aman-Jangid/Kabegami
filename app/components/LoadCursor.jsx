@@ -2,15 +2,14 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import AnimatedLottieView from "lottie-react-native";
 
-export default function LoadCursor({ progress }) {
+export default function LoadCursor() {
   return (
     <AnimatedLottieView
       source={require("../assets/animations/progress.json")}
       autoPlay
-      speed={5}
+      speed={10}
       style={styles.container}
       loop={false}
-      progress={progress}
     />
   );
 }

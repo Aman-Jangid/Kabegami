@@ -1,0 +1,167 @@
+# Query: console.log(
+# ContextLines: 1
+
+42 results - 21 files
+
+App.js:
+  19      )
+  20:       .then((status) => console.log("Asking for permission !", status))
+  21:       .catch((error) => console.log("Failed to ask for permission", error));
+  22    };
+
+  50      if (!categories) {
+  52        await storage.setData(values.CATEGORIES, tags);
+
+  68    //   const values = await AsyncStorage.multiGet(keys);
+  69:   //   console.log("values", values);
+  70    // };
+
+app/components/CollectionAccumulator.jsx:
+  26      const data = await storage.getData(values.COLLECTION_NAMES);
+  28    };
+
+app/components/CollectionCreator.jsx:
+  29      } catch (error) {
+  30:       console.log(
+  31          "Error occurred trying to pick image (CollectionCreator.jsx) : ",
+
+app/components/FullScreenImage.jsx:
+  11          setWidth(width);
+  13        },
+  14:       (err) => console.log(err)
+  15      );
+
+app/components/Icon.jsx:
+  14    if (!IconPacks[iconPack]) {
+  15:     console.log(`Icon-pack ${iconPack} is not supported!`);
+  16      return null;
+
+app/components/IconButton.jsx:
+  24    if (!IconPacks[iconPack]) {
+  25:     console.log(`Icon-pack ${iconPack} is not supported!`);
+  26      return null;
+
+app/components/ImageButton.jsx:
+  18  }) {
+  20  
+
+app/components/ImageFlatList.jsx:
+  27    useEffect(() => {
+  29    }, [optionsVisible]);
+
+app/components/ImageSelector.jsx:
+  18        if (response.didCancel) {
+  19:         console.log("User cancelled image picker");
+  20        } else if (response.error) {
+  21:         console.log("ImagePicker Error: ", response.error);
+  22        } else if (response.customButton) {
+  23:         console.log("User tapped custom button: ", response.customButton);
+  24        } else {
+
+app/components/LinkButton.jsx:
+   9      Linking.openURL(url).catch((error) => {
+  10:       console.log("Failed to open Url", error);
+  11      });
+
+app/components/LocalImageFlatList.jsx:
+  18      const info = await folderInfo.get(dir);
+  19:     console.log("INFO", info);
+  20      setWallpapers(info);
+
+  25      getWallpapers();
+  26:     console.log("i yam");
+  27    }, [isFocused]);
+
+app/screens/Collections.jsx:
+  66      ) {
+  68        setDirectory(path);
+
+  77        const location = await storage.getData(values.COLLECTIONS_PATH);
+  78:       console.log("Folder has been created at -> ", location);
+  79        setDirectory(collectionsPath);
+
+  88        const data = await storage.getData(values.COLLECTION_NAMES);
+  90      })();
+
+app/screens/Customize.jsx:
+  51      } catch (error) {
+  52:       console.log(`Couldn't find the image for tag ${tag} `, error);
+  53      }
+
+  61      );
+  63      await storage.setData(values.CATEGORIES, newTags);
+
+  85    const handleConfirmation = () => {
+  87      setTagsAsync();
+
+app/screens/Home.jsx:
+   36      else setRecentSearches(searches);
+   38    };
+
+   91        setWallpapers(response);
+   92:       console.log("Fetched data successfully.");
+   93        setSearching(false);
+   94      } catch (error) {
+   95:       console.log("Failed to fetch data", error);
+   96        setSearching(false);
+
+  116        setWallpapers([...wallpapers, ...response]);
+  117:       console.log("Fetched data successfully.");
+  118        setLoading(false);
+  119      } catch (error) {
+  120:       console.log("Failed to fetch data", error);
+  121        setLoading(false);
+
+app/screens/Local.jsx:
+  46    useEffect(() => {
+  47:     console.log(folders);
+  48    }, [folders]);
+
+app/services/downloadImage.js:
+  25        // File has been downloaded and saved successfully
+  26:       console.log("File downloaded successfully.", res.path());
+  27        Alert.alert("Success", "File downloaded successfully.");
+
+app/services/fileSelection.js:
+  5    //   const uri = await result.assets.uri;
+  6:   console.log(result);
+  7  };
+
+app/services/folderInfo.js:
+   7  
+   8:   console.log(folderPath);
+   9  
+
+  22    } catch (error) {
+  23:     console.log("Error reading directory : ", error);
+  24    }
+
+app/services/ManageStorage.js:
+  10    const res = await fs.stat(path);
+  12  };
+
+  35      await RNFS.mkdir(folderPath);
+  36:     console.log("User-specified folder created successfully:", folderPath);
+  37    } else {
+  38:     console.log("User-specified folder already exists:", folderPath);
+  39    }
+
+app/services/setWallpaper.js:
+   7      if (err) {
+   8:       console.log("Error setting wallpaper: ", err);
+   9      } else {
+  10:       console.log("Success : ", msg);
+  11      }
+
+app/services/storage.js:
+  22    } catch (error) {
+  23:     console.log(`Failed to store ${key} in async storage : `, error);
+  24    }
+
+  33    } catch (error) {
+  34:     console.log(`Failed to get the value of ${key} : `, error);
+  35    }
+
+  42    } catch (error) {
+  43:     console.log(`Failed to remove data of ${key} : `, error);
+  44    }

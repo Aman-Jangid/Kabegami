@@ -1,7 +1,5 @@
 import React from "react";
-import { StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Icon from "../components/Icon";
 
 // Stack Navigators
 import FavoritesStack from "./FavoritesStack";

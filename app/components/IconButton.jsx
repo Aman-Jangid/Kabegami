@@ -38,6 +38,7 @@ export default function IconButton({
         <Icon
           name={name}
           size={size}
+          iconPack={iconPack}
           color={disabled ? disabledColor : color}
           style={styles.buttonContainer}
         />

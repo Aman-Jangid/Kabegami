@@ -3,13 +3,11 @@ import { StyleSheet, Text, View } from "react-native";
 import Button from "./Button";
 import color from "../theme/colors";
 
-const purities = [
-  { title: "anime", color: color.color5 },
-  { title: "general", color: color.color11 },
-  { title: "people", color: color.color10 },
-];
-
-export default function ButtonSelection({ handleSelections, selections }) {
+export default function ButtonSelection({
+  handleSelections,
+  selections,
+  options,
+}) {
   const [selectedPurities, setSelectedPurities] = useState(
     selections ? [...selections] : []
   );
@@ -35,15 +33,15 @@ export default function ButtonSelection({ handleSelections, selections }) {
 
   return (
     <View style={styles.container}>
-      {purities.map((purity, i) => (
+      {options.map((item, i) => (
         <Button
-          title={purity.title}
-          color={purity.color}
+          title={item.title}
+          color={item.color}
           textColor={
-            selectedPurities.includes(purity.title) ? color.white : color.color7
+            selectedPurities.includes(item.title) ? color.white : item.text
           }
-          key={purity + i}
-          onPress={() => handleSelection(purity.title, i)}
+          key={item + i}
+          onPress={() => handleSelection(item.title, i)}
         />
       ))}
     </View>

@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import Button from "../components/Button";
+import { StyleSheet, View } from "react-native";
+
+import keys from "../keys";
 import color from "../theme/colors";
-import BackButton from "../components/BackButton";
-import Screen from "./Screen";
-import PathSelector from "../components/PathSelector";
-import ManageStorage from "../services/ManageStorage";
 import storage from "../services/storage";
-import values from "../values";
+import Screen from "./Screen";
+import Button from "../components/Button";
+import BackButton from "../components/BackButton";
+import PathSelector from "../components/PathSelector";
+import SavingChanges from "../components/SavingChanges";
+import ButtonSelection from "../components/ButtonSelection";
 
 export default function Settings() {
-  const [path, setPath] = useState(null);
   const [useCustomDir, setUseCustomDir] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const getButtonState = async () => {
-    const downloadPath = await storage.getData(values.DOWNLOADS_PATH);
+    const downloadPath = await storage.getData(keys.DOWNLOADS_PATH);
     if (
       downloadPath.split("/")[downloadPath.split("/").length - 1] ===
       ".Downloads"
@@ -23,17 +25,12 @@ export default function Settings() {
     } else setUseCustomDir(false);
   };
 
-  const getMainDirectory = async () => {
-    const path = await storage.getData(values.DIRECTORY_PATH);
-    setPath(path);
-  };
-
   const setDownloadDirectory = async () => {
-    const path = await storage.getData(values.DIRECTORY_PATH);
+    const path = await storage.getData(keys.DIRECTORY_PATH);
     if (!useCustomDir) {
-      await storage.setData(values.DOWNLOADS_PATH, path + "/Downloads");
+      await storage.setData(keys.DOWNLOADS_PATH, path + "/Downloads");
     } else {
-      await storage.setData(values.DOWNLOADS_PATH, path + "/.Downloads");
+      await storage.setData(keys.DOWNLOADS_PATH, path + "/.Downloads");
     }
   };
 
@@ -45,31 +42,27 @@ export default function Settings() {
     setUseCustomDir(!useCustomDir);
   };
 
-  const setLocalImagesDirectory = () => {};
+  const handleConfirm = () => {
+    setSaving(true);
+    setTimeout(() => {
+      setSaving(false);
+    }, 1000);
+  };
 
   useEffect(() => {
     getButtonState();
-    getMainDirectory();
   }, []);
 
-  const handleDirectorySelection = async () => {
-    if (path) return;
-    // select main directory
-    const path = await ManageStorage.selectDirectory();
-    const mainPath = await ManageStorage.createFolder("Kabegami", path);
-    await storage.setData(values.DIRECTORY_PATH, mainPath);
-    setPath(mainPath);
-  };
+  const selections = [
+    { title: "dark", color: color.color3, text: color.color8 },
+    { title: "light", color: color.color8, text: color.color3 },
+  ];
 
   return (
     <Screen>
       <View style={styles.container}>
         <BackButton goTo="Home" />
-        <PathSelector
-          path={path}
-          placeholder="kabegami directory"
-          onPress={handleDirectorySelection}
-        />
+        <PathSelector placeholder="kabegami directory" />
         <View style={styles.DownloadPathSelection}>
           <Button
             title={
@@ -82,13 +75,16 @@ export default function Settings() {
             onPress={handleUseCustomDownloadDir}
           />
         </View>
+        <ButtonSelection options={selections} />
         <Button
           title="confirm"
           color={color.color10}
           textColor={color.white}
           width="90%"
+          onPress={() => handleConfirm()}
         />
       </View>
+      {saving && <SavingChanges />}
     </Screen>
   );
 }

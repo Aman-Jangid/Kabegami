@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import DropDownMenu from "../components/DropDownMenu";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import color from "../theme/colors";
@@ -9,20 +8,34 @@ import LinkButton from "../components/LinkButton";
 import BackButton from "../components/BackButton";
 import Screen from "./Screen";
 import storage from "../services/storage";
-import values from "../values";
+import keys from "../keys";
+import TextCarousel from "../components/TextCarousel";
+import SavingChanges from "../components/SavingChanges";
 
 const initialTags = ["hot", "anime", "cats", "cars", "nature"];
 
+const options = [
+  { label: "Wallhaven.cc", value: "wallhaven" },
+  { label: "Unsplash.com", value: "unsplash" },
+  { label: "Pexels.com", value: "pexels" },
+];
+
 export default function Customize() {
   const [tags, setTags] = useState("");
+  const [apiKey, setApiKey] = useState("");
   const [showLink, setShowLink] = useState(false);
+  const [saving, setSaving] = useState(false);
   const toggleLink = () => {
     setShowLink(!showLink);
   };
 
   const getTagsAsync = async () => {
-    const data = await storage.getData(values.TAGS);
+    const data = await storage.getData(keys.TAGS);
     setTags(data.join(","));
+  };
+
+  const getApiKey = async () => {
+    // get api key
   };
 
   const getTagProps = async (tag) => {
@@ -48,8 +61,7 @@ export default function Customize() {
     const newTags = await Promise.all(
       tagsArray.map(async (tag) => await getTagProps(tag))
     );
-    console.log(newTags);
-    await storage.setData(values.CATEGORIES, newTags);
+    await storage.setData(keys.CATEGORIES, newTags);
   };
 
   useEffect(() => {
@@ -57,8 +69,14 @@ export default function Customize() {
   }, []);
 
   const setTagsAsync = async () => {
-    await storage.setData(values.TAGS, tags.split(","));
+    await storage.setData(keys.TAGS, tags.split(","));
     getUserTags();
+  };
+
+  const setApiKeyAsync = async () => {};
+
+  const handleAPIkeyInput = (value) => {
+    setApiKey(value);
   };
 
   const handleTagsInput = (value) => {
@@ -66,18 +84,27 @@ export default function Customize() {
   };
 
   const handleConfirmation = () => {
-    console.log("Confirmed");
+    setSaving(true);
     setTagsAsync();
+    setTimeout(() => {
+      setSaving(false);
+    }, 1000);
     // handle all the states and async storage variables
     // store api key in secure storage
     // store Api domain,tags and purity in async storage
   };
 
+  const purities = [
+    { title: "anime", color: color.color5, text: color.color8 },
+    { title: "general", color: color.color11, text: color.color8 },
+    { title: "people", color: color.color10, text: color.color8 },
+  ];
+
   return (
     <Screen>
       <View style={styles.container}>
         <BackButton goTo="Home" />
-        <DropDownMenu />
+        <TextCarousel items={options} />
         <Input
           backgroundColor={color.color3}
           color={color.color7}
@@ -86,6 +113,8 @@ export default function Customize() {
           displayHelp={true}
           iconColor={color.color4}
           toggleLink={toggleLink}
+          handleChange={handleAPIkeyInput}
+          value={apiKey}
         />
         {showLink && (
           <LinkButton
@@ -103,15 +132,16 @@ export default function Customize() {
           value={tags}
           handleChange={handleTagsInput}
         />
-        <ButtonSelection />
+        <ButtonSelection options={purities} />
         <Button
           title="confirm"
-          color={color.color9}
+          color={color.color10}
           textColor={color.white}
           width="80%"
           onPress={handleConfirmation}
         />
       </View>
+      {saving && <SavingChanges />}
     </Screen>
   );
 }
@@ -119,7 +149,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: color.colorPrimary,
     alignItems: "center",
-    // paddingTop: 50,
+    paddingHorizontal: 15,
     height: "100%",
     width: "100%",
   },

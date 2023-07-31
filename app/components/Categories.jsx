@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, View, ScrollView } from "react-native";
 import ImageButton from "./ImageButton";
 import color from "../theme/colors";
 import storage from "../services/storage";
-import values from "../values";
+import keys from "../keys";
 import { useIsFocused } from "@react-navigation/native";
 import uuid from "react-native-uuid";
 
@@ -13,7 +13,7 @@ export default function Categories({ selectedCategory, selectCategory }) {
 
   useEffect(() => {
     const getTags = async () => {
-      const data = await storage.getData(values.CATEGORIES);
+      const data = await storage.getData(keys.CATEGORIES);
       setTags(data);
     };
     getTags();

@@ -5,25 +5,11 @@ import IconButton from "./IconButton";
 import uuid from "react-native-uuid";
 import TouchableListItem from "./TouchableListItem";
 import storage from "../services/storage";
-import values from "../values";
-
-const collections = [
-  "neko",
-  "marvel",
-  "anime",
-  "cars",
-  "nature",
-  "cosmos",
-  "birds",
-  "sea",
-  "lord of the rings",
-  "monochrome",
-  "monogatari",
-];
+import keys from "../keys";
 
 export default function CollectionAccumulator() {
   const getData = async () => {
-    const data = await storage.getData(values.COLLECTION_NAMES);
+    const data = await storage.getData(keys.COLLECTION_NAMES);
     console.log(data);
   };
 

@@ -1,7 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Favorites from "../screens/Favorites";
 import Collections from "../screens/Collections";
-import Saved from "../screens/Saved";
 import SavedTab from "./SavedTab";
 
 const Stack = createNativeStackNavigator();

@@ -24,9 +24,7 @@ const ImageFlatList = ({
     }
   };
 
-  useEffect(() => {
-    console.log("optionsVisible --> ", optionsVisible);
-  }, [optionsVisible]);
+  useEffect(() => {}, [optionsVisible]);
 
   useEffect(() => {
     handleScrollToTop();

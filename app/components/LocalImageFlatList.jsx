@@ -4,7 +4,7 @@ import ImageItem from "./ImageItem";
 import uuid from "react-native-uuid";
 import folderInfo from "../services/folderInfo";
 import WallpaperSet from "./WallpaperSet";
-import values from "../values";
+import values from "../keys";
 import storage from "../services/storage";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import BackButton from "./BackButton";
@@ -15,13 +15,14 @@ export default function LocalImageFlatList({ scrollToTop, dir }) {
   const [wallpapers, setWallpapers] = useState([]);
 
   const getWallpapers = async () => {
-    setWallpapers(await folderInfo.get(dir));
+    const info = await folderInfo.get(dir);
+    console.log("INFO", info);
+    setWallpapers(info);
   };
   const isFocused = useIsFocused();
 
   useEffect(() => {
     getWallpapers();
-    console.log("i yam");
   }, [isFocused]);
 
   const flatlistRef = useRef(null);

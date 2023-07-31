@@ -5,7 +5,7 @@ const get = async (directory) => {
   const fileExtensions = ["jpg", "jpeg", "png", "webm"];
   const folderPath = await storage.getData(directory);
 
-  console.log(folderPath);
+  console.log("folderPath", folderPath);
 
   try {
     const items = await RNFS.readDir(folderPath);
@@ -18,6 +18,7 @@ const get = async (directory) => {
         return { uri, isImage };
       })
     );
+    console.log("folderItems", folderItems);
     return folderItems;
   } catch (error) {
     console.log("Error reading directory : ", error);

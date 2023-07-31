@@ -1,6 +1,6 @@
 import React from "react";
 import { Linking, Text, TouchableOpacity } from "react-native";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import Icon from "./Icon";
 import color from "../theme/colors";
 

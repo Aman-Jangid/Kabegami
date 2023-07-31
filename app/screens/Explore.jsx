@@ -83,11 +83,6 @@ export default function Explore() {
     fetchNewWallpapers();
   };
 
-  const switchCategory = () => {
-    // console.log(categories.includes(selectedCategory));
-    console.log(selectedCategory);
-  };
-
   return (
     <Screen>
       <View style={styles.container}>

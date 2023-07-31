@@ -3,12 +3,23 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "./Icon";
 import color from "../theme/colors";
 
-export default function TouchableListItem({ text, handlePress, icon = true }) {
+export default function TouchableListItem({
+  text,
+  handlePress,
+  icon = true,
+  iconName,
+  iconPack,
+}) {
   return (
     <TouchableOpacity style={styles.touchable} onPress={handlePress}>
       <Text style={styles.text}>{text}</Text>
       {icon ? (
-        <Icon name="enter" iconPack="ADI" size={20} color={color.color6} />
+        <Icon
+          name={iconName}
+          iconPack={iconPack}
+          size={20}
+          color={color.color6}
+        />
       ) : (
         <View style={styles.subTextContainer}>
           <Text style={styles.subText}>20</Text>

@@ -13,7 +13,7 @@ import color from "../theme/colors";
 import WallpaperSet from "../components/WallpaperSet";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import storage from "../services/storage";
-import values from "../values";
+import keys from "../keys";
 import CollectionAccumulator from "../components/CollectionAccumulator";
 import FullScreenImage from "../components/FullScreenImage";
 import DraggableImage from "../components/DraggableImage";
@@ -27,7 +27,7 @@ export default function ImageDisplay({}) {
   const route = useRoute();
 
   const setAlreadyLiked = async () => {
-    const images = Array.from(await storage.getData(values.LIKED_IMAGES));
+    const images = Array.from(await storage.getData(keys.LIKED_IMAGES));
     if (images.find((image) => image.path === route.params.path)) {
       setLiked(true);
     }
@@ -49,7 +49,7 @@ export default function ImageDisplay({}) {
   const handleLike = async () => {
     setLiked(true);
 
-    await storage.addArrayData(values.LIKED_IMAGES, route.params);
+    await storage.addArrayData(keys.LIKED_IMAGES, route.params);
   };
 
   const buttonContainer = {

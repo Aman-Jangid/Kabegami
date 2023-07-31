@@ -1,29 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Screen from "./Screen";
 import color from "../theme/colors";
-import Icon from "../components/Icon";
 import ManageStorage from "../services/ManageStorage";
-import ImageButton from "../components/ImageButton";
-import BackButton from "../components/BackButton";
 import storage from "../services/storage";
-import values from "../values";
-import folderInfo from "../services/folderInfo";
+import keys from "../keys";
+import FolderFlatlist from "../components/FolderFlatlist";
 
 const localFolders = [
-  { title: "Import", id: 0 },
+  {
+    title: "add_new_collection",
+    id: 0,
+    collectionImage: "https://th.wallhaven.cc/small/l3/l3zey2.jpg",
+  },
   {
     title: "My-Images",
     id: 1,
-    background: require("../assets/pictures/anime.jpg"),
-    numberOfItems: 43,
+    collectionImage: "https://th.wallhaven.cc/small/01/01dl3g.jpg",
+    numberOfImages: 43,
   },
-  // {
-  //   title: "dark-wallpapers",
-  //   id: 1,
-  //   background: require("../assets/pictures/anime.jpg"),
-  //   numberOfItems: 43,
-  // },
+  {
+    title: "dark-wallpapers",
+    id: 1,
+    collectionImage: "https://th.wallhaven.cc/small/l3/l3zey2.jpg",
+    numberOfImages: 343,
+  },
 ];
 
 export default function Local() {
@@ -32,13 +33,13 @@ export default function Local() {
   const [info, setInfo] = useState();
 
   const addFolderAsync = async () => {
-    const localFolders = await storage.getData(values.LOCAL_FOLDERS);
+    const localFolders = await storage.getData(keys.LOCAL_FOLDERS);
 
     if (!localFolders) {
-      await storage.setData(values.LOCAL_FOLDERS, [folderPath]);
+      await storage.setData(keys.LOCAL_FOLDERS, [folderPath]);
     } else {
       const newLocalFolders = [...localFolders, folderPath];
-      await storage.setData(values.LOCAL_FOLDERS, newLocalFolders);
+      await storage.setData(keys.LOCAL_FOLDERS, newLocalFolders);
     }
   };
 
@@ -47,7 +48,7 @@ export default function Local() {
   }, [folders]);
 
   const getFolderContents = async () => {
-    const pathsRes = await storage.getData(values.LOCAL_FOLDERS);
+    const pathsRes = await storage.getData(keys.LOCAL_FOLDERS);
     const paths = new Set(pathsRes.filter((path) => path));
     setFolders(Array.from(paths));
     // const info = await folderInfo.get(folders[1], true);
@@ -69,35 +70,7 @@ export default function Local() {
   return (
     <Screen>
       <View style={styles.container}>
-        <FlatList
-          contentContainerStyle={styles.flatlist}
-          data={localFolders}
-          numColumns={2}
-          renderItem={({ item }) =>
-            !item.background ? (
-              <TouchableOpacity
-                onPress={handleAddFolder}
-                style={styles.addCollection}
-              >
-                <Icon
-                  name="addfolder"
-                  iconPack="ADI"
-                  color={color.color6}
-                  size={80}
-                />
-              </TouchableOpacity>
-            ) : (
-              <ImageButton
-                background={item.background}
-                width={"48%"}
-                title={item.title}
-                key={item.id}
-                height={115}
-              />
-            )
-          }
-          keyExtractor={(item) => item.id}
-        />
+        <FolderFlatlist data={localFolders} />
       </View>
     </Screen>
   );
@@ -105,10 +78,6 @@ export default function Local() {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-  },
-  flatlist: {
-    // flexDirection: "row",
-    justifyContent: "space-around",
   },
   addCollection: {
     backgroundColor: color.color4,

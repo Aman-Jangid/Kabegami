@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import { StyleSheet, Text, TouchableOpacity, Image, View } from "react-native";
 import Icon from "./Icon";
 import color from "../theme/colors";
 
 export default function ImageButton({
   active,
-  title,
+  title = "",
   onPress,
   textColor,
   background,
@@ -21,14 +21,14 @@ export default function ImageButton({
         styles.container,
         styles.active,
         {
-          minWidth: width,
+          minWidth: title.length > 10 ? title.length * 13 : width,
           height,
         },
       ]
     : [
         styles.container,
         {
-          minWidth: width,
+          minWidth: title.length > 10 ? title.length * 13 : width,
           height,
         },
       ];

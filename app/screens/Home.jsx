@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
-import Search from "../components/Search";
-import TouchableListItem from "../components/TouchableListItem";
-import ItemSeparator from "../components/ItemSeparator";
+import { StyleSheet, View } from "react-native";
 import Button from "../components/Button";
 import color from "../theme/colors";
 import createURL from "../api/createURL";
 import { useNavigation } from "@react-navigation/native";
 import ImageFlatList from "../components/ImageFlatList";
 import getWallpapers from "../api/getWallpapers";
-import IconButton from "../components/IconButton";
-import SearchListHeader from "../components/SearchListHeader";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Screen from "./Screen";
 import Loading from "../components/Loading";
 import storage from "../services/storage";
-import values from "../values";
+import keys from "../keys";
+import SearchBar from "../components/SearchBar";
+import TextFlatlist from "../components/TextFlatlist";
 
 export default function Home() {
   const { navigate } = useNavigation();
@@ -28,18 +25,19 @@ export default function Home() {
   const [query, setQuery] = useState(null);
 
   const getData = async () => {
-    const searches = await storage.getData(values.RECENT_SEARCHES);
+    const searches = await storage.getData(keys.RECENT_SEARCHES);
 
     if (!searches) setRecentSearches([]);
     else setRecentSearches(searches);
+    console.log(searches);
   };
 
   const setData = async () => {
-    await storage.setData(values.RECENT_SEARCHES, recentSearches);
+    await storage.setData(keys.RECENT_SEARCHES, recentSearches);
   };
 
   const deleteData = async () => {
-    await storage.setData(values.RECENT_SEARCHES, []);
+    await storage.setData(keys.RECENT_SEARCHES, []);
   };
 
   useEffect(() => {
@@ -124,8 +122,6 @@ export default function Home() {
     loadMore(query);
   };
 
-  // const removeSearchListItem = () => {};
-
   const emptySearchList = () => {
     setRecentSearches([]);
     deleteData();
@@ -148,55 +144,33 @@ export default function Home() {
     <Screen>
       <GestureHandlerRootView>
         <View style={styles.container}>
-          <View style={styles.searchBar}>
-            <IconButton
-              name={!query ? "circle-thin" : "chevron-with-circle-left"}
-              iconPack={!query ? "FAI" : "EI"}
-              size={!query ? 32 : 28}
-              color={!query ? color.color3 : color.color9}
-              onPress={() => handleGoBack()}
-            />
-            <Search textChangeHandle={handleSearch} />
-          </View>
+          <SearchBar
+            searching={query}
+            handleSearch={handleSearch}
+            handleBack={handleGoBack}
+          />
           {searching && (
             <Loading source={require("../assets/animations/searching.json")} />
           )}
           {query && (
-            <View style={styles.listContainer}>
-              <ImageFlatList
-                end={end}
-                scrollToTop={searching}
-                marginBottom={90}
-                data={wallpapers}
-                loading={loading}
-                handleScrollEnd={handleScrollEnd}
-              />
-            </View>
+            <ImageFlatList
+              end={end}
+              scrollToTop={searching}
+              marginBottom={90}
+              data={wallpapers}
+              loading={loading}
+              handleScrollEnd={handleScrollEnd}
+            />
           )}
           {!query && (
             <>
-              <FlatList
-                style={styles.history}
+              <TextFlatlist
                 data={recentSearches}
-                renderItem={({ item }) => (
-                  <TouchableListItem
-                    text={item}
-                    handlePress={() => initiateSearch(item)}
-                  />
-                )}
-                keyExtractor={(item, index) => item + "_" + index}
-                contentContainerStyle={{ alignItems: "center" }}
-                ItemSeparatorComponent={<ItemSeparator />}
-                ListHeaderComponent={
-                  <SearchListHeader onPress={emptySearchList} />
-                }
-                horizontal={false}
-                ListHeaderComponentStyle={{
-                  width: "100%",
-                  height: 40,
-                  padding: 5,
-                  paddingHorizontal: 10,
-                }}
+                handlePress={initiateSearch}
+                handleEmpty={emptySearchList}
+                icon="enter"
+                pack="ADI"
+                title={"Recent searches"}
               />
               <Button
                 title="settings"
@@ -221,29 +195,10 @@ export default function Home() {
 }
 const styles = StyleSheet.create({
   container: {
-    // paddingTop: 30,
     height: "100%",
     width: "100%",
     alignItems: "center",
     backgroundColor: color.colorPrimary,
     gap: 10,
-  },
-  searchBar: {
-    width: "100%",
-    paddingHorizontal: 10,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  history: {
-    width: "90%",
-    maxHeight: 250,
-    borderRadius: 20,
-    overflow: "hidden",
-    marginBottom: 30,
-  },
-  listContainer: {
-    width: "100%",
-    marginBottom: -20,
-    height: "94%",
   },
 });

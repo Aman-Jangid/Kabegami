@@ -7,7 +7,6 @@ export default function ItemSeparator() {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    // width: 300,
     height: 1.5,
     backgroundColor: "black",
   },

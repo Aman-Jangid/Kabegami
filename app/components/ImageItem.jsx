@@ -1,20 +1,24 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { Image, StyleSheet, TouchableOpacity } from "react-native";
 import color from "../theme/colors";
 import LoadCursor from "./LoadCursor";
 
 export default function ImageItem({ thumbnail, id, url, showOptions, active }) {
   const { navigate } = useNavigation();
-  const [progress, setProgress] = useState(0);
   const [isLongPressing, setIsLongPressing] = useState(false);
 
   const handleLongPress = () => {
-    showOptions();
+    setTimeout(() => {
+      showOptions();
+      setIsLongPressing(false);
+    }, 200);
   };
 
   return (
     <TouchableOpacity
+      onPressIn={() => setIsLongPressing(true)}
+      onPressOut={() => setIsLongPressing(false)}
       onPress={() =>
         navigate("ImageDisplay", {
           path: url,
@@ -27,7 +31,7 @@ export default function ImageItem({ thumbnail, id, url, showOptions, active }) {
       activeOpacity={0.6}
     >
       <>
-        {isLongPressing && <LoadCursor progress={progress} />}
+        {isLongPressing && <LoadCursor />}
         <Image
           source={{ uri: thumbnail }}
           style={[
