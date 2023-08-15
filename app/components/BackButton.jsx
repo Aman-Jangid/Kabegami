@@ -27,6 +27,7 @@ export default function BackButton({ goTo }) {
 }
 const styles = StyleSheet.create({
   back: {
+    flexShrink: 1,
     width: "100%",
     flexDirection: "row",
     paddingBottom: 20,

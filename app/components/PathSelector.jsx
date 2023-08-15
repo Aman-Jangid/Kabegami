@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, TextInput, View } from "react-native";
+import { NativeModules, StyleSheet, TextInput, View } from "react-native";
 
 import IconButton from "./IconButton";
 
@@ -10,6 +10,8 @@ import ManageStorage from "../services/ManageStorage";
 
 export default function PathSelector({ placeholder }) {
   const [path, setPath] = useState(null);
+
+  const { FileExplorerModule } = NativeModules;
 
   // get main directory
   const getMainDirectory = async () => {
@@ -23,6 +25,7 @@ export default function PathSelector({ placeholder }) {
   const selectMainDirectory = async () => {
     const selectedDir = await ManageStorage.selectDirectory();
     setPath(selectedDir);
+
     // check if directory already exists
     const exists = await ManageStorage.checkDirectoryExistence(selectedDir);
     if (exists) {
@@ -63,6 +66,11 @@ export default function PathSelector({ placeholder }) {
       path + "/Downloads"
     );
 
+    // set in async storage
+    await storage.setData(keys.COLLECTIONS_PATH, path + "/.Collections");
+    await storage.setData(keys.DOWNLOADS_PATH, path + "/Downloads");
+    await storage.setData(keys.HIDDEN_DOWNLOADS_PATH, path + "/.Downloads");
+
     return [
       collectionsExists / 1,
       hiddenDownloadsExists / 1,
@@ -72,6 +80,12 @@ export default function PathSelector({ placeholder }) {
 
   const handleDirectorySelection = async () => {
     await selectMainDirectory();
+  };
+
+  const openInExplorer = () => {
+    console.log(path);
+    // get uri of the path
+    FileExplorerModule.openFileExplorer(path);
   };
 
   useEffect(() => {
@@ -94,6 +108,14 @@ export default function PathSelector({ placeholder }) {
         iconPack="II"
         size={26}
         onPress={handleDirectorySelection}
+        style={{ marginRight: 3 }}
+      />
+      <IconButton
+        color={color.color10}
+        name="open-outline"
+        iconPack="II"
+        size={26}
+        onPress={openInExplorer}
       />
     </View>
   );

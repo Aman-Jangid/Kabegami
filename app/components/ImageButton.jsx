@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, Image, View } from "react-native";
 import Icon from "./Icon";
 import color from "../theme/colors";
+import FastImage from "react-native-fast-image";
 
 export default function ImageButton({
   active,
@@ -11,10 +12,12 @@ export default function ImageButton({
   background,
   width = 120,
   height = 45,
+  imageHeight,
   quantity,
   uri,
   collection,
   disabled,
+  position = "center",
 }) {
   const buttonStyles = active
     ? [
@@ -42,10 +45,13 @@ export default function ImageButton({
       <Text style={[styles.title, { color: !textColor && "#fff" }]}>
         {title}
       </Text>
-      <Image
-        source={uri ? { uri: uri } : background}
-        style={styles.background}
-      />
+      <View style={{ width: "100%", height: 150, justifyContent: position }}>
+        <FastImage
+          resizeMode="cover"
+          source={uri ? { uri: uri } : background}
+          style={{ height: imageHeight || 400 }}
+        />
+      </View>
       {collection && (
         <View style={styles.quantity}>
           <Icon name="images" iconPack="II" size={20} color={color.color6} />
@@ -90,15 +96,10 @@ const styles = StyleSheet.create({
     backgroundColor: color.colorPrimary,
     paddingVertical: 4,
     paddingHorizontal: 8,
-    // borderRadius: 5,
   },
   quantityText: {
     fontSize: 15,
     fontWeight: "bold",
     color: color.color9,
-  },
-  background: {
-    width: "100%",
-    height: "100%",
   },
 });

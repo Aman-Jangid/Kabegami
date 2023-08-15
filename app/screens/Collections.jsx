@@ -4,114 +4,62 @@ import Screen from "./Screen";
 import color from "../theme/colors";
 import BackButton from "../components/BackButton";
 import storage from "../services/storage";
-import ManageStorage from "../services/ManageStorage";
 import keys from "../keys";
 import CollectionCreator from "../components/CollectionCreator";
 import FolderFlatlist from "../components/FolderFlatlist";
+import IconButton from "../components/IconButton";
+import folderInfo from "../services/folderInfo";
 
-export default function Collections() {
-  const [collections, setCollections] = useState([]);
-  const [directory, setDirectory] = useState(null);
+export default function Collections({ navigation }) {
+  const [collections, setCollections] = useState([
+    { id: 0, title: "add_new_collection" },
+  ]);
   const [showCreator, setShowCreator] = useState(false);
   const [syncNow, setSyncNow] = useState(false);
+  const [foldersContent, setFoldersContent] = useState([]);
 
-  const getCollectionsAsync = async () => {
+  const setCollectionNamesAsync = async () => {
+    const collectionNames = collections
+      .map((collection) => {
+        if (collection.path) {
+          return {
+            title: collection.title,
+            path: collection.path,
+            quantity: collection.numberOfImages,
+          };
+        }
+      })
+      .filter((item) => item);
+
+    await storage.setData(keys.COLLECTION_NAMES, collectionNames);
+  };
+
+  const getCollectionAsync = async () => {
     const data = await storage.getData(keys.COLLECTIONS);
 
-    if (!data) {
+    if (!data || data?.length === 0) {
       await storage.setData(keys.COLLECTIONS, [
-        {
-          title: "add_new_collection",
-          id: 0,
-        },
+        { id: 0, title: "add_new_collection" },
       ]);
-
-      await storage.setData(keys.COLLECTION_NAMES, []);
-
-      const data = await storage.getData(keys.COLLECTIONS);
-
-      setCollections(data);
-    }
-    if (data) {
-      setCollections(data);
-
-      const nameData = await storage.getData(keys.COLLECTION_NAMES);
-
-      const newNameArray = [];
-
-      collections.map((collection) => {
-        if (collection.title !== "add_new_collection") {
-          newNameArray.push(collection.title);
-        }
-      });
-
-      if (newNameArray.length !== nameData.length) {
-        await storage.setData(keys.COLLECTION_NAMES, newNameArray);
-      }
-    } else if (!collections.length) {
-      collections.push({ title: "add_new_collection", id: 0 });
-      storage.setData(keys.COLLECTIONS, collections);
-    }
-  };
-
-  const createFolder = async () => {
-    const path = await storage.getData(keys.COLLECTIONS_PATH);
-
-    // check if directory exist -> if yes return
-    const exists = await ManageStorage.checkDirectoryExistence(path);
-
-    if (
-      exists &&
-      path.split("/")[path.split("/").length - 1] === ".Collections"
-    ) {
-      console.log("exists");
-      setDirectory(path);
+      setCollections([{ id: 0, title: "add_new_collection" }]);
     } else {
-      const collectionsPath = await ManageStorage.createFolder(
-        ".Collections",
-        path
-      );
-
-      await storage.setData(keys.COLLECTIONS_PATH, collectionsPath);
-
-      const location = await storage.getData(keys.COLLECTIONS_PATH);
-      console.log("Folder has been created at -> ", location);
-      setDirectory(collectionsPath);
+      // setCollections(data);
+      await getCollectionsContent(data);
     }
   };
 
-  useEffect(() => {
-    getCollectionsAsync();
-    createFolder();
+  const setCollectionsAsync = async () => {
+    await storage.setData(keys.COLLECTIONS, collections);
+  };
 
-    (async () => {
-      const data = await storage.getData(keys.COLLECTION_NAMES);
-      console.log(data);
-    })();
-  }, []);
-
-  useEffect(() => {
-    getCollectionsAsync();
-
-    // cleanup
-    return () => {
-      setSyncNow(false);
-    };
-  }, [syncNow]);
-
-  const handleAddCollection = async (item) => {
+  const handleAddCollection = (item) => {
     const newCollections = [...collections];
-    newCollections.pop();
 
-    await storage.addArrayData(keys.COLLECTIONS, item);
+    if (!item) return;
 
-    if (item) {
-      newCollections.push(item);
-      newCollections.push({ title: "add_new_collection", id: 0 });
-      setCollections([...newCollections]);
-      await storage.addArrayData(keys.COLLECTION_NAMES, item.title);
-      setSyncNow(true);
-    } else return;
+    newCollections.push(item);
+    setCollections([...newCollections]);
+    setSyncNow(true);
   };
 
   const handleConfirm = async (item) => {
@@ -123,6 +71,66 @@ export default function Collections() {
     setShowCreator(false);
   };
 
+  const handleEmpty = async () => {
+    // add +collection to collections and storage
+    await storage.setData(keys.COLLECTIONS, [
+      { id: 0, title: "add_new_collection" },
+    ]);
+    setCollections([{ id: 0, title: "add_new_collection" }]);
+
+    console.log("emptying");
+  };
+
+  const getCollectionsContent = async (data) => {
+    const paths = data.map((item) => item.path);
+
+    const dataFromPath = await Promise.all(
+      paths.map(async (path) => await folderInfo.get(path))
+    );
+
+    const filteredData = dataFromPath.filter((data) => data);
+    const numberOfItemsArray = filteredData.map((data) => data.length);
+
+    numberOfItemsArray.unshift(0);
+
+    const collectionsArr = [...data];
+    collectionsArr.forEach(
+      (collection, i) => (collection.numberOfImages = numberOfItemsArray[i])
+    );
+    // await storage.setData(keys.COLLECTIONS_PATH,paths)
+
+    setCollections(collectionsArr);
+
+    setFoldersContent(filteredData);
+  };
+
+  const handlePress = async (item) => {
+    // const index = collections.indexOf(item);
+    const parentPath = await storage.getData(keys.COLLECTIONS_PATH);
+    const path = parentPath + "/" + item.title;
+
+    const folderItems = await folderInfo.get(path);
+    // navigation.navigate("CollectionContents", { items: folderItems });
+  };
+
+  useEffect(() => {
+    getCollectionAsync();
+  }, []);
+
+  useEffect(() => {
+    if (syncNow) {
+      setCollectionsAsync();
+    }
+
+    return () => {
+      setSyncNow(false);
+    };
+  }, [syncNow]);
+
+  useEffect(() => {
+    setCollectionNamesAsync();
+  }, [collections]);
+
   return (
     <Screen>
       <View style={styles.container}>
@@ -132,9 +140,20 @@ export default function Collections() {
             handleConfirm={handleConfirm}
           />
         )}
-        <BackButton goTo="Favorites" />
+        <View style={styles.header}>
+          <BackButton goTo="Favorites" />
+          <IconButton
+            name="delete"
+            color={color.color9}
+            iconPack="ADI"
+            size={28}
+            style={{ marginHorizontal: 5 }}
+            onPress={handleEmpty}
+          />
+        </View>
         <FolderFlatlist
           data={collections}
+          onItemPress={handlePress}
           handleAdd={() => setShowCreator(true)}
         />
       </View>
@@ -148,5 +167,9 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "100%",
     backgroundColor: color.colorPrimary,
+  },
+  header: {
+    width: "100%",
+    flexDirection: "row",
   },
 });

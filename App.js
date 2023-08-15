@@ -7,6 +7,7 @@ import color from "./app/theme/colors";
 import storage from "./app/services/storage";
 import keys from "./app/keys";
 import Welcome from "./app/screens/Welcome";
+import { AsyncProvider } from "./app/context/AsyncContext";
 
 export default function App({ navigation }) {
   const [welcome, setWelcome] = useState(true);
@@ -63,6 +64,8 @@ export default function App({ navigation }) {
     return welcome;
   };
 
+  const checkDownload = async () => {};
+
   // const getAllKeys = async () => {
   //   const keys = await AsyncStorage.getAllKeys();
   //   const keys = await AsyncStorage.multiGet(keys);
@@ -71,27 +74,30 @@ export default function App({ navigation }) {
 
   useEffect(() => {
     // getAllKeys();
+
+    checkDownload();
     handleWelcome();
     getPermission();
     initializeTags();
   }, []);
-
   return (
-    <View
-      style={{
-        flex: 1,
-        width: "100%",
-        height: "100%",
-        backgroundColor: color.colorPrimary,
-      }}
-    >
-      {welcome && <Welcome hideWelcome={hideWelcome} />}
-      {!welcome && (
-        <NavigationContainer>
-          <AppNavigation />
-          <StatusBar style="light" />
-        </NavigationContainer>
-      )}
-    </View>
+    <AsyncProvider>
+      <View
+        style={{
+          flex: 1,
+          width: "100%",
+          height: "100%",
+          backgroundColor: color.colorPrimary,
+        }}
+      >
+        {welcome && <Welcome hideWelcome={hideWelcome} />}
+        {!welcome && (
+          <NavigationContainer>
+            <AppNavigation />
+            <StatusBar style="light" />
+          </NavigationContainer>
+        )}
+      </View>
+    </AsyncProvider>
   );
 }

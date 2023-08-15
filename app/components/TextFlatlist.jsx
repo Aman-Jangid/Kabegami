@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import React from "react";
+import { FlatList, StyleSheet } from "react-native";
 import uuid from "react-native-uuid";
 
 import TouchableListItem from "./TouchableListItem";
@@ -21,7 +21,7 @@ export default function TextFlatlist({
       renderItem={({ item }) => (
         <TouchableListItem
           text={item}
-          handlePress={handlePress}
+          handlePress={() => handlePress(item)}
           icon={true}
           iconName={icon}
           iconPack={pack}

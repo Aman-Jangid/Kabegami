@@ -3,8 +3,19 @@ import React, { useState } from "react";
 import { Image, StyleSheet, TouchableOpacity } from "react-native";
 import color from "../theme/colors";
 import LoadCursor from "./LoadCursor";
+import FastImage from "react-native-fast-image";
+import ImageInfo from "./ImageInfo";
 
-export default function ImageItem({ thumbnail, id, url, showOptions, active }) {
+export default function ImageItem({
+  thumbnail,
+  id,
+  url,
+  info,
+  showOptions,
+  select,
+  selected,
+  onPressHandle,
+}) {
   const { navigate } = useNavigation();
   const [isLongPressing, setIsLongPressing] = useState(false);
 
@@ -19,27 +30,32 @@ export default function ImageItem({ thumbnail, id, url, showOptions, active }) {
     <TouchableOpacity
       onPressIn={() => setIsLongPressing(true)}
       onPressOut={() => setIsLongPressing(false)}
-      onPress={() =>
-        navigate("ImageDisplay", {
-          path: url,
-          thumbs: { original: thumbnail },
-          id,
-        })
-      }
+      onPress={() => {
+        if (select) {
+          onPressHandle(id);
+        } else
+          navigate("ImageDisplay", {
+            path: url,
+            info: info,
+            thumbs: { original: thumbnail },
+            id: id,
+          });
+      }}
       onLongPress={handleLongPress}
       delayLongPress={300}
       activeOpacity={0.6}
     >
       <>
         {isLongPressing && <LoadCursor />}
-        <Image
+        <FastImage
           source={{ uri: thumbnail }}
           style={[
             styles.image,
             {
-              borderWidth: active ? 2 : 0,
-              borderColor: color.color9,
-              borderRadius: active ? 7 : 5,
+              borderWidth: selected && select ? 3 : 0,
+              borderColor: selected ? color.color9 : color.color2,
+              borderRadius: selected ? 7 : 5,
+              borderStyle: "dashed",
             },
           ]}
         />

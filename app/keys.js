@@ -10,5 +10,10 @@ export default keys = {
   TAGS: "TAGS", // array (from Customization.jsx)
   CATEGORIES: "CATEGORIES", //array user defined tags
   LOCAL_FOLDERS: "LOCAL_FOLDERS", //array of uri's
+  PURITY: "PURITY", //string
   WELCOME: "WELCOME", //boolean
+  API_KEY: "API_KEY", //string
+  CURRENT_DOWNLOADS_PATH: "CURRENT_DOWNLOADS_PATH", //string
+  THEME: "THEME", //string
+  RESOLUTIONS: "RESOLUTIONS", //array
 };

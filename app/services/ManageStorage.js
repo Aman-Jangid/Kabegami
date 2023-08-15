@@ -37,17 +37,18 @@ const createFolder = async (name, path = null) => {
 };
 
 const createSubFolder = async (childName, parentPath) => {
-  const folderPath = parentPath + "/" + childName;
-  const folderExists = await checkDirectoryExistence(folderPath);
+  const folderPath = await ScopedStorage.createDirectory(parentPath, childName);
 
-  if (!folderExists) {
-    await RNFS.mkdir(folderPath);
-    console.log("User-specified folder created successfully:", folderPath);
+  if (!folderPath) {
+    console.log("directory " + childName + " exists already ... ");
   } else {
-    console.log("User-specified folder already exists:", folderPath);
+    console.log("directory has been created successfully...");
   }
-  return folderPath;
+
+  return folderPath.uri;
 };
+
+const getPaths = async () => {};
 
 export default {
   createFolder,

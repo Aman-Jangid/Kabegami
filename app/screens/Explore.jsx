@@ -1,23 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import getWallpapers from "../api/getWallpapers";
-import Categories from "../components/Categories";
-import createURL from "../api/createURL";
-import ImageFlatList from "../components/ImageFlatList";
-import color from "../theme/colors";
+import { StyleSheet, View } from "react-native";
+
 import Screen from "./Screen";
+import Categories from "../components/Categories";
+import ImageFlatList from "../components/ImageFlatList";
 import Loading from "../components/Loading";
-// search -> order (ascending) ->
-// category (100 -> general,010 -> anime ,001 -> people) ->
-// purity (100/110/111 -- sfw,sketchy,nsfw) -> API key is needed for --1
-// &page=1 (24 images)
-// seed --> for random results
-// sorting random --> sort fetched items randomly
-// resolutions --> required resolutions
-// ratios --> aspect ratio
-// "search?sorting=views&resolutions=1080x1920,1440x2560&order=asc&categories=010&purity=100&page=2"
-// new uploads --> search?sorting&hot&categories=010&resolutions=1080x1920
-// top wallpapers (from given time range) --> search?sorting&toplist&topRange=1M&categories=010&resolutions=1080x1920
+
+import getWallpapers from "../api/getWallpapers";
+import createURL from "../api/createURL";
+import color from "../theme/colors";
+import storage from "../services/storage";
+import keys from "../keys";
 
 export default function Explore() {
   const [wallpapers, setWallpapers] = useState();
@@ -26,31 +19,37 @@ export default function Explore() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [scrollToTop, setScrollToTop] = useState(false);
+  const [purity, setPurity] = useState(null);
+
+  const getApiConfiguration = async () => {
+    const value = await storage.getData(keys.PURITY);
+    setPurity(value);
+  };
 
   const fetchWallpapers = async () => {
     setFetching(true);
-    const url = createURL.createURL({
+    const url = await createURL.createURL({
       q: selectedCategory !== "hot" ? selectedCategory : null,
       hot: selectedCategory === "hot",
       sorting: "random",
       categories: "110",
-      purity: "100",
+      purity: purity,
       page: currentPage,
     });
     const data = await getWallpapers(url);
-    setFetching(false);
     setWallpapers(data);
+    setFetching(false);
   };
 
   // infinite scroll
   const fetchNewWallpapers = async () => {
     setLoading(true);
-    const url = createURL.createURL({
+    const url = await createURL.createURL({
       q: selectedCategory !== "hot" ? selectedCategory : null,
       hot: selectedCategory === "hot",
       sorting: "random",
       categories: "110",
-      purity: "100",
+      purity: purity,
       page: currentPage,
     });
     const data = await getWallpapers(url);
@@ -68,6 +67,7 @@ export default function Explore() {
   };
 
   useEffect(() => {
+    getApiConfiguration();
     fetchWallpapers();
   }, []);
 

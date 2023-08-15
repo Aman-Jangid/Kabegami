@@ -5,72 +5,86 @@ import color from "../theme/colors";
 import ManageStorage from "../services/ManageStorage";
 import storage from "../services/storage";
 import keys from "../keys";
+import uuid from "react-native-uuid";
 import FolderFlatlist from "../components/FolderFlatlist";
 
-const localFolders = [
-  {
-    title: "add_new_collection",
-    id: 0,
-    collectionImage: "https://th.wallhaven.cc/small/l3/l3zey2.jpg",
-  },
-  {
-    title: "My-Images",
-    id: 1,
-    collectionImage: "https://th.wallhaven.cc/small/01/01dl3g.jpg",
-    numberOfImages: 43,
-  },
-  {
-    title: "dark-wallpapers",
-    id: 1,
-    collectionImage: "https://th.wallhaven.cc/small/l3/l3zey2.jpg",
-    numberOfImages: 343,
-  },
-];
+const addCollection = {
+  title: "add_new_collection",
+  id: 0,
+  collectionImage: "https://th.wallhaven.cc/small/l3/l3zey2.jpg",
+};
 
 export default function Local() {
-  const [folderPath, setFolderPath] = useState();
   const [folders, setFolders] = useState([]);
+  const [process, setProcess] = useState(false);
   const [info, setInfo] = useState();
 
-  const addFolderAsync = async () => {
+  const addFolderAsync = async (path) => {
     const localFolders = await storage.getData(keys.LOCAL_FOLDERS);
+    console.log("path->", path);
 
-    if (!localFolders) {
-      await storage.setData(keys.LOCAL_FOLDERS, [folderPath]);
+    const numberOfImages = 12;
+
+    const folder = {
+      title: path.split("/")[path.split("/").length - 1],
+      id: uuid.v4(),
+      collectionImage: "https://th.wallhaven.cc/small/l3/l3zey2.jpg",
+      path,
+      numberOfImages,
+    };
+    if (!localFolders || localFolders?.length === 0) {
+      await storage.setData(keys.LOCAL_FOLDERS, [[path]]);
+
+      setFolders([folder]);
+      console.log(folders);
     } else {
-      const newLocalFolders = [...localFolders, folderPath];
+      const newLocalFolders = [...localFolders, folder];
       await storage.setData(keys.LOCAL_FOLDERS, newLocalFolders);
     }
   };
 
-  useEffect(() => {
-    console.log(folders);
-  }, [folders]);
+  const getFoldersAsync = async () => {
+    const data = await storage.getData(keys.LOCAL_FOLDERS);
+    const filteredData = data.filter((value) => value || !isFinite(value));
+    filteredData.unshift(addCollection);
+    setFolders(filteredData);
+  };
 
   const getFolderContents = async () => {
     const pathsRes = await storage.getData(keys.LOCAL_FOLDERS);
     const paths = new Set(pathsRes.filter((path) => path));
-    setFolders(Array.from(paths));
-    // const info = await folderInfo.get(folders[1], true);
-    // setInfo(info);
+    console.log(paths);
   };
 
   useEffect(() => {
-    getFolderContents();
-  }, [folderPath]);
+    getFoldersAsync();
+  }, []);
+
+  useEffect(() => {
+    // getFolderContents();
+    if (process) {
+      getFoldersAsync();
+    }
+
+    return () => setProcess(false);
+  }, [process]);
 
   // choose a folder from local storage (external storage)
   const handleAddFolder = async () => {
     const path = await ManageStorage.selectDirectory(true);
-    setFolderPath(path);
 
-    await addFolderAsync();
+    setProcess(true);
+    await addFolderAsync(path);
   };
 
   return (
     <Screen>
       <View style={styles.container}>
-        <FolderFlatlist data={localFolders} />
+        <FolderFlatlist
+          data={folders}
+          handleAdd={handleAddFolder}
+          onItemPress={(path) => console.log(path)}
+        />
       </View>
     </Screen>
   );

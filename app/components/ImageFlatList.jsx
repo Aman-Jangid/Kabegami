@@ -11,9 +11,13 @@ const ImageFlatList = ({
   scrollToTop,
   loading,
   marginBottom,
+  select,
+  selections,
+  setSelections,
   end,
 }) => {
   const [optionsVisible, setOptionsVisible] = useState(false);
+  // const [selectedItems, setSelectedItems] = useState([]);
   const [imageUrl, setImageUrl] = useState();
 
   const flatlistRef = useRef(null);
@@ -35,6 +39,23 @@ const ImageFlatList = ({
     setImageUrl(url);
   };
 
+  // useEffect(() => {
+  //   console.log("selectedItems -> ", selectedItems);
+  // }, [selectedItems]);
+
+  // const handleSelections = (item) => {
+  // const tempSelectedItems = [...selectedItems];
+
+  // if (tempSelectedItems.includes(item)) {
+  //   console.log("already includes");
+  //   const filteredItems = tempSelectedItems.filter((value) => value !== item);
+  //   setSelectedItems(filteredItems);
+  // } else {
+  //   tempSelectedItems.push(item);
+  //   setSelectedItems(tempSelectedItems);
+  // }
+  // };
+
   return (
     <>
       {optionsVisible && (
@@ -49,7 +70,7 @@ const ImageFlatList = ({
         scrollToTop={scrollToTop}
         refreshing={true}
         onEndReached={handleScrollEnd}
-        onEndReachedThreshold={0.4}
+        onEndReachedThreshold={0.8}
         numColumns={3}
         style={{
           alignSelf: "center",
@@ -60,9 +81,21 @@ const ImageFlatList = ({
             key={item.id}
             thumbnail={item.thumbs.original}
             id={item.id}
+            info={{
+              category: item?.category || item.info.category,
+              width: item?.dimension_x || item.info.width,
+              height: item?.dimension_y || item.info.height,
+              purity: item?.purity || item.info.purity,
+              resolution: item?.resolution || item.info.resolution,
+              colors: item?.colors || item.info.colors,
+              url: item?.url || item.info.url,
+            }}
             url={item.path}
             active={item.path === imageUrl}
             showOptions={() => handleShowOptions(item.path)}
+            select={select}
+            selected={select && selections.includes(item.id)}
+            onPressHandle={setSelections}
           />
         )}
         keyExtractor={(item) => item.id}

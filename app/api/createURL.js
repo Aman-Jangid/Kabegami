@@ -1,4 +1,12 @@
-const createURL = (
+import keys from "../keys";
+import storage from "../services/storage";
+
+const getPurity = async () => {
+  const purity = await storage.getData(keys.PURITY);
+  return purity;
+};
+
+const createURL = async (
   options = {
     q: "",
     sorting: "",
@@ -12,6 +20,7 @@ const createURL = (
     page: "",
   }
 ) => {
+  purity = await getPurity();
   const prefix = "search?";
 
   const suffix = Array.from(Object.keys(options)).map((key) =>
@@ -19,6 +28,8 @@ const createURL = (
   );
 
   const url = prefix + suffix.join("");
+
+  console.log(url);
 
   return url;
 };

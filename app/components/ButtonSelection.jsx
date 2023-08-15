@@ -1,35 +1,66 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Button from "./Button";
 import color from "../theme/colors";
+import storage from "../services/storage";
 
 export default function ButtonSelection({
+  dependency,
   handleSelections,
-  selections,
   options,
+  showHelp,
+  KEY,
 }) {
-  const [selectedPurities, setSelectedPurities] = useState(
-    selections ? [...selections] : []
-  );
+  const [selectedPurities, setSelectedPurities] = useState(new Set(["100"]));
 
   const handleSelection = (newSelection) => {
-    if (selectedPurities.includes(newSelection))
-      setSelectedPurities((prevSelections) => {
-        const index = selectedPurities.findIndex(
-          (string) => string === newSelection
-        );
-        const newSelections = [...prevSelections];
-        newSelections.splice(index, 1);
-        return newSelections;
-      });
-    else
-      setSelectedPurities((prevSelections) => [
-        ...prevSelections,
-        newSelection,
-      ]);
-    // handles the selected items in parent component
-    handleSelections(selectedPurities);
+    if (!dependency && newSelection[2] === "1") {
+      // console.log(`can't select nsfw without an Api-Key`);
+      showHelp();
+      return;
+    }
+
+    if (selectedPurities.has(newSelection)) {
+      const newSet = new Set(selectedPurities);
+      newSet.delete(newSelection);
+      setSelectedPurities(newSet);
+      return;
+    }
+
+    const newSet = new Set(selectedPurities);
+    newSet.add(newSelection);
+    setSelectedPurities(newSet);
   };
+
+  const getSelectionsAsync = async () => {
+    const data = await storage.getData(KEY);
+    if (data && data !== "000") {
+      const selectionsSet = [];
+      const selectionsStr = data;
+      if (selectionsStr[0] === "1") {
+        selectionsSet.push("100");
+      }
+      if (selectionsStr[1] === "1") {
+        selectionsSet.push("010");
+      }
+      if (selectionsStr[2] === "1") {
+        selectionsSet.push("001");
+      }
+      setSelectedPurities(new Set(selectionsSet));
+    } else setSelectedPurities(new Set(["100"]));
+  };
+
+  useEffect(() => {
+    getSelectionsAsync();
+  }, []);
+
+  useEffect(() => {
+    if (selectedPurities.size === 0) {
+      setSelectedPurities(new Set(["100"]));
+    }
+
+    handleSelections(selectedPurities);
+  }, [selectedPurities]);
 
   return (
     <View style={styles.container}>
@@ -38,10 +69,10 @@ export default function ButtonSelection({
           title={item.title}
           color={item.color}
           textColor={
-            selectedPurities.includes(item.title) ? color.white : item.text
+            selectedPurities.has(item.value) ? color.white : color.color7
           }
           key={item + i}
-          onPress={() => handleSelection(item.title, i)}
+          onPress={() => handleSelection(item.value)}
         />
       ))}
     </View>

@@ -1,12 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 import Button from "../components/Button";
 import IconButton from "../components/IconButton";
 import color from "../theme/colors";
@@ -15,41 +9,122 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import storage from "../services/storage";
 import keys from "../keys";
 import CollectionAccumulator from "../components/CollectionAccumulator";
-import FullScreenImage from "../components/FullScreenImage";
-import DraggableImage from "../components/DraggableImage";
+import ScrollableImage from "../components/ScrollableImage";
+import ImageInfo from "../components/ImageInfo";
+import getWallpapers, { getWallpaperInfo } from "../api/getWallpapers";
+import createURL from "../api/createURL";
+import ImageFlatList from "../components/ImageFlatList";
+
+// transform this into an scrollable like Categories.jsx
 
 export default function ImageDisplay({}) {
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState();
+  const [tags, setTags] = useState([]);
+  const [likedArray, setLikedArray] = useState([]);
   const [optionsVisible, setOptionsVisible] = useState(false);
+  const [showImageInfo, setShowImageInfo] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [query, setQuery] = useState("");
+  const [wallpapers, setWallpapers] = useState([]);
   const [collectionsVisible, setCollectionsVisible] = useState(false);
 
-  const { goBack } = useNavigation();
+  const { goBack, isFocused } = useNavigation();
   const route = useRoute();
 
-  const setAlreadyLiked = async () => {
-    const images = Array.from(await storage.getData(keys.LIKED_IMAGES));
-    if (images.find((image) => image.path === route.params.path)) {
-      setLiked(true);
-    }
-  };
-
-  useEffect(() => {
-    setAlreadyLiked();
-  }, [liked]);
-
-  const handleClose = () => {
-    setCollectionsVisible(false);
-    setOptionsVisible(false);
-  };
+  // const handleClose = () => {
+  //   console.log("closing");
+  //   setCollectionsVisible(false);
+  //   setOptionsVisible(false);
+  // };
 
   const handleCloseViewer = () => {
     goBack();
   };
 
-  const handleLike = async () => {
-    setLiked(true);
+  // get liked images array from async storage (ASYNC)
+  const getLikedImagesAsync = async () => {
+    const likedImages = await storage.getData(keys.LIKED_IMAGES);
 
-    await storage.addArrayData(keys.LIKED_IMAGES, route.params);
+    if (!Array.isArray(likedImages)) {
+      storage.setData(keys.LIKED_IMAGES, []);
+      setLikedArray([]);
+      return;
+    }
+
+    setLikedArray(likedImages);
+    checkLiked(likedImages);
+  };
+
+  // set likedArray to LIKED_IMAGES key in async storage (ASYNC)
+  const setLikedImagesAsync = async () => {
+    await storage.setData(keys.LIKED_IMAGES, likedArray);
+  };
+
+  const checkLiked = (images) => {
+    if (images.filter((item) => item.id === route.params.id).length > 0) {
+      setLiked(true);
+    }
+  };
+
+  useEffect(() => {
+    const tempLikedArray = [...likedArray];
+
+    if (liked) {
+      if (
+        tempLikedArray.filter((item) => item.id === route.params.id).length > 0
+      ) {
+        return;
+      }
+      tempLikedArray.push(route.params);
+      setLikedArray(tempLikedArray);
+    }
+    if (!liked) {
+      const filteredArray = tempLikedArray.filter(
+        (item) => item.id !== route.params.id
+      );
+
+      setLikedArray(filteredArray);
+    }
+  }, [liked]);
+
+  const handleSearching = (query) => {
+    setSearching(true);
+    initiateSearch(query);
+  };
+
+  const search = async (searchTerm) => {
+    const url = await createURL.createURL({
+      q: query || searchTerm,
+      sorting: "random",
+      top: true,
+      categories: "111",
+      page: 1,
+    });
+
+    const data = await getWallpapers(url);
+    return data;
+  };
+
+  const initiateSearch = async (query) => {
+    console.log("searching for ", query);
+    const data = await search(query);
+    setWallpapers(data);
+  };
+
+  //get array of liked images that exists in async storage
+  useEffect(() => {
+    getLikedImagesAsync();
+  }, []);
+
+  useEffect(() => {
+    setLikedImagesAsync();
+  }, [likedArray]);
+
+  // get image tags
+  const getTags = async () => {
+    const info = await getWallpaperInfo(route.params.id);
+    const tagsArr = info.tags.map((tag) => tag.name);
+    setTags(tagsArr.sort((a, b) => a.length - b.length));
   };
 
   const buttonContainer = {
@@ -57,62 +132,109 @@ export default function ImageDisplay({}) {
     textAlign: "center",
     alignItems: "center",
     borderRadius: 50,
-    padding: 4,
+    padding: 2,
   };
 
   return (
-    <TouchableWithoutFeedback onPress={() => setOptionsVisible(false)}>
-      <View style={styles.container}>
-        {optionsVisible && (
-          <WallpaperSet
-            imageUrl={route.params.path}
-            hideDownload
-            optionsVisible={optionsVisible}
-            handleShowOptions={() => setOptionsVisible(!optionsVisible)}
-          />
-        )}
-        {collectionsVisible && <CollectionAccumulator />}
-        <TouchableWithoutFeedback onPress={handleClose}>
-          <DraggableImage uri={route.params.path} />
-        </TouchableWithoutFeedback>
-        <View style={styles.gestureIndicator}>
-          <IconButton
-            name="chevron-thin-down"
-            iconPack="EI"
-            size={50}
-            color={color.white}
-            onPress={handleCloseViewer}
-          />
-        </View>
-        <View style={styles.buttons}>
-          <IconButton
-            name="collections"
-            iconPack="MI"
-            size={35}
-            color={color.color18}
-            style={buttonContainer}
-            onPress={() => setCollectionsVisible(!collectionsVisible)}
-          />
-          <Button
-            title="set as wallpaper"
-            color={color.color19}
-            textColor={color.white}
-            onPress={() => setOptionsVisible(!optionsVisible)}
-          />
-          <IconButton
-            name={liked ? "heart" : "hearto"}
-            iconPack="ADI"
-            size={32}
-            color={color.color19}
-            style={buttonContainer}
-            onPress={handleLike}
-          />
-        </View>
-        <StatusBar style="light" />
+    <View style={styles.container}>
+      {optionsVisible && (
+        <WallpaperSet
+          imageUrl={route.params.path}
+          hideDownload
+          optionsVisible={optionsVisible}
+          handleShowOptions={() => setOptionsVisible(!optionsVisible)}
+        />
+      )}
+      {collectionsVisible && (
+        <CollectionAccumulator hide={() => setCollectionsVisible(false)} />
+      )}
+      <ScrollableImage
+        uri={route.params.path}
+        onPress={() => setShowImageInfo(false)}
+        width={route.params.info.width}
+        height={route.params.info.height}
+      />
+      <View style={styles.gestureIndicator}>
+        <IconButton
+          name="chevron-thin-down"
+          iconPack="EI"
+          size={50}
+          color={color.white}
+          onPress={handleCloseViewer}
+        />
       </View>
-    </TouchableWithoutFeedback>
+      {showImageInfo && (
+        <View style={styles.info}>
+          <ImageInfo
+            tags={tags}
+            colors={route.params.info.colors}
+            category={route.params.info.category}
+            purity={route.params.info.purity}
+            resolution={route.params.info.resolution}
+            url={route.params.info.url}
+            id={route.params.id}
+            handleSearching={handleSearching}
+            fetchTags={async () => await getTags()}
+          />
+        </View>
+      )}
+      <View style={styles.buttons}>
+        <IconButton
+          name="collections"
+          iconPack="MI"
+          size={35}
+          color={color.color19}
+          style={buttonContainer}
+          onPress={() => setCollectionsVisible(!collectionsVisible)}
+        />
+        <IconButton
+          name="info"
+          iconPack="MI"
+          size={35}
+          color={color.color19}
+          style={buttonContainer}
+          onPress={() => setShowImageInfo(true)}
+        />
+        <Button
+          title="set as wallpaper"
+          color={color.color19}
+          textColor={color.white}
+          onPress={() => setOptionsVisible(!optionsVisible)}
+        />
+        <IconButton
+          name={liked ? "heart" : "hearto"}
+          iconPack="ADI"
+          size={33}
+          style={buttonContainer}
+          color={color.color19}
+          onPress={() => setLiked(!liked)}
+        />
+      </View>
+      {showImageInfo && searching && (
+        <View style={styles.search}>
+          <ImageFlatList data={wallpapers} />
+          <IconButton
+            name="times-circle"
+            iconPack="FAI"
+            size={35}
+            color={color.color9}
+            onPress={() => setSearching(false)}
+            style={{
+              position: "absolute",
+              top: -22,
+              right: 6,
+              backgroundColor: color.color4,
+              borderRadius: 25,
+              paddingHorizontal: 3,
+            }}
+          />
+        </View>
+      )}
+      <StatusBar style="light" />
+    </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     width: "100%",
@@ -137,11 +259,30 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     bottom: 20,
-    gap: 10,
+    gap: 5,
     alignSelf: "center",
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor: "rgba(255,255,255,0.05)",
     borderRadius: 20,
     paddingVertical: 5,
     paddingHorizontal: 10,
+  },
+  info: {
+    position: "absolute",
+    bottom: 0,
+    alignSelf: "center",
+    width: "100%",
+    overflow: "hidden",
+    zIndex: 2000,
+    borderRadius: 15,
+  },
+  search: {
+    position: "absolute",
+    zIndex: 10000,
+    alignSelf: "center",
+    top: 80,
+    width: "95%",
+    height: 420,
+    backgroundColor: color.color4,
+    borderRadius: 10,
   },
 });

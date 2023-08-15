@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import color from "../theme/colors";
 import IconButton from "./IconButton";
@@ -6,11 +6,32 @@ import uuid from "react-native-uuid";
 import TouchableListItem from "./TouchableListItem";
 import storage from "../services/storage";
 import keys from "../keys";
+import downloadImage from "../services/downloadImage";
+import ItemSeparator from "./ItemSeparator";
 
-export default function CollectionAccumulator() {
+export default function CollectionAccumulator({ hide }) {
+  const [collections, setCollections] = useState([]);
+  const [selected, setSelected] = useState("");
+
+  const handleSelection = (index) => {
+    setSelected(index);
+  };
+
+  const handleConfirm = async () => {
+    const collection = collections[selected];
+    collection.quantity += 1;
+
+    setCollections(
+      (prevCollections) => (prevCollections[selected] = collection)
+    );
+
+    await storage.setData(keys.COLLECTION_NAMES, collections);
+    hide();
+  };
+
   const getData = async () => {
     const data = await storage.getData(keys.COLLECTION_NAMES);
-    console.log(data);
+    setCollections(Array.from(data));
   };
 
   useEffect(() => {
@@ -24,23 +45,33 @@ export default function CollectionAccumulator() {
         <FlatList
           style={styles.flatlist}
           data={collections}
-          renderItem={({ item }) => (
-            <TouchableListItem text={item} icon={false} />
+          renderItem={({ item, index }) => (
+            <TouchableListItem
+              background={selected === index ? color.color4 : "transparent"}
+              textColor={selected === index ? color.color18 : color.color8}
+              text={item.title}
+              icon={false}
+              subText={item.quantity}
+              handlePress={() => handleSelection(index)}
+            />
           )}
-          keyExtractor={(item) => uuid.v4()}
+          ItemSeparatorComponent={<ItemSeparator color="transparent" />}
+          keyExtractor={() => uuid.v4()}
         />
         <View style={styles.buttons}>
-          <IconButton
-            color={color.color7}
-            name="check-circle"
-            iconPack="MI"
-            size={50}
-          />
           <IconButton
             color={color.color7}
             name="cancel"
             iconPack="MI"
             size={50}
+            onPress={hide}
+          />
+          <IconButton
+            color={color.color7}
+            name="check-circle"
+            iconPack="MI"
+            size={50}
+            onPress={handleConfirm}
           />
         </View>
       </View>

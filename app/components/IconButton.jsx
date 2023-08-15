@@ -19,6 +19,7 @@ export default function IconButton({
     FAI: Icons.FontAwesome,
     EI: Icons.Entypo,
     II: Icons.Ionicons,
+    FI: Icons.Feather,
   };
 
   if (!IconPacks[iconPack]) {

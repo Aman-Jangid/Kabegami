@@ -1,14 +1,14 @@
-import { Alert } from "react-native";
-
 import RNFetchBlob from "rn-fetch-blob";
 
 import storage from "./storage";
 import keys from "../keys";
+import { Alert } from "react-native";
 
 export default downloadImage = async (url) => {
   const fileName = url.split("/")[url.split("/").length - 1];
 
-  const customDownloadPath = await storage.getData(keys.DOWNLOADS_PATH);
+  const customDownloadPath = await storage.getData(keys.CURRENT_DOWNLOADS_PATH);
+  // const customDownloadPath = RNFetchBlob.fs.dirs.DownloadDir;
 
   RNFetchBlob.config({
     fileCache: true,
@@ -23,7 +23,7 @@ export default downloadImage = async (url) => {
     .then((res) => {
       // File has been downloaded and saved successfully
       console.log("File downloaded successfully.", res.path());
-      Alert.alert("Success", "File downloaded successfully.");
+      // Alert.alert("Success", "File downloaded successfully.");
     })
     .catch((error) => {
       // Handle errors here

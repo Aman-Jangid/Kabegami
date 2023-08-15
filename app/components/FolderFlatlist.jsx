@@ -5,7 +5,7 @@ import ImageButton from "./ImageButton";
 import Icon from "./Icon";
 import color from "../theme/colors";
 
-export default function FolderFlatlist({ data, handleAdd }) {
+export default function FolderFlatlist({ data, handleAdd, onItemPress }) {
   return (
     <FlatList
       data={data}
@@ -21,6 +21,8 @@ export default function FolderFlatlist({ data, handleAdd }) {
               height={100}
               quantity={item.numberOfImages}
               collection
+              onPress={() => onItemPress(item)}
+              position={item?.imagePosition}
             />
           );
         } else

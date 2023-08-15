@@ -7,7 +7,6 @@ import Screen from "./Screen";
 import { StatusBar } from "expo-status-bar";
 import storage from "../services/storage";
 import keys from "../keys";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Welcome({ hideWelcome }) {
   // initialize async storage pairs
@@ -18,6 +17,8 @@ export default function Welcome({ hideWelcome }) {
     const collectionNamesExist = await storage.getData(keys.COLLECTION_NAMES);
     const tagsExist = await storage.getData(keys.TAGS);
     const localFoldersExist = await storage.getData(keys.LOCAL_FOLDERS);
+    const purityExist = await storage.getData(keys.PURITY);
+    const apiKeyExist = await storage.getData(keys.API_KEY);
 
     if (!likedImagesExist) {
       await storage.setData(keys.LIKED_IMAGES, []);
@@ -28,6 +29,7 @@ export default function Welcome({ hideWelcome }) {
     if (!collectionsExist) {
       await storage.setData(keys.COLLECTIONS, []);
     }
+
     if (!collectionNamesExist) {
       await storage.setData(keys.COLLECTION_NAMES, []);
     }
@@ -36,6 +38,12 @@ export default function Welcome({ hideWelcome }) {
     }
     if (!localFoldersExist) {
       await storage.setData(keys.LOCAL_FOLDERS, []);
+    }
+    if (!purityExist) {
+      await storage.setData(keys.PURITY, 100);
+    }
+    if (!apiKeyExist) {
+      await storage.setData(keys.API_KEY, "");
     }
   };
 

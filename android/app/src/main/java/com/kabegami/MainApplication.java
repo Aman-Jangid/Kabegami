@@ -16,43 +16,44 @@ import expo.modules.ApplicationLifecycleDispatcher;
 import expo.modules.ReactNativeHostWrapper;
 
 import com.wallpapermodule.WallpaperModulePackage;
+import com.fileexplorermodule.FileExplorerModulePackage;
 
 import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
 
-  private final ReactNativeHost mReactNativeHost =
-    new ReactNativeHostWrapper(this, new DefaultReactNativeHost(this) {
-      @Override
-      public boolean getUseDeveloperSupport() {
-        return BuildConfig.DEBUG;
-      }
+  private final ReactNativeHost mReactNativeHost = new ReactNativeHostWrapper(this, new DefaultReactNativeHost(this) {
+    @Override
+    public boolean getUseDeveloperSupport() {
+      return BuildConfig.DEBUG;
+    }
 
-      @Override
-      protected List<ReactPackage> getPackages() {
-        @SuppressWarnings("UnnecessaryLocalVariable")
-        List<ReactPackage> packages = new PackageList(this).getPackages();
-        packages.add(new CalendarModulePackage());
-        packages.add(new WallpaperModulePackage());
-        // Packages that cannot be autolinked yet can be added manually here, for example:
-        // packages.add(new MyReactNativePackage());
-        return packages;
-      }
+    @Override
+    protected List<ReactPackage> getPackages() {
+      @SuppressWarnings("UnnecessaryLocalVariable")
+      List<ReactPackage> packages = new PackageList(this).getPackages();
+      packages.add(new WallpaperModulePackage());
+      packages.add(new FileExplorerModulePackage());
+      // Packages that cannot be autolinked yet can be added manually here, for
+      // example:
+      // packages.add(new MyReactNativePackage());
+      return packages;
+    }
 
-      @Override
-      protected String getJSMainModuleName() {
-        return "index";
-      }
+    @Override
+    protected String getJSMainModuleName() {
+      return "index";
+    }
 
-      @Override
-      protected boolean isNewArchEnabled() {
-        return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
-      }
+    @Override
+    protected boolean isNewArchEnabled() {
+      return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
+    }
 
-      @Override
-      protected Boolean isHermesEnabled() {
-        return BuildConfig.IS_HERMES_ENABLED;
-      }
+    @Override
+    protected Boolean isHermesEnabled() {
+      return BuildConfig.IS_HERMES_ENABLED;
+    }
   });
 
   @Override
@@ -65,7 +66,8 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      // If you opted-in for the New Architecture, we load the native entry point for this app.
+      // If you opted-in for the New Architecture, we load the native entry point for
+      // this app.
       DefaultNewArchitectureEntryPoint.load();
     }
     ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());

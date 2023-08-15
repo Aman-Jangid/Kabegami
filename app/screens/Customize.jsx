@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Animated, Keyboard, StyleSheet, View } from "react-native";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import color from "../theme/colors";
@@ -12,12 +12,25 @@ import keys from "../keys";
 import TextCarousel from "../components/TextCarousel";
 import SavingChanges from "../components/SavingChanges";
 
+// if api key is not available and nsfw is selected then
+// show visual error "API-KEY is required to access nsfw wallpapers"
+
 const initialTags = ["hot", "anime", "cats", "cars", "nature"];
 
 const options = [
   { label: "Wallhaven.cc", value: "wallhaven" },
-  { label: "Unsplash.com", value: "unsplash" },
-  { label: "Pexels.com", value: "pexels" },
+  { label: "That's all for now...", value: "wallhaven" },
+];
+
+const purities = [
+  { title: "sfw", color: color.color5, text: color.color8, value: "100" },
+  {
+    title: "sketchy",
+    color: color.color11,
+    text: color.color8,
+    value: "010",
+  },
+  { title: "nsfw", color: color.color10, text: color.color8, value: "001" },
 ];
 
 export default function Customize() {
@@ -25,8 +38,18 @@ export default function Customize() {
   const [apiKey, setApiKey] = useState("");
   const [showLink, setShowLink] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [resolutions, setResolutions] = useState("");
+  const [animateHelpButton, setAnimateHelpButton] = useState(false);
+  const [selectedPurities, setSelectedPurities] = useState(["1", "0", "0"]);
+
   const toggleLink = () => {
     setShowLink(!showLink);
+    setAnimateHelpButton(false);
+  };
+
+  const getApiKeyAsync = async () => {
+    const data = await storage.getData(keys.API_KEY);
+    setApiKey(data);
   };
 
   const getTagsAsync = async () => {
@@ -34,15 +57,21 @@ export default function Customize() {
     setTags(data.join(","));
   };
 
-  const getApiKey = async () => {
-    // get api key
+  const getResolutionsAsync = async () => {
+    const data = await storage.getData(keys.RESOLUTIONS);
+    setResolutions(data);
+  };
+
+  const getPurityAsync = async () => {
+    const data = await storage.getData(keys.PURITY);
+    setSelectedPurities(data.split(""));
   };
 
   const getTagProps = async (tag) => {
     // fetch tag images
     try {
       const res = await fetch(
-        `https://wallhaven.cc/api/v1/search?q=${tag}&categories=111&sorting=random`
+        `https://wallhaven.cc/api/v1/search?q=${tag}&categories=111&purity=111&sorting=random`
       );
       const data = await res.json();
       return {
@@ -64,16 +93,75 @@ export default function Customize() {
     await storage.setData(keys.CATEGORIES, newTags);
   };
 
-  useEffect(() => {
-    getTagsAsync();
-  }, []);
+  const showHelp = () => {
+    setAnimateHelpButton(true);
+  };
 
   const setTagsAsync = async () => {
+    // const tagsAsync = await storage.getData(keys.TAGS);
+    const filteredTags = tags
+      .split(",")
+      .filter((tag) => tag)
+      .join(",");
+
+    setTags(filteredTags);
+
     await storage.setData(keys.TAGS, tags.split(","));
+
     getUserTags();
   };
 
-  const setApiKeyAsync = async () => {};
+  const setApiKeyAsync = async (value) => {
+    await storage.setData(keys.API_KEY, apiKey.trim());
+  };
+
+  const setPurityAsync = async () => {
+    await storage.setData(keys.PURITY, selectedPurities.join(""));
+  };
+
+  const setResolutionsAsync = async () => {
+    ``;
+    const filteredRes = resolutions
+      .split(",")
+      .filter((res) => res)
+      .join("");
+
+    await storage.setData(keys.RESOLUTIONS, resolutions);
+  };
+
+  const convertPuritiesToString = (purities) => {
+    const purity = ["0", "0", "0"];
+    if (purities.includes("s")) {
+      purity[0] = "1";
+      setSelectedPurities(purity);
+    }
+    if (purities.includes("sk")) {
+      purity[1] = "1";
+      setSelectedPurities(purity);
+    }
+    if (purities.includes("ns")) {
+      purity[2] = "1";
+      setSelectedPurities(purity);
+    }
+  };
+
+  const handleSelections = (value) => {
+    if (value.size > 0) {
+      const str = [];
+      value.forEach((num) => {
+        if (num[0] === "1") {
+          str.push("s");
+        }
+        if (num[1] === "1") {
+          str.push("sk");
+        }
+        if (num[2] === "1") {
+          str.push("ns");
+        }
+      });
+      convertPuritiesToString(str);
+    }
+  };
 
   const handleAPIkeyInput = (value) => {
     setApiKey(value);
@@ -83,22 +171,29 @@ export default function Customize() {
     setTags(value);
   };
 
+  const handleResolutionsInput = (value) => {
+    setResolutions(value);
+  };
+
   const handleConfirmation = () => {
     setSaving(true);
     setTagsAsync();
+    setApiKeyAsync();
+    setPurityAsync();
     setTimeout(() => {
       setSaving(false);
-    }, 1000);
-    // handle all the states and async storage variables
-    // store api key in secure storage
-    // store Api domain,tags and purity in async storage
+    }, 700);
+    Keyboard.dismiss();
   };
 
-  const purities = [
-    { title: "anime", color: color.color5, text: color.color8 },
-    { title: "general", color: color.color11, text: color.color8 },
-    { title: "people", color: color.color10, text: color.color8 },
-  ];
+  useEffect(() => {
+    getTagsAsync();
+    getApiKeyAsync();
+    getPurityAsync();
+    if (!apiKey) {
+      selectedPurities[2] === "0";
+    }
+  }, []);
 
   return (
     <Screen>
@@ -115,6 +210,7 @@ export default function Customize() {
           toggleLink={toggleLink}
           handleChange={handleAPIkeyInput}
           value={apiKey}
+          animate={animateHelpButton}
         />
         {showLink && (
           <LinkButton
@@ -132,13 +228,30 @@ export default function Customize() {
           value={tags}
           handleChange={handleTagsInput}
         />
-        <ButtonSelection options={purities} />
+        <Input
+          lines={2}
+          backgroundColor={color.color3}
+          color={color.color7}
+          placeholder="Resolutions in WIDTHxHEIGHT format (separate using , (comma) )"
+          placeholderColor={color.color5}
+          value={resolutions}
+          handleChange={handleResolutionsInput}
+        />
+        <ButtonSelection
+          KEY={keys.PURITY}
+          options={purities}
+          handleSelections={handleSelections}
+          numberOfSelectable={purities.length}
+          dependency={apiKey}
+          showHelp={showHelp}
+        />
         <Button
           title="confirm"
           color={color.color10}
           textColor={color.white}
           width="80%"
           onPress={handleConfirmation}
+          disabled={saving}
         />
       </View>
       {saving && <SavingChanges />}

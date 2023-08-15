@@ -1,20 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import Button from "../components/Button";
+import { useNavigation } from "@react-navigation/native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 import color from "../theme/colors";
 import createURL from "../api/createURL";
-import { useNavigation } from "@react-navigation/native";
-import ImageFlatList from "../components/ImageFlatList";
 import getWallpapers from "../api/getWallpapers";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import Screen from "./Screen";
-import Loading from "../components/Loading";
 import storage from "../services/storage";
 import keys from "../keys";
+
+import Screen from "./Screen";
+import Loading from "../components/Loading";
+import ImageFlatList from "../components/ImageFlatList";
 import SearchBar from "../components/SearchBar";
 import TextFlatlist from "../components/TextFlatlist";
+import IconButton from "../components/IconButton";
 
-export default function Home() {
+function Home() {
   const { navigate } = useNavigation();
   const [wallpapers, setWallpapers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -23,122 +25,105 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [end, setEnd] = useState(false);
   const [query, setQuery] = useState(null);
+  // const [purity, setPurity] = useState(null);
 
-  const getData = async () => {
-    const searches = await storage.getData(keys.RECENT_SEARCHES);
-
-    if (!searches) setRecentSearches([]);
-    else setRecentSearches(searches);
-    console.log(searches);
+  // get every time there's a change in recentSearches state variable
+  const getRecentSearches = async () => {
+    const value = await storage.getData(keys.RECENT_SEARCHES);
+    setRecentSearches(value);
   };
 
-  const setData = async () => {
+  // set every time there's a change in recentSearches state variable
+  const setRecentSearchesToStorage = async () => {
     await storage.setData(keys.RECENT_SEARCHES, recentSearches);
   };
 
-  const deleteData = async () => {
-    await storage.setData(keys.RECENT_SEARCHES, []);
+  // get on component mount
+  // const getApiConfiguration = async () => {
+  //   const value = await storage.getData(keys.PURITY);
+  //   setPurity(value);
+  // };
+
+  const handleRecentSearches = (query) => {
+    if (recentSearches.includes(query)) {
+      const searches = [...recentSearches];
+      const index = searches.findIndex((search) => search === query);
+      searches.splice(index, 1);
+      searches.unshift(query);
+      setRecentSearches(searches);
+    } else {
+      setRecentSearches((prevSearches) => [query, ...prevSearches]);
+    }
   };
 
-  useEffect(() => {
-    getData();
-  }, []);
+  const search = async (searchTerm) => {
+    const url = await createURL.createURL({
+      q: query || searchTerm,
+      sorting: "random",
+      top: true,
+      categories: "111",
+      page: currentPage,
+    });
 
-  useEffect(() => {
-    setData();
-  }, [recentSearches]);
+    const data = await getWallpapers(url);
+    return data;
+  };
 
-  const initiateSearch = async (term) => {
+  const initiateSearch = async (searchTerm) => {
     setSearching(true);
-    setWallpapers([]);
 
-    if (!query) setQuery(term);
+    handleRecentSearches(searchTerm);
+    const data = await search(searchTerm);
+    setWallpapers(data);
 
-    if (recentSearches.includes(term)) {
-      setRecentSearches((prevSearches) => {
-        const newSearchArray = [...prevSearches];
-        const index = newSearchArray.findIndex((value) => value === term);
-        newSearchArray.splice(index, 1);
-        newSearchArray.unshift(term);
-        return newSearchArray;
-      });
-    }
-
-    if (!recentSearches.includes(term)) {
-      setRecentSearches((prevSearches) => {
-        const newSearchArray = [...prevSearches];
-        newSearchArray.unshift(term);
-        return newSearchArray;
-      });
-    }
-
-    const url = createURL.createURL({
-      q: term,
-      sorting: "random",
-      top: true,
-      purity: "100",
-      categories: "111",
-      page: currentPage,
-    });
-
-    try {
-      const response = await getWallpapers(url);
-      setWallpapers(response);
-      console.log("Fetched data successfully.");
-      setSearching(false);
-    } catch (error) {
-      console.log("Failed to fetch data", error);
-      setSearching(false);
-    }
+    setSearching(false);
   };
 
-  const loadMore = async (term) => {
+  const getMoreResults = async () => {
     setLoading(true);
-    if (!query) setQuery(term);
 
-    const url = createURL.createURL({
-      q: term,
-      sorting: "random",
-      top: true,
-      purity: "100",
-      categories: "111",
-      page: currentPage,
-    });
+    setCurrentPage((prevPage) => prevPage + 1);
+    const newData = await search();
+    // append new wallpapers
+    setWallpapers([...wallpapers, ...newData]);
 
-    try {
-      const response = await getWallpapers(url);
-      setEnd(response.length === 0);
-      setWallpapers([...wallpapers, ...response]);
-      console.log("Fetched data successfully.");
-      setLoading(false);
-    } catch (error) {
-      console.log("Failed to fetch data", error);
-      setLoading(false);
-    }
+    setLoading(false);
+  };
+
+  const handleSearch = (value) => {
+    setQuery(value);
+    initiateSearch(value);
   };
 
   const handleScrollEnd = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-    loadMore(query);
-  };
-
-  const emptySearchList = () => {
-    setRecentSearches([]);
-    deleteData();
+    getMoreResults();
   };
 
   const handleGoBack = () => {
     setWallpapers([]);
-    setQuery(null);
     setLoading(false);
     setSearching(false);
+    setCurrentPage(1);
+    setEnd(false);
+    setQuery("");
+    navigate("HomeStack");
   };
 
-  const handleSearch = (term) => {
-    setCurrentPage(1);
-    setSearching(true);
-    initiateSearch(term);
+  const handleEmptyList = () => {
+    setRecentSearches([]);
   };
+
+  // on component mount
+  useEffect(() => {
+    getRecentSearches();
+
+    // getApiConfiguration();
+  }, []);
+
+  // on search
+  useEffect(() => {
+    setRecentSearchesToStorage();
+  }, [recentSearches]);
 
   return (
     <Screen>
@@ -166,26 +151,35 @@ export default function Home() {
             <>
               <TextFlatlist
                 data={recentSearches}
-                handlePress={initiateSearch}
-                handleEmpty={emptySearchList}
+                handlePress={handleSearch}
+                handleEmpty={handleEmptyList}
                 icon="enter"
                 pack="ADI"
                 title={"Recent searches"}
               />
-              <Button
-                title="settings"
-                onPress={() => navigate("Settings")}
-                color={color.color4}
-                textColor={color.color8}
-                width="80%"
-              />
-              <Button
-                title="configure api"
-                onPress={() => navigate("Customize")}
-                color={color.color4}
-                textColor={color.color8}
-                width="80%"
-              />
+              <View style={styles.settings}>
+                <IconButton
+                  name={"settings-sharp"}
+                  iconPack={"II"}
+                  onPress={() => navigate("Settings")}
+                  color={color.color9}
+                  size={34}
+                />
+                <IconButton
+                  size={32}
+                  name={"api"}
+                  iconPack={"MCI"}
+                  onPress={() => navigate("Customize")}
+                  color={color.colorPrimary}
+                  style={{
+                    paddingHorizontal: 0.1,
+                    paddingVertical: 0.1,
+                    borderRadius: 50,
+                    textAlign: "center",
+                    backgroundColor: color.color9,
+                  }}
+                />
+              </View>
             </>
           )}
         </View>
@@ -201,4 +195,15 @@ const styles = StyleSheet.create({
     backgroundColor: color.colorPrimary,
     gap: 10,
   },
+  settings: {
+    position: "absolute",
+    bottom: 18,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    width: 100,
+    right: 5,
+  },
 });
+
+export default memo(Home);

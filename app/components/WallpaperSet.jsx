@@ -3,7 +3,9 @@ import { StyleSheet, View, Animated, PanResponder } from "react-native";
 import IconButton from "./IconButton";
 import color from "../theme/colors";
 
-import setWallpaper from "../services/setWallpaper";
+import { useAsyncContext } from "../context/AsyncContext";
+
+import setWallpaper, { setLocalWallpaper } from "../services/setWallpaper";
 import downloadImage from "../services/downloadImage";
 import DismissGesture from "./DismissGesture";
 import LoadCursor from "./LoadCursor";
@@ -13,8 +15,10 @@ export default function WallpaperSet({
   hideDownload,
   marginBottom = 90,
   handleShowOptions,
+  local = false,
 }) {
   const [processing, setProcessing] = useState(false);
+  const { downloading, setDownloading } = useAsyncContext();
 
   const round = {
     borderRadius: 50,
@@ -49,8 +53,18 @@ export default function WallpaperSet({
 
   const wallpaperSetter = async (url, screen) => {
     setProcessing(true);
-    await setWallpaper(url, screen);
+    local
+      ? await setLocalWallpaper(url, screen)
+      : await setWallpaper(url, screen);
     setProcessing(false);
+  };
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    await downloadImage(imageUrl);
+    setTimeout(() => {
+      setDownloading(false);
+    }, 1000);
   };
 
   return (
@@ -90,7 +104,7 @@ export default function WallpaperSet({
               size={40}
               iconPack="MI"
               style={round}
-              onPress={() => downloadImage(imageUrl)}
+              onPress={handleDownload}
             />
           )}
         </View>

@@ -9,10 +9,21 @@ export default function TouchableListItem({
   icon = true,
   iconName,
   iconPack,
+  subText,
+  background,
+  textColor,
 }) {
   return (
-    <TouchableOpacity style={styles.touchable} onPress={handlePress}>
-      <Text style={styles.text}>{text}</Text>
+    <TouchableOpacity
+      style={[
+        styles.touchable,
+        { backgroundColor: background || color.color2 },
+      ]}
+      onPress={handlePress}
+    >
+      <Text style={[styles.text, { color: textColor || color.color6 }]}>
+        {text}
+      </Text>
       {icon ? (
         <Icon
           name={iconName}
@@ -22,8 +33,13 @@ export default function TouchableListItem({
         />
       ) : (
         <View style={styles.subTextContainer}>
-          <Text style={styles.subText}>20</Text>
-          <Icon name="image" iconPack="II" color={color.color10} size={20} />
+          <Text style={{ color: textColor || color.color10 }}>{subText}</Text>
+          <Icon
+            name="image"
+            iconPack="II"
+            color={textColor || color.color10}
+            size={20}
+          />
         </View>
       )}
     </TouchableOpacity>
@@ -33,7 +49,6 @@ const styles = StyleSheet.create({
   touchable: {
     width: 330,
     flexDirection: "row",
-    backgroundColor: color.color2,
     width: "100%",
     paddingVertical: 5,
     paddingHorizontal: 10,
@@ -41,7 +56,6 @@ const styles = StyleSheet.create({
   text: {
     flex: 1,
     letterSpacing: 1.3,
-    color: color.color6,
     alignSelf: "center",
     fontSize: 17,
   },
@@ -50,8 +64,5 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     flexDirection: "row",
     gap: 2,
-  },
-  subText: {
-    color: color.color10,
   },
 });
