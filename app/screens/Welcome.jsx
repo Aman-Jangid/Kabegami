@@ -7,8 +7,9 @@ import Screen from "./Screen";
 import { StatusBar } from "expo-status-bar";
 import storage from "../services/storage";
 import keys from "../keys";
+import ManageStorage from "../services/ManageStorage";
 
-export default function Welcome({ hideWelcome }) {
+export default function Welcome({ navigation }) {
   // initialize async storage pairs
   const initializeAsyncStorage = async () => {
     const likedImagesExist = await storage.getData(keys.LIKED_IMAGES);
@@ -48,8 +49,22 @@ export default function Welcome({ hideWelcome }) {
   };
 
   useEffect(() => {
+    (async () => {
+      await ManageStorage.renameFolder(
+        await storage.getData(keys.CURRENT_DOWNLOADS_PATH)
+      );
+    })();
+
     initializeAsyncStorage();
   }, []);
+
+  const handleConfirm = async () => {
+    const downloadPath = await storage.getData(keys.CURRENT_DOWNLOADS_PATH);
+
+    if (downloadPath) {
+      navigation.navigate("App");
+    }
+  };
 
   return (
     <Screen>
@@ -70,7 +85,7 @@ export default function Welcome({ hideWelcome }) {
             title="continue"
             color={color.color10}
             textColor={color.white}
-            onPress={hideWelcome}
+            onPress={() => handleConfirm()}
             width={380}
           />
         </View>

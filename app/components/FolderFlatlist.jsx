@@ -22,6 +22,7 @@ export default function FolderFlatlist({ data, handleAdd, onItemPress }) {
               quantity={item.numberOfImages}
               collection
               onPress={() => onItemPress(item)}
+              onLongPress={() => console.log("longPressed")}
               position={item?.imagePosition}
             />
           );

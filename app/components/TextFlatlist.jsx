@@ -13,6 +13,7 @@ export default function TextFlatlist({
   title,
   handlePress,
   handleEmpty,
+  handleRemove,
 }) {
   return (
     <FlatList
@@ -25,6 +26,7 @@ export default function TextFlatlist({
           icon={true}
           iconName={icon}
           iconPack={pack}
+          removeItem={handleRemove}
         />
       )}
       keyExtractor={() => uuid.v4()}

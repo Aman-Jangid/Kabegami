@@ -29,8 +29,6 @@ const createURL = async (
 
   const url = prefix + suffix.join("");
 
-  console.log(url);
-
   return url;
 };
 

@@ -38,12 +38,6 @@ function Home() {
     await storage.setData(keys.RECENT_SEARCHES, recentSearches);
   };
 
-  // get on component mount
-  // const getApiConfiguration = async () => {
-  //   const value = await storage.getData(keys.PURITY);
-  //   setPurity(value);
-  // };
-
   const handleRecentSearches = (query) => {
     if (recentSearches.includes(query)) {
       const searches = [...recentSearches];
@@ -65,6 +59,8 @@ function Home() {
       page: currentPage,
     });
 
+    console.log(url);
+
     const data = await getWallpapers(url);
     return data;
   };
@@ -73,6 +69,7 @@ function Home() {
     setSearching(true);
 
     handleRecentSearches(searchTerm);
+
     const data = await search(searchTerm);
     setWallpapers(data);
 
@@ -91,6 +88,7 @@ function Home() {
   };
 
   const handleSearch = (value) => {
+    setWallpapers([]);
     setQuery(value);
     initiateSearch(value);
   };
@@ -113,11 +111,14 @@ function Home() {
     setRecentSearches([]);
   };
 
+  const handleRemove = (item) => {
+    const filteredSearches = recentSearches.filter((search) => search !== item);
+    setRecentSearches(filteredSearches);
+  };
+
   // on component mount
   useEffect(() => {
     getRecentSearches();
-
-    // getApiConfiguration();
   }, []);
 
   // on search
@@ -152,6 +153,7 @@ function Home() {
               <TextFlatlist
                 data={recentSearches}
                 handlePress={handleSearch}
+                handleRemove={handleRemove}
                 handleEmpty={handleEmptyList}
                 icon="enter"
                 pack="ADI"

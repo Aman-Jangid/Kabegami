@@ -48,6 +48,39 @@ const createSubFolder = async (childName, parentPath) => {
   return folderPath.uri;
 };
 
+const renameFolder = async (path, newName) => {
+  try {
+    // await RNFS.moveFile(path, path + "/storage/emulated/0/Kabegami/" + newName);
+    // await fs.mv(
+    //   path,
+    //   path
+    //     .split("/")
+    //     .splice(0, path.split("/").length - 1)
+    //     .join("/") +
+    //     "/" +
+    //     newName
+    // );
+
+    // const res = await ScopedStorage.getPersistedUriPermissions(path);
+    // console.log(res);
+
+    // const info = await ScopedStorage.stat(
+    //   "content://com.android.externalstorage.documents/tree/primary%3ADownload"
+    // );
+
+    const files = await RNFS.readDir(RNFS.DownloadDirectoryPath);
+    console.log(files);
+
+    // console.log(info);
+  } catch (err) {
+    console.log(
+      "failed to rename the folder at ",
+      path + " to " + newName + "-error-",
+      err
+    );
+  }
+};
+
 const getPaths = async () => {};
 
 export default {
@@ -57,4 +90,5 @@ export default {
   checkDirectoryExistence,
   createSubFolder,
   selectLocalDirectory,
+  renameFolder,
 };

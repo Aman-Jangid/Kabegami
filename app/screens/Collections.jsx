@@ -9,14 +9,23 @@ import CollectionCreator from "../components/CollectionCreator";
 import FolderFlatlist from "../components/FolderFlatlist";
 import IconButton from "../components/IconButton";
 import folderInfo from "../services/folderInfo";
+import { useIsFocused } from "@react-navigation/native";
+import TimeSetter from "../components/TimeSetter";
 
 export default function Collections({ navigation }) {
   const [collections, setCollections] = useState([
     { id: 0, title: "add_new_collection" },
   ]);
+
+  const [showTimeSetter, setShowTimeSetter] = useState(false);
   const [showCreator, setShowCreator] = useState(false);
   const [syncNow, setSyncNow] = useState(false);
-  const [foldersContent, setFoldersContent] = useState([]);
+  const [selected, setSelected] = useState([]);
+  const [time, setTime] = useState("");
+
+  const setTimerAsync = async () => {
+    await storage.setData(keys.TIME, time);
+  };
 
   const setCollectionNamesAsync = async () => {
     const collectionNames = collections
@@ -46,6 +55,15 @@ export default function Collections({ navigation }) {
       // setCollections(data);
       await getCollectionsContent(data);
     }
+  };
+
+  const getTimer = async () => {
+    const value = await storage.getData(keys.TIME);
+    setTime(value);
+  };
+
+  const openTimeSetter = () => {
+    setShowTimeSetter(!showTimeSetter);
   };
 
   const setCollectionsAsync = async () => {
@@ -100,8 +118,6 @@ export default function Collections({ navigation }) {
     // await storage.setData(keys.COLLECTIONS_PATH,paths)
 
     setCollections(collectionsArr);
-
-    setFoldersContent(filteredData);
   };
 
   const handlePress = async (item) => {
@@ -110,7 +126,8 @@ export default function Collections({ navigation }) {
     const path = parentPath + "/" + item.title;
 
     const folderItems = await folderInfo.get(path);
-    // navigation.navigate("CollectionContents", { items: folderItems });
+    // console.log(folderItems);
+    navigation.navigate("CollectionContents", { items: folderItems });
   };
 
   useEffect(() => {
@@ -131,6 +148,12 @@ export default function Collections({ navigation }) {
     setCollectionNamesAsync();
   }, [collections]);
 
+  // const isFocused =  useIsFocused()
+
+  // useEffect(()=>{
+
+  // },[])
+
   return (
     <Screen>
       <View style={styles.container}>
@@ -140,13 +163,32 @@ export default function Collections({ navigation }) {
             handleConfirm={handleConfirm}
           />
         )}
+        {showTimeSetter && <TimeSetter />}
         <View style={styles.header}>
           <BackButton goTo="Favorites" />
+          <IconButton
+            name="slideshow"
+            color={color.color9}
+            iconPack="MI"
+            size={28}
+            style={{ marginHorizontal: 5 }}
+            onPress={() => console.log("set image slideshow")}
+            disabled
+            disabledColor={color.color4}
+          />
+          <IconButton
+            name="timer-outline"
+            color={color.color9}
+            iconPack="II"
+            size={28}
+            style={{ marginHorizontal: 5 }}
+            onPress={openTimeSetter}
+          />
           <IconButton
             name="delete"
             color={color.color9}
             iconPack="ADI"
-            size={28}
+            size={27}
             style={{ marginHorizontal: 5 }}
             onPress={handleEmpty}
           />

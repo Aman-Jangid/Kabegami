@@ -6,11 +6,6 @@ import BackButton from "../components/BackButton";
 import color from "../theme/colors";
 
 export default function CollectionContents({ route }) {
-  const [dir, setDir] = useState([]);
-
-  // useEffect(() => {
-  //   setDir([route.params.path]);
-  // }, []);
   return (
     <Screen>
       <View style={styles.container}>

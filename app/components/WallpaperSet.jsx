@@ -9,6 +9,7 @@ import setWallpaper, { setLocalWallpaper } from "../services/setWallpaper";
 import downloadImage from "../services/downloadImage";
 import DismissGesture from "./DismissGesture";
 import LoadCursor from "./LoadCursor";
+import RNFetchBlob from "rn-fetch-blob";
 
 export default function WallpaperSet({
   imageUrl,
@@ -51,10 +52,16 @@ export default function WallpaperSet({
     outputRange: [0, -100],
   });
 
+  const setLocalImageAsWallpaper = async (uri, screen) => {
+    const base64Image = await RNFetchBlob.fs.readFile(uri, "base64");
+
+    await setLocalWallpaper(base64Image, screen);
+  };
+
   const wallpaperSetter = async (url, screen) => {
     setProcessing(true);
     local
-      ? await setLocalWallpaper(url, screen)
+      ? setLocalImageAsWallpaper(url, screen)
       : await setWallpaper(url, screen);
     setProcessing(false);
   };

@@ -31,6 +31,7 @@ export default function Categories({ selectedCategory, selectCategory }) {
             if (item) {
               return (
                 <ImageButton
+                  imageHeight={50}
                   title={item.title}
                   active={selectedCategory === item.value}
                   uri={item.background}

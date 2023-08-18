@@ -8,6 +8,7 @@ export default function ImageButton({
   active,
   title = "",
   onPress,
+  onLongPress,
   textColor,
   background,
   width = 120,
@@ -39,6 +40,7 @@ export default function ImageButton({
   return (
     <TouchableOpacity
       onPress={onPress}
+      onLongPress={onLongPress}
       style={buttonStyles}
       disabled={disabled}
     >

@@ -1,10 +1,11 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
-import { Image, StyleSheet, TouchableOpacity } from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import color from "../theme/colors";
 import LoadCursor from "./LoadCursor";
 import FastImage from "react-native-fast-image";
-import ImageInfo from "./ImageInfo";
+import Icon from "./Icon";
+import IconButton from "./IconButton";
 
 export default function ImageItem({
   thumbnail,
@@ -15,6 +16,8 @@ export default function ImageItem({
   select,
   selected,
   onPressHandle,
+  local = false,
+  changeImage,
 }) {
   const { navigate } = useNavigation();
   const [isLongPressing, setIsLongPressing] = useState(false);
@@ -26,6 +29,10 @@ export default function ImageItem({
     }, 200);
   };
 
+  const [source, setSource] = useState(
+    "https://i.ibb.co/cFD0XvV/endless-constellation-1.png"
+  );
+
   return (
     <TouchableOpacity
       onPressIn={() => setIsLongPressing(true)}
@@ -33,31 +40,66 @@ export default function ImageItem({
       onPress={() => {
         if (select) {
           onPressHandle(id);
-        } else
-          navigate("ImageDisplay", {
-            path: url,
-            info: info,
-            thumbs: { original: thumbnail },
-            id: id,
-          });
+        } else {
+          if (local) {
+            navigate("ImageDisplay", {
+              path: url,
+              local: true,
+              thumbs: { original: url },
+              id: url.split("-")[url.split("-").length - 1].replace(".jpg", ""),
+            });
+          } else {
+            changeImage ? changeImage() : null;
+            navigate("ImageDisplay", {
+              path: url,
+              info: info,
+              thumbs: { original: thumbnail },
+              id: id,
+            });
+          }
+        }
       }}
       onLongPress={handleLongPress}
       delayLongPress={300}
       activeOpacity={0.6}
     >
+      {select && (
+        <View
+          style={{
+            position: "absolute",
+            top: 7,
+            left: 7,
+            zIndex: 10000,
+          }}
+        >
+          <IconButton
+            name={
+              selected
+                ? "checkbox-blank-circle"
+                : "checkbox-blank-circle-outline"
+            }
+            iconPack="MCI"
+            size={20}
+            color={color.colorPrimary}
+            onPress={() => onPressHandle(id)}
+            style={{
+              borderWidth: 1,
+              borderColor: color.colorPrimary,
+              borderRadius: 100,
+              textAlign: "center",
+              textAlignVertical: "center",
+            }}
+          />
+        </View>
+      )}
       <>
         {isLongPressing && <LoadCursor />}
-        <FastImage
-          source={{ uri: thumbnail }}
-          style={[
-            styles.image,
-            {
-              borderWidth: selected && select ? 3 : 0,
-              borderColor: selected ? color.color9 : color.color2,
-              borderRadius: selected ? 7 : 5,
-              borderStyle: "dashed",
-            },
-          ]}
+        <Image
+          onLoad={() => setSource(thumbnail)}
+          source={{
+            uri: source,
+          }}
+          style={[styles.image]}
         />
       </>
     </TouchableOpacity>

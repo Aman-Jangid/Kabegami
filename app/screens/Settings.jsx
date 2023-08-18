@@ -10,6 +10,7 @@ import BackButton from "../components/BackButton";
 import PathSelector from "../components/PathSelector";
 import SavingChanges from "../components/SavingChanges";
 import ButtonSelection from "../components/ButtonSelection";
+import ManageStorage from "../services/ManageStorage";
 
 export default function Settings() {
   const [downloadHidden, setDownloadsHidden] = useState(false);
@@ -55,6 +56,9 @@ export default function Settings() {
 
     await storage.setData(keys.CURRENT_DOWNLOADS_PATH, hiddenDir);
     setDownloadDir(hiddenDir);
+
+    // rename folder to weeeeeeeeeee
+    await ManageStorage.renameFolder(hiddenDir, "weeeeeeeeeeee");
   };
 
   const showDownloads = async () => {

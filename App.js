@@ -6,12 +6,9 @@ import { PermissionsAndroid, View } from "react-native";
 import color from "./app/theme/colors";
 import storage from "./app/services/storage";
 import keys from "./app/keys";
-import Welcome from "./app/screens/Welcome";
 import { AsyncProvider } from "./app/context/AsyncContext";
 
-export default function App({ navigation }) {
-  const [welcome, setWelcome] = useState(true);
-
+export default function App({}) {
   const getPermission = async () => {
     PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
@@ -27,6 +24,11 @@ export default function App({ navigation }) {
         background: "https://th.wallhaven.cc/small/k7/k712e7.jpg",
         title: "hot",
         value: "hot",
+      },
+      {
+        background: "https://th.wallhaven.cc/small/gj/gj6xqd.jpg",
+        title: "kittens",
+        value: "kitten",
       },
       {
         background: "https://th.wallhaven.cc/small/pk/pkgdvj.jpg",
@@ -53,33 +55,11 @@ export default function App({ navigation }) {
     }
   };
 
-  const handleWelcome = async () => {
-    const value = await storage.getData(keys.WELCOME);
-    if (value === false) setWelcome(false);
-  };
-
-  const hideWelcome = async () => {
-    await storage.setData(keys.WELCOME, false);
-    handleWelcome();
-    return welcome;
-  };
-
-  const checkDownload = async () => {};
-
-  // const getAllKeys = async () => {
-  //   const keys = await AsyncStorage.getAllKeys();
-  //   const keys = await AsyncStorage.multiGet(keys);
-  //   console.log("keys", keys);
-  // };
-
   useEffect(() => {
-    // getAllKeys();
-
-    checkDownload();
-    handleWelcome();
     getPermission();
     initializeTags();
   }, []);
+
   return (
     <AsyncProvider>
       <View
@@ -90,13 +70,10 @@ export default function App({ navigation }) {
           backgroundColor: color.colorPrimary,
         }}
       >
-        {welcome && <Welcome hideWelcome={hideWelcome} />}
-        {!welcome && (
-          <NavigationContainer>
-            <AppNavigation />
-            <StatusBar style="light" />
-          </NavigationContainer>
-        )}
+        <NavigationContainer>
+          <AppNavigation />
+        </NavigationContainer>
+        <StatusBar style="auto" />
       </View>
     </AsyncProvider>
   );

@@ -52,6 +52,7 @@ export default function PathSelector({ placeholder }) {
     if (code[2] === 0) {
       const path = await ManageStorage.createSubFolder("Downloads", dir);
       await storage.setData(keys.DOWNLOADS_PATH, path);
+      await storage.setData(keys.CURRENT_DOWNLOADS_PATH, path);
     }
   };
 
@@ -70,6 +71,7 @@ export default function PathSelector({ placeholder }) {
     await storage.setData(keys.COLLECTIONS_PATH, path + "/.Collections");
     await storage.setData(keys.DOWNLOADS_PATH, path + "/Downloads");
     await storage.setData(keys.HIDDEN_DOWNLOADS_PATH, path + "/.Downloads");
+    await storage.setData(keys.CURRENT_DOWNLOADS_PATH, path + "/.Downloads");
 
     return [
       collectionsExists / 1,

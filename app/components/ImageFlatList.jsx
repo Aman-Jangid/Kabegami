@@ -15,6 +15,7 @@ const ImageFlatList = ({
   selections,
   setSelections,
   end,
+  changeImage,
 }) => {
   const [optionsVisible, setOptionsVisible] = useState(false);
   // const [selectedItems, setSelectedItems] = useState([]);
@@ -72,8 +73,9 @@ const ImageFlatList = ({
         onEndReached={handleScrollEnd}
         onEndReachedThreshold={0.8}
         numColumns={3}
-        style={{
-          alignSelf: "center",
+        contentContainerStyle={{
+          alignSelf: data?.length > 2 ? "center" : "flex-start",
+          paddingHorizontal: 10,
         }}
         data={data}
         renderItem={({ item }) => (
@@ -96,6 +98,7 @@ const ImageFlatList = ({
             select={select}
             selected={select && selections.includes(item.id)}
             onPressHandle={setSelections}
+            changeImage={changeImage}
           />
         )}
         keyExtractor={(item) => item.id}

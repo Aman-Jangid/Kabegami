@@ -17,14 +17,17 @@ export default function Downloaded() {
     const downloads = await storage.getData(keys.DOWNLOADS_PATH);
     const hiddenDownloads = await storage.getData(keys.HIDDEN_DOWNLOADS_PATH);
     getWallpapers([downloads, hiddenDownloads]);
+    // getWallpapers([directory]);
   };
 
   const getWallpapers = async (dirs) => {
-    const info = await Promise.all(
-      dirs.map(async (dir) => await folderInfo.get(dir))
-    );
-    console.log(info);
-    setData(info);
+    // const infoA = await Promise.all(
+    //   dirs.map(async (dir) => await folderInfo.get(dir))
+    // );
+    const infoA = await folderInfo.get(dirs[0]);
+    const infoB = await folderInfo.get(dirs[1]);
+
+    setData([...infoA, ...infoB]);
   };
 
   useEffect(() => {

@@ -49,9 +49,11 @@ export default function LocalImageFlatList({ scrollToTop, data }) {
         renderItem={({ item }) => (
           <ImageItem
             key={uuid.v4()}
+            local
             thumbnail={item.uri}
             url={item.uri}
             showOptions={() => handleShowOptions(item.uri)}
+            onPressHandle={() => console.log(item.url)}
           />
         )}
       />

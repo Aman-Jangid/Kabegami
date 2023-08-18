@@ -28,6 +28,7 @@ export default function ImageInfo({
 
   useEffect(() => {
     console.log("url changed...Fetching new tags.");
+    // resetLiked();
     fetchTags();
   }, [url]);
 

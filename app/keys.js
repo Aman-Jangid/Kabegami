@@ -16,4 +16,5 @@ export default keys = {
   CURRENT_DOWNLOADS_PATH: "CURRENT_DOWNLOADS_PATH", //string
   THEME: "THEME", //string
   RESOLUTIONS: "RESOLUTIONS", //array
+  TIME: "TIME",
 };

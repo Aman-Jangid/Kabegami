@@ -9,21 +9,25 @@ import keys from "../keys";
 import downloadImage from "../services/downloadImage";
 import ItemSeparator from "./ItemSeparator";
 
-export default function CollectionAccumulator({ hide }) {
+export default function CollectionAccumulator({ hide, imageUrl }) {
   const [collections, setCollections] = useState([]);
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useState(null);
 
   const handleSelection = (index) => {
     setSelected(index);
   };
 
   const handleConfirm = async () => {
+    if (selected === null) return;
+
     const collection = collections[selected];
     collection.quantity += 1;
 
     setCollections(
       (prevCollections) => (prevCollections[selected] = collection)
     );
+
+    await downloadImage(imageUrl, collections[selected].path);
 
     await storage.setData(keys.COLLECTION_NAMES, collections);
     hide();
@@ -47,7 +51,9 @@ export default function CollectionAccumulator({ hide }) {
           data={collections}
           renderItem={({ item, index }) => (
             <TouchableListItem
-              background={selected === index ? color.color4 : "transparent"}
+              background={
+                selected === index ? "rgba(0,0,0,0.2)" : "transparent"
+              }
               textColor={selected === index ? color.color18 : color.color8}
               text={item.title}
               icon={false}
@@ -60,14 +66,14 @@ export default function CollectionAccumulator({ hide }) {
         />
         <View style={styles.buttons}>
           <IconButton
-            color={color.color7}
+            color={color.color8}
             name="cancel"
             iconPack="MI"
             size={50}
             onPress={hide}
           />
           <IconButton
-            color={color.color7}
+            color={color.color8}
             name="check-circle"
             iconPack="MI"
             size={50}
@@ -88,7 +94,7 @@ const styles = StyleSheet.create({
     zIndex: 1001,
     width: 250,
     height: 250,
-    backgroundColor: color.color6,
+    backgroundColor: color.color19,
     alignItems: "center",
   },
   flatlist: {
@@ -98,7 +104,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 18,
-    alignSelf: "flex-start",
+    alignSelf: "center",
     fontWeight: "bold",
     color: color.color8,
     paddingVertical: 5,
@@ -106,7 +112,7 @@ const styles = StyleSheet.create({
   listContainer: {
     width: "100%",
     height: 205,
-    backgroundColor: "rgba(0,0,0,0.2)",
+    backgroundColor: "rgba(0,0,0,0.1)",
     alignSelf: "flex-start",
     borderRadius: 5,
     overflow: "hidden",
@@ -115,6 +121,6 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     flexDirection: "row",
     justifyContent: "space-evenly",
-    backgroundColor: color.color6,
+    backgroundColor: color.color19,
   },
 });

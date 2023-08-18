@@ -54,7 +54,9 @@ export default function Customize() {
 
   const getTagsAsync = async () => {
     const data = await storage.getData(keys.TAGS);
-    setTags(data.join(","));
+    if (data?.length > 0) {
+      setTags(data.join(","));
+    } else setTags("");
   };
 
   const getResolutionsAsync = async () => {
@@ -206,7 +208,7 @@ export default function Customize() {
           placeholder="API KEY"
           placeholderColor={color.color5}
           displayHelp={true}
-          iconColor={color.color4}
+          iconColor={animateHelpButton ? color.color10 : color.color4}
           toggleLink={toggleLink}
           handleChange={handleAPIkeyInput}
           value={apiKey}
@@ -223,7 +225,7 @@ export default function Customize() {
           lines={6}
           backgroundColor={color.color3}
           color={color.color7}
-          placeholder="Tags (separate using , (comma) )"
+          placeholder="Tags (separate using , comma )"
           placeholderColor={color.color5}
           value={tags}
           handleChange={handleTagsInput}
@@ -232,19 +234,19 @@ export default function Customize() {
           lines={2}
           backgroundColor={color.color3}
           color={color.color7}
-          placeholder="Resolutions in WIDTHxHEIGHT format (separate using , (comma) )"
+          placeholder="Resolutions eg.1080x1920 (separate using , comma )"
           placeholderColor={color.color5}
           value={resolutions}
           handleChange={handleResolutionsInput}
         />
-        <ButtonSelection
+        {/* <ButtonSelection
           KEY={keys.PURITY}
           options={purities}
           handleSelections={handleSelections}
           numberOfSelectable={purities.length}
           dependency={apiKey}
           showHelp={showHelp}
-        />
+        /> */}
         <Button
           title="confirm"
           color={color.color10}

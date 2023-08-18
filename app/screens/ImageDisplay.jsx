@@ -140,19 +140,23 @@ export default function ImageDisplay({}) {
       {optionsVisible && (
         <WallpaperSet
           imageUrl={route.params.path}
+          local={route.params.local}
           hideDownload
           optionsVisible={optionsVisible}
           handleShowOptions={() => setOptionsVisible(!optionsVisible)}
         />
       )}
-      {collectionsVisible && (
-        <CollectionAccumulator hide={() => setCollectionsVisible(false)} />
+      {collectionsVisible && !route.params.local && (
+        <CollectionAccumulator
+          hide={() => setCollectionsVisible(false)}
+          imageUrl={route.params.path}
+        />
       )}
       <ScrollableImage
         uri={route.params.path}
         onPress={() => setShowImageInfo(false)}
-        width={route.params.info.width}
-        height={route.params.info.height}
+        width={route.params.local ? 1920 : route.params.info.width}
+        height={route.params.local ? 1080 : route.params.info.height}
       />
       <View style={styles.gestureIndicator}>
         <IconButton
@@ -163,7 +167,7 @@ export default function ImageDisplay({}) {
           onPress={handleCloseViewer}
         />
       </View>
-      {showImageInfo && (
+      {showImageInfo && !route.params.local && (
         <View style={styles.info}>
           <ImageInfo
             tags={tags}
@@ -174,45 +178,55 @@ export default function ImageDisplay({}) {
             url={route.params.info.url}
             id={route.params.id}
             handleSearching={handleSearching}
+            resetLiked={() => setLiked(false)}
             fetchTags={async () => await getTags()}
           />
         </View>
       )}
       <View style={styles.buttons}>
-        <IconButton
-          name="collections"
-          iconPack="MI"
-          size={35}
-          color={color.color19}
-          style={buttonContainer}
-          onPress={() => setCollectionsVisible(!collectionsVisible)}
-        />
-        <IconButton
-          name="info"
-          iconPack="MI"
-          size={35}
-          color={color.color19}
-          style={buttonContainer}
-          onPress={() => setShowImageInfo(true)}
-        />
+        {!route.params.local && (
+          <IconButton
+            name="collections"
+            iconPack="MI"
+            size={35}
+            color={color.color19}
+            style={buttonContainer}
+            onPress={() => setCollectionsVisible(!collectionsVisible)}
+          />
+        )}
+        {!route.params.local && (
+          <IconButton
+            name="info"
+            iconPack="MI"
+            size={35}
+            color={color.color19}
+            style={buttonContainer}
+            onPress={() => setShowImageInfo(true)}
+          />
+        )}
         <Button
           title="set as wallpaper"
           color={color.color19}
           textColor={color.white}
           onPress={() => setOptionsVisible(!optionsVisible)}
         />
-        <IconButton
-          name={liked ? "heart" : "hearto"}
-          iconPack="ADI"
-          size={33}
-          style={buttonContainer}
-          color={color.color19}
-          onPress={() => setLiked(!liked)}
-        />
+        {!route.params.local && (
+          <IconButton
+            name={liked ? "heart" : "hearto"}
+            iconPack="ADI"
+            size={33}
+            style={buttonContainer}
+            color={color.color19}
+            onPress={() => setLiked(!liked)}
+          />
+        )}
       </View>
-      {showImageInfo && searching && (
+      {showImageInfo && searching && !route.params.local && (
         <View style={styles.search}>
-          <ImageFlatList data={wallpapers} />
+          <ImageFlatList
+            data={wallpapers}
+            changeImage={() => setLiked(false)}
+          />
           <IconButton
             name="times-circle"
             iconPack="FAI"
@@ -280,7 +294,7 @@ const styles = StyleSheet.create({
     zIndex: 10000,
     alignSelf: "center",
     top: 80,
-    width: "95%",
+    width: "98%",
     height: 420,
     backgroundColor: color.color4,
     borderRadius: 10,

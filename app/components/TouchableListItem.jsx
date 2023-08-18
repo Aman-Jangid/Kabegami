@@ -2,6 +2,8 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "./Icon";
 import color from "../theme/colors";
+import Clipboard from "@react-native-clipboard/clipboard";
+import IconButton from "./IconButton";
 
 export default function TouchableListItem({
   text,
@@ -12,9 +14,13 @@ export default function TouchableListItem({
   subText,
   background,
   textColor,
+  removeItem,
 }) {
   return (
     <TouchableOpacity
+      onLongPress={() => {
+        Clipboard.setString(text);
+      }}
       style={[
         styles.touchable,
         { backgroundColor: background || color.color2 },
@@ -25,12 +31,22 @@ export default function TouchableListItem({
         {text}
       </Text>
       {icon ? (
-        <Icon
-          name={iconName}
-          iconPack={iconPack}
-          size={20}
-          color={color.color6}
-        />
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Icon
+            name={iconName}
+            iconPack={iconPack}
+            size={20}
+            color={color.color6}
+          />
+          <IconButton
+            name={"x"}
+            iconPack={"FI"}
+            size={22}
+            color={color.color6}
+            style={{ paddingLeft: 3 }}
+            onPress={() => removeItem(text)}
+          />
+        </View>
       ) : (
         <View style={styles.subTextContainer}>
           <Text style={{ color: textColor || color.color10 }}>{subText}</Text>
