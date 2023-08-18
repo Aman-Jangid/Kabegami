@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
 import keys from "../keys";
-import color from "../theme/colors";
+import color, { switchToDarkMode, switchToLightMode } from "../theme/colors";
 import storage from "../services/storage";
 import Screen from "./Screen";
 import Button from "../components/Button";
@@ -43,8 +43,10 @@ export default function Settings() {
 
   const handleThemeChange = async () => {
     if (darkMode) {
+      switchToDarkMode();
       await storage.setData(keys.THEME, "dark");
     } else {
+      switchToLightMode();
       await storage.setData(keys.THEME, "light");
     }
   };

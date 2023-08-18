@@ -24,6 +24,8 @@ export default function FlatlistHeader({
 }
 const styles = StyleSheet.create({
   container: {
+    marginTop: 10,
+    width: "90%",
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 2,

@@ -3,16 +3,14 @@ import { FlatList, StyleSheet } from "react-native";
 import uuid from "react-native-uuid";
 
 import TouchableListItem from "./TouchableListItem";
-import FlatlistHeader from "./FlatlistHeader";
 import ItemSeparator from "./ItemSeparator";
+import color from "../theme/colors";
 
 export default function TextFlatlist({
   data,
   icon,
   pack,
-  title,
   handlePress,
-  handleEmpty,
   handleRemove,
 }) {
   return (
@@ -30,10 +28,7 @@ export default function TextFlatlist({
         />
       )}
       keyExtractor={() => uuid.v4()}
-      ItemSeparatorComponent={<ItemSeparator />}
-      ListHeaderComponent={
-        <FlatlistHeader title={title} onPress={handleEmpty} />
-      }
+      ItemSeparatorComponent={<ItemSeparator color={color.colorPrimary} />}
       ListHeaderComponentStyle={{
         width: "100%",
         height: 40,

@@ -15,6 +15,7 @@ export default SavedTab = () => {
           paddingTop: 20,
           width: "100%",
           justifyContent: "center",
+          shadowColor: "transparent",
           backgroundColor: color.colorPrimary,
         },
         tabBarShowLabel: false,

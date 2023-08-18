@@ -15,6 +15,7 @@ import ImageFlatList from "../components/ImageFlatList";
 import SearchBar from "../components/SearchBar";
 import TextFlatlist from "../components/TextFlatlist";
 import IconButton from "../components/IconButton";
+import FlatlistHeader from "../components/FlatlistHeader";
 
 function Home() {
   const { navigate } = useNavigation();
@@ -52,14 +53,12 @@ function Home() {
 
   const search = async (searchTerm) => {
     const url = await createURL.createURL({
-      q: query || searchTerm,
+      q: searchTerm || query,
       sorting: "random",
       top: true,
       categories: "111",
       page: currentPage,
     });
-
-    console.log(url);
 
     const data = await getWallpapers(url);
     return data;
@@ -150,11 +149,14 @@ function Home() {
           )}
           {!query && (
             <>
+              <FlatlistHeader
+                title={"Recent Searches"}
+                onPress={handleEmptyList}
+              />
               <TextFlatlist
                 data={recentSearches}
                 handlePress={handleSearch}
                 handleRemove={handleRemove}
-                handleEmpty={handleEmptyList}
                 icon="enter"
                 pack="ADI"
                 title={"Recent searches"}
