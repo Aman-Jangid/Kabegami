@@ -3,9 +3,25 @@ import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
 import uuid from "react-native-uuid";
 import ImageButton from "./ImageButton";
 import Icon from "./Icon";
-import color from "../theme/colors";
 
-export default function FolderFlatlist({ data, handleAdd, onItemPress }) {
+export default function FolderFlatlist({
+  data,
+  color,
+  handleAdd,
+  onItemPress,
+}) {
+  const styles = StyleSheet.create({
+    addCollection: {
+      flex: 1,
+      borderRadius: 10,
+      margin: 5,
+      height: 100,
+      backgroundColor: color.color4,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+  });
+
   return (
     <FlatList
       data={data}
@@ -36,14 +52,3 @@ export default function FolderFlatlist({ data, handleAdd, onItemPress }) {
     />
   );
 }
-const styles = StyleSheet.create({
-  addCollection: {
-    flex: 1,
-    borderRadius: 10,
-    margin: 5,
-    height: 100,
-    backgroundColor: color.color4,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

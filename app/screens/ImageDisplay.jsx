@@ -1,9 +1,8 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Button from "../components/Button";
 import IconButton from "../components/IconButton";
-import color from "../theme/colors";
 import WallpaperSet from "../components/WallpaperSet";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import storage from "../services/storage";
@@ -14,6 +13,7 @@ import ImageInfo from "../components/ImageInfo";
 import getWallpapers, { getWallpaperInfo } from "../api/getWallpapers";
 import createURL from "../api/createURL";
 import ImageFlatList from "../components/ImageFlatList";
+import ThemeContext from "../theme/ThemeContext";
 
 // transform this into an scrollable like Categories.jsx
 
@@ -27,6 +27,60 @@ export default function ImageDisplay({}) {
   const [query, setQuery] = useState("");
   const [wallpapers, setWallpapers] = useState([]);
   const [collectionsVisible, setCollectionsVisible] = useState(false);
+
+  const { color } = useContext(ThemeContext);
+
+  const styles = StyleSheet.create({
+    container: {
+      width: "100%",
+      height: "100%",
+    },
+    gestureIndicator: {
+      position: "absolute",
+      backgroundColor: "rgba(0,0,0,0.15)",
+      top: -10,
+      paddingTop: 30,
+      paddingHorizontal: 5,
+      borderRadius: 10,
+      alignSelf: "center",
+    },
+    image: {
+      width: "100%",
+      height: "100%",
+      flex: 1,
+    },
+    buttons: {
+      position: "absolute",
+      flexDirection: "row",
+      alignItems: "center",
+      bottom: 20,
+      gap: 5,
+      alignSelf: "center",
+      backgroundColor: "rgba(255,255,255,0.05)",
+      borderRadius: 20,
+      paddingVertical: 5,
+      paddingHorizontal: 10,
+    },
+    info: {
+      position: "absolute",
+      bottom: 0,
+      alignSelf: "center",
+      width: "100%",
+      overflow: "hidden",
+      zIndex: 2000,
+      borderRadius: 15,
+    },
+    search: {
+      position: "absolute",
+      zIndex: 10000,
+      alignSelf: "center",
+      top: 80,
+      width: "98%",
+      height: 420,
+      backgroundColor: color.color4,
+      borderRadius: 10,
+    },
+  });
 
   const { goBack, isFocused } = useNavigation();
   const route = useRoute();
@@ -148,6 +202,7 @@ export default function ImageDisplay({}) {
       )}
       {collectionsVisible && !route.params.local && (
         <CollectionAccumulator
+          color={color}
           hide={() => setCollectionsVisible(false)}
           imageUrl={route.params.path}
         />
@@ -170,6 +225,7 @@ export default function ImageDisplay({}) {
       {showImageInfo && !route.params.local && (
         <View style={styles.info}>
           <ImageInfo
+            color={color}
             tags={tags}
             colors={route.params.info.colors}
             category={route.params.info.category}
@@ -248,55 +304,3 @@ export default function ImageDisplay({}) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    height: "100%",
-  },
-  gestureIndicator: {
-    position: "absolute",
-    backgroundColor: "rgba(0,0,0,0.15)",
-    top: -10,
-    paddingTop: 30,
-    paddingHorizontal: 5,
-    borderRadius: 10,
-    alignSelf: "center",
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    flex: 1,
-  },
-  buttons: {
-    position: "absolute",
-    flexDirection: "row",
-    alignItems: "center",
-    bottom: 20,
-    gap: 5,
-    alignSelf: "center",
-    backgroundColor: "rgba(255,255,255,0.05)",
-    borderRadius: 20,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-  },
-  info: {
-    position: "absolute",
-    bottom: 0,
-    alignSelf: "center",
-    width: "100%",
-    overflow: "hidden",
-    zIndex: 2000,
-    borderRadius: 15,
-  },
-  search: {
-    position: "absolute",
-    zIndex: 10000,
-    alignSelf: "center",
-    top: 80,
-    width: "98%",
-    height: 420,
-    backgroundColor: color.color4,
-    borderRadius: 10,
-  },
-});

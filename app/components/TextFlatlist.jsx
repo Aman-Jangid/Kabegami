@@ -4,7 +4,6 @@ import uuid from "react-native-uuid";
 
 import TouchableListItem from "./TouchableListItem";
 import ItemSeparator from "./ItemSeparator";
-import color from "../theme/colors";
 
 export default function TextFlatlist({
   data,
@@ -12,7 +11,18 @@ export default function TextFlatlist({
   pack,
   handlePress,
   handleRemove,
+  color,
 }) {
+  const styles = StyleSheet.create({
+    container: {
+      width: "90%",
+      maxHeight: 250,
+      borderRadius: 20,
+      overflow: "hidden",
+      marginBottom: 30,
+    },
+  });
+
   return (
     <FlatList
       data={data}
@@ -20,6 +30,7 @@ export default function TextFlatlist({
       renderItem={({ item }) => (
         <TouchableListItem
           text={item}
+          color={color}
           handlePress={() => handlePress(item)}
           icon={true}
           iconName={icon}
@@ -38,12 +49,3 @@ export default function TextFlatlist({
     />
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    width: "90%",
-    maxHeight: 250,
-    borderRadius: 20,
-    overflow: "hidden",
-    marginBottom: 30,
-  },
-});

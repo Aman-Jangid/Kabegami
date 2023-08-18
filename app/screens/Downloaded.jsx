@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Screen from "./Screen";
 import LocalImageFlatList from "../components/LocalImageFlatList";
@@ -7,11 +7,14 @@ import RNFetchBlob from "rn-fetch-blob";
 import storage from "../services/storage";
 import { useIsFocused } from "@react-navigation/native";
 import folderInfo from "../services/folderInfo";
+import ThemeContext from "../theme/ThemeContext";
 
 export default function Downloaded() {
   const [data, setData] = useState([]);
   const isFocused = useIsFocused();
   const directory = RNFetchBlob.fs.dirs.DownloadDir;
+
+  const { color } = useContext(ThemeContext);
 
   const getDir = async () => {
     const downloads = await storage.getData(keys.DOWNLOADS_PATH);
@@ -37,7 +40,7 @@ export default function Downloaded() {
   return (
     <Screen>
       <View style={styles.container}>
-        <LocalImageFlatList data={data} />
+        <LocalImageFlatList color data={data} />
       </View>
     </Screen>
   );

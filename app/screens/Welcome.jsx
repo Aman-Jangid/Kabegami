@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
-import color from "../theme/colors";
 import PathSelector from "../components/PathSelector";
 import Button from "../components/Button";
 import Screen from "./Screen";
@@ -8,6 +7,7 @@ import { StatusBar } from "expo-status-bar";
 import storage from "../services/storage";
 import keys from "../keys";
 import ManageStorage from "../services/ManageStorage";
+import ThemeContext from "../theme/ThemeContext";
 
 export default function Welcome({ navigation }) {
   // initialize async storage pairs
@@ -20,7 +20,11 @@ export default function Welcome({ navigation }) {
     const localFoldersExist = await storage.getData(keys.LOCAL_FOLDERS);
     const purityExist = await storage.getData(keys.PURITY);
     const apiKeyExist = await storage.getData(keys.API_KEY);
+    const themeExist = await storage.getData(keys.THEME);
 
+    if (!themeExist) {
+      await storage.setData(keys.THEME, "dark");
+    }
     if (!likedImagesExist) {
       await storage.setData(keys.LIKED_IMAGES, []);
     }
@@ -47,8 +51,11 @@ export default function Welcome({ navigation }) {
       await storage.setData(keys.API_KEY, "");
     }
   };
+  const { color, toggleTheme } = useContext(ThemeContext);
 
   useEffect(() => {
+    toggleTheme("dark");
+
     (async () => {
       await ManageStorage.renameFolder(
         await storage.getData(keys.CURRENT_DOWNLOADS_PATH)
@@ -66,6 +73,39 @@ export default function Welcome({ navigation }) {
     }
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      width: "100%",
+      height: "100%",
+      alignItems: "center",
+      justifyContent: "space-between",
+      backgroundColor: color.colorPrimary,
+    },
+    logo: {
+      height: 150,
+      resizeMode: "contain",
+    },
+    appTitle: {
+      paddingVertical: 40,
+      fontSize: 50,
+      color: color.color9,
+    },
+    lowerHalf: {
+      paddingVertical: 20,
+      height: "70%",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    description: {
+      color: color.color17,
+      paddingHorizontal: 15,
+    },
+    welcomeText: {
+      fontSize: 72,
+      color: color.color10,
+    },
+  });
+
   return (
     <Screen>
       <View style={styles.container}>
@@ -79,7 +119,7 @@ export default function Welcome({ navigation }) {
             <Text style={styles.description}>
               Please select a directory to store your downloads.
             </Text>
-            <PathSelector placeholder="kabegami directory." />
+            <PathSelector placeholder="kabegami directory." color={color} />
           </View>
           <Button
             title="continue"
@@ -94,35 +134,3 @@ export default function Welcome({ navigation }) {
     </Screen>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    height: "100%",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: color.colorPrimary,
-  },
-  logo: {
-    height: 150,
-    resizeMode: "contain",
-  },
-  appTitle: {
-    paddingVertical: 40,
-    fontSize: 50,
-    color: color.color9,
-  },
-  lowerHalf: {
-    paddingVertical: 20,
-    height: "70%",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  description: {
-    color: color.color17,
-    paddingHorizontal: 15,
-  },
-  welcomeText: {
-    fontSize: 72,
-    color: color.color10,
-  },
-});

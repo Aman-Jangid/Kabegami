@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Screen from "./Screen";
-import color from "../theme/colors";
 import ManageStorage from "../services/ManageStorage";
 import storage from "../services/storage";
 import keys from "../keys";
 import uuid from "react-native-uuid";
 import FolderFlatlist from "../components/FolderFlatlist";
+import ThemeContext from "../theme/ThemeContext";
 
 const addCollection = {
   title: "add_new_collection",
@@ -18,6 +18,23 @@ export default function Local() {
   const [folders, setFolders] = useState([]);
   const [process, setProcess] = useState(false);
   const [info, setInfo] = useState();
+
+  const { color } = useContext(ThemeContext);
+
+  const styles = StyleSheet.create({
+    container: {
+      padding: 10,
+    },
+    addCollection: {
+      backgroundColor: color.color4,
+      width: "50%",
+      height: 120,
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 10,
+      paddingVertical: 10,
+    },
+  });
 
   const addFolderAsync = async (path) => {
     const localFolders = await storage.getData(keys.LOCAL_FOLDERS);
@@ -81,6 +98,7 @@ export default function Local() {
     <Screen>
       <View style={styles.container}>
         <FolderFlatlist
+          color={color}
           data={folders}
           handleAdd={handleAddFolder}
           onItemPress={(path) => console.log(path)}
@@ -89,17 +107,3 @@ export default function Local() {
     </Screen>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-  },
-  addCollection: {
-    backgroundColor: color.color4,
-    width: "50%",
-    height: 120,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    paddingVertical: 10,
-  },
-});

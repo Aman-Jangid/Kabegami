@@ -1,9 +1,8 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import color from "../theme/colors";
 import createURL from "../api/createURL";
 import getWallpapers from "../api/getWallpapers";
 import storage from "../services/storage";
@@ -16,6 +15,7 @@ import SearchBar from "../components/SearchBar";
 import TextFlatlist from "../components/TextFlatlist";
 import IconButton from "../components/IconButton";
 import FlatlistHeader from "../components/FlatlistHeader";
+import ThemeContext from "../theme/ThemeContext";
 
 function Home() {
   const { navigate } = useNavigation();
@@ -26,15 +26,12 @@ function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [end, setEnd] = useState(false);
   const [query, setQuery] = useState(null);
-  // const [purity, setPurity] = useState(null);
 
-  // get every time there's a change in recentSearches state variable
   const getRecentSearches = async () => {
     const value = await storage.getData(keys.RECENT_SEARCHES);
     setRecentSearches(value);
   };
 
-  // set every time there's a change in recentSearches state variable
   const setRecentSearchesToStorage = async () => {
     await storage.setData(keys.RECENT_SEARCHES, recentSearches);
   };
@@ -125,11 +122,33 @@ function Home() {
     setRecentSearchesToStorage();
   }, [recentSearches]);
 
+  const { color } = useContext(ThemeContext);
+
+  const styles = StyleSheet.create({
+    container: {
+      height: "100%",
+      width: "100%",
+      alignItems: "center",
+      backgroundColor: color.colorPrimary,
+      gap: 10,
+    },
+    settings: {
+      position: "absolute",
+      bottom: 18,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-evenly",
+      width: 100,
+      right: 5,
+    },
+  });
+
   return (
     <Screen>
       <GestureHandlerRootView>
         <View style={styles.container}>
           <SearchBar
+            color={color}
             searching={query}
             handleSearch={handleSearch}
             handleBack={handleGoBack}
@@ -150,10 +169,12 @@ function Home() {
           {!query && (
             <>
               <FlatlistHeader
+                color={color}
                 title={"Recent Searches"}
                 onPress={handleEmptyList}
               />
               <TextFlatlist
+                color={color}
                 data={recentSearches}
                 handlePress={handleSearch}
                 handleRemove={handleRemove}
@@ -191,23 +212,5 @@ function Home() {
     </Screen>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    height: "100%",
-    width: "100%",
-    alignItems: "center",
-    backgroundColor: color.colorPrimary,
-    gap: 10,
-  },
-  settings: {
-    position: "absolute",
-    bottom: 18,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-evenly",
-    width: 100,
-    right: 5,
-  },
-});
 
 export default memo(Home);

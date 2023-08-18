@@ -1,7 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, Image, View } from "react-native";
 import Icon from "./Icon";
-import color from "../theme/colors";
 import FastImage from "react-native-fast-image";
 
 export default function ImageButton({
@@ -19,7 +18,51 @@ export default function ImageButton({
   collection,
   disabled,
   position = "center",
+  color,
 }) {
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      borderRadius: 10,
+      margin: 5,
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      flexWrap: "nowrap",
+    },
+    active: {
+      borderWidth: 2,
+      borderColor: color.color9,
+    },
+    title: {
+      color: "white",
+      position: "absolute",
+      fontSize: 20,
+      textShadowColor: color.black,
+      textShadowOffset: { width: 2, height: 4 },
+      textShadowRadius: 15,
+      fontWeight: "900",
+      textTransform: "uppercase",
+      zIndex: 1000,
+    },
+
+    quantity: {
+      flexDirection: "row",
+      gap: 5,
+      position: "absolute",
+      bottom: 0,
+      right: 0,
+      backgroundColor: color.colorPrimary,
+      paddingVertical: 4,
+      paddingHorizontal: 8,
+    },
+    quantityText: {
+      fontSize: 15,
+      fontWeight: "bold",
+      color: color.color9,
+    },
+  });
+
   const buttonStyles = active
     ? [
         styles.container,
@@ -63,45 +106,3 @@ export default function ImageButton({
     </TouchableOpacity>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    borderRadius: 10,
-    margin: 5,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-    flexWrap: "nowrap",
-  },
-  active: {
-    borderWidth: 2,
-    borderColor: color.color9,
-  },
-  title: {
-    color: "white",
-    position: "absolute",
-    fontSize: 20,
-    textShadowColor: color.black,
-    textShadowOffset: { width: 2, height: 4 },
-    textShadowRadius: 15,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    zIndex: 1000,
-  },
-
-  quantity: {
-    flexDirection: "row",
-    gap: 5,
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    backgroundColor: color.colorPrimary,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-  },
-  quantityText: {
-    fontSize: 15,
-    fontWeight: "bold",
-    color: color.color9,
-  },
-});

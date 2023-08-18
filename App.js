@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import AppNavigation from "./app/routes/AppNavigation";
 import { PermissionsAndroid, View } from "react-native";
-import color from "./app/theme/colors";
 import storage from "./app/services/storage";
 import keys from "./app/keys";
 import { AsyncProvider } from "./app/context/AsyncContext";
+import { ThemeProvider } from "./app/theme/ThemeContext";
 
 export default function App({}) {
   const getPermission = async () => {
@@ -61,20 +61,13 @@ export default function App({}) {
   }, []);
 
   return (
-    <AsyncProvider>
-      <View
-        style={{
-          flex: 1,
-          width: "100%",
-          height: "100%",
-          backgroundColor: color.colorPrimary,
-        }}
-      >
+    <ThemeProvider>
+      <AsyncProvider>
         <NavigationContainer>
           <AppNavigation />
         </NavigationContainer>
         <StatusBar style="auto" />
-      </View>
-    </AsyncProvider>
+      </AsyncProvider>
+    </ThemeProvider>
   );
 }

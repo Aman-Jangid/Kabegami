@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
-import color from "../theme/colors";
 import IconButton from "./IconButton";
 import { Text } from "react-native";
 import { launchImageLibrary } from "react-native-image-picker";
@@ -9,11 +8,75 @@ import uuid from "react-native-uuid";
 import storage from "../services/storage";
 import keys from "../keys";
 import ManageStorage from "../services/ManageStorage";
+import ThemeContext from "../theme/ThemeContext";
 
 export default function CollectionCreator({ handleExit, handleConfirm }) {
   const [uri, setUri] = useState(null);
   const [value, setValue] = useState();
   const [currentPosition, setCurrentPosition] = useState("center");
+
+  const { color } = useContext(ThemeContext);
+
+  const styles = StyleSheet.create({
+    container: {
+      borderWidth: 2,
+      borderColor: color.color5,
+      position: "absolute",
+      zIndex: 1010,
+      paddingBottom: 10,
+      paddingHorizontal: 10,
+      alignItems: "center",
+      alignSelf: "center",
+      top: "20%",
+      borderRadius: 10,
+      width: 220,
+      minHeight: 200,
+      backgroundColor: color.color2,
+    },
+    text: {
+      fontSize: 18,
+      color: color.color7,
+      letterSpacing: 1,
+      fontWeight: "bold",
+    },
+    imageSelection: {
+      marginBottom: 10,
+      marginHorizontal: 20,
+      flexDirection: "row",
+      width: "100%",
+      padding: 2,
+      justifyContent: "space-evenly",
+      alignSelf: "center",
+      alignItems: "center",
+      borderRadius: 10,
+      backgroundColor: color.color4,
+    },
+    buttons: {
+      flexDirection: "row",
+      padding: 10,
+      width: "100%",
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "space-evenly",
+      borderRadius: 10,
+      backgroundColor: color.color4,
+    },
+    imageAlignButtons: {
+      width: 40,
+      height: 105,
+      backgroundColor: color.color2,
+      zIndex: 1002,
+      position: "absolute",
+      right: -40,
+      top: 100,
+      borderWidth: 2,
+      borderColor: color.color5,
+      borderLeftWidth: 0,
+      borderTopRightRadius: 5,
+      borderBottomRightRadius: 5,
+      justifyContent: "space-evenly",
+    },
+  });
 
   // opens gallery to select and image then sets uri to the uri of the selected image
   const selectImage = async () => {
@@ -154,63 +217,3 @@ export default function CollectionCreator({ handleExit, handleConfirm }) {
     </View>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    borderWidth: 2,
-    borderColor: color.color5,
-    position: "absolute",
-    zIndex: 1010,
-    paddingBottom: 10,
-    paddingHorizontal: 10,
-    alignItems: "center",
-    alignSelf: "center",
-    top: "20%",
-    borderRadius: 10,
-    width: 220,
-    minHeight: 200,
-    backgroundColor: color.color2,
-  },
-  text: {
-    fontSize: 18,
-    color: color.color7,
-    letterSpacing: 1,
-    fontWeight: "bold",
-  },
-  imageSelection: {
-    marginBottom: 10,
-    marginHorizontal: 20,
-    flexDirection: "row",
-    width: "100%",
-    padding: 2,
-    justifyContent: "space-evenly",
-    alignSelf: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    backgroundColor: color.color4,
-  },
-  buttons: {
-    flexDirection: "row",
-    padding: 10,
-    width: "100%",
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "space-evenly",
-    borderRadius: 10,
-    backgroundColor: color.color4,
-  },
-  imageAlignButtons: {
-    width: 40,
-    height: 105,
-    backgroundColor: color.color2,
-    zIndex: 1002,
-    position: "absolute",
-    right: -40,
-    top: 100,
-    borderWidth: 2,
-    borderColor: color.color5,
-    borderLeftWidth: 0,
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
-    justifyContent: "space-evenly",
-  },
-});

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Button from "./Button";
-import color from "../theme/colors";
 import storage from "../services/storage";
 
 export default function ButtonSelection({
@@ -10,6 +9,7 @@ export default function ButtonSelection({
   options,
   showHelp,
   KEY,
+  color,
 }) {
   const [selectedPurities, setSelectedPurities] = useState(new Set(["100"]));
 

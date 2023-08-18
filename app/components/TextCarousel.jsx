@@ -1,13 +1,31 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import color from "../theme/colors";
 import IconButton from "./IconButton";
 
 const min = 0;
 
-export default function TextCarousel({ items }) {
+export default function TextCarousel({ items, color }) {
   const [itemIndex, setItemIndex] = useState(0);
-  const [value, setValue] = useState(null);
+  const styles = StyleSheet.create({
+    dropdown: {
+      width: "100%",
+      alignSelf: "center",
+      zIndex: 10,
+      marginBottom: 8,
+      backgroundColor: color.color3,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: 10,
+      borderRadius: 10,
+    },
+    dropdownText: {
+      fontSize: 20,
+      fontWeight: "bold",
+      letterSpacing: 1,
+      color: color.color8,
+    },
+  });
 
   const max = items.length - 1;
   return (
@@ -34,23 +52,3 @@ export default function TextCarousel({ items }) {
     </View>
   );
 }
-const styles = StyleSheet.create({
-  dropdown: {
-    width: "100%",
-    alignSelf: "center",
-    zIndex: 10,
-    marginBottom: 8,
-    backgroundColor: color.color3,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 10,
-    borderRadius: 10,
-  },
-  dropdownText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    letterSpacing: 1,
-    color: color.color8,
-  },
-});

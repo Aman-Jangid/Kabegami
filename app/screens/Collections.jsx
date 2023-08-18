@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Screen from "./Screen";
-import color from "../theme/colors";
 import BackButton from "../components/BackButton";
 import storage from "../services/storage";
 import keys from "../keys";
@@ -11,6 +10,7 @@ import IconButton from "../components/IconButton";
 import folderInfo from "../services/folderInfo";
 import { useIsFocused } from "@react-navigation/native";
 import TimeSetter from "../components/TimeSetter";
+import ThemeContext from "../theme/ThemeContext";
 
 export default function Collections({ navigation }) {
   const [collections, setCollections] = useState([
@@ -22,6 +22,22 @@ export default function Collections({ navigation }) {
   const [syncNow, setSyncNow] = useState(false);
   const [selected, setSelected] = useState([]);
   const [time, setTime] = useState("");
+
+  const { color } = useContext(ThemeContext);
+
+  const styles = StyleSheet.create({
+    container: {
+      padding: 5,
+      width: "100%",
+      flex: 1,
+      height: "100%",
+      backgroundColor: color.colorPrimary,
+    },
+    header: {
+      width: "100%",
+      flexDirection: "row",
+    },
+  });
 
   const setTimerAsync = async () => {
     await storage.setData(keys.TIME, time);
@@ -159,11 +175,12 @@ export default function Collections({ navigation }) {
       <View style={styles.container}>
         {showCreator && (
           <CollectionCreator
+            color={color}
             handleExit={handleExit}
             handleConfirm={handleConfirm}
           />
         )}
-        {showTimeSetter && <TimeSetter />}
+        {showTimeSetter && <TimeSetter color={color} />}
         <View style={styles.header}>
           <BackButton goTo="Favorites" />
           <IconButton
@@ -194,6 +211,7 @@ export default function Collections({ navigation }) {
           />
         </View>
         <FolderFlatlist
+          color={color}
           data={collections}
           onItemPress={handlePress}
           handleAdd={() => setShowCreator(true)}
@@ -202,16 +220,3 @@ export default function Collections({ navigation }) {
     </Screen>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    padding: 5,
-    width: "100%",
-    flex: 1,
-    height: "100%",
-    backgroundColor: color.colorPrimary,
-  },
-  header: {
-    width: "100%",
-    flexDirection: "row",
-  },
-});

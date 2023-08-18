@@ -3,9 +3,21 @@ import { StyleSheet, View } from "react-native";
 
 import IconButton from "./IconButton";
 import Search from "./Search";
-import color from "../theme/colors";
 
-export default function SearchBar({ searching, handleSearch, handleBack }) {
+export default function SearchBar({
+  searching,
+  handleSearch,
+  handleBack,
+  color,
+}) {
+  const styles = StyleSheet.create({
+    container: {
+      width: "100%",
+      paddingHorizontal: 10,
+      flexDirection: "row",
+      alignItems: "center",
+    },
+  });
   return (
     <View style={styles.container}>
       <IconButton
@@ -15,15 +27,7 @@ export default function SearchBar({ searching, handleSearch, handleBack }) {
         color={!searching ? color.color3 : color.color9}
         onPress={handleBack}
       />
-      <Search textChangeHandle={handleSearch} />
+      <Search color={color} textChangeHandle={handleSearch} />
     </View>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    paddingHorizontal: 10,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-});

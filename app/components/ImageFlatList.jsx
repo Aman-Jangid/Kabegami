@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { FlatList, Text } from "react-native";
 import ImageItem from "./ImageItem";
 import Loading from "./Loading";
 import WallpaperSet from "./WallpaperSet";
-import color from "../theme/colors";
+import ThemeContext from "../theme/ThemeContext";
 
 const ImageFlatList = ({
   data,
@@ -20,6 +20,8 @@ const ImageFlatList = ({
   const [optionsVisible, setOptionsVisible] = useState(false);
   // const [selectedItems, setSelectedItems] = useState([]);
   const [imageUrl, setImageUrl] = useState();
+
+  const { color } = useContext(ThemeContext);
 
   const flatlistRef = useRef(null);
 

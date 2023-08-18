@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Downloaded from "../screens/Downloaded";
 import Local from "../screens/Local";
-import color from "../theme/colors";
 import MaterialTabItem from "../components/MaterialTabItem";
+import ThemeContext from "../theme/ThemeContext";
 
 const Tab = createMaterialTopTabNavigator();
 
 export default SavedTab = () => {
+  const { color } = useContext(ThemeContext);
+
   return (
     <Tab.Navigator
       screenOptions={{

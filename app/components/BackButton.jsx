@@ -1,14 +1,32 @@
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
+import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import IconButton from "./IconButton";
-import color from "../theme/colors";
+import ThemeContext from "../theme/ThemeContext";
 export default function BackButton({ goTo }) {
   const { goBack } = useNavigation();
+
+  const { color } = useContext(ThemeContext);
 
   const handleGoBack = () => {
     goBack();
   };
+
+  const styles = StyleSheet.create({
+    back: {
+      flexShrink: 1,
+      width: "100%",
+      flexDirection: "row",
+      paddingBottom: 20,
+      paddingHorizontal: 15,
+      alignItems: "center",
+      gap: 10,
+    },
+    text: {
+      fontSize: 18,
+      color: color.color9,
+    },
+  });
 
   return (
     <View style={styles.back}>
@@ -25,18 +43,3 @@ export default function BackButton({ goTo }) {
     </View>
   );
 }
-const styles = StyleSheet.create({
-  back: {
-    flexShrink: 1,
-    width: "100%",
-    flexDirection: "row",
-    paddingBottom: 20,
-    paddingHorizontal: 15,
-    alignItems: "center",
-    gap: 10,
-  },
-  text: {
-    fontSize: 18,
-    color: color.color9,
-  },
-});

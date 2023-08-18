@@ -1,12 +1,36 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import color from "../theme/colors";
 import Icon from "./Icon";
+import ThemeContext from "../theme/ThemeContext";
 
 export default DownloadIndicator = ({ downloading }) => {
   if (!downloading) {
     return null;
   }
+
+  const { color } = useContext(ThemeContext);
+
+  const styles = StyleSheet.create({
+    container: {
+      flexDirection: "row",
+      position: "absolute",
+      top: 120, // Adjust as needed
+      right: 20, // Adjust as needed
+      backgroundColor: color.color4,
+      borderWidth: 3,
+      borderColor: color.color10,
+      padding: 6,
+      borderRadius: 25,
+      zIndex: 1000,
+      alignItems: "center",
+    },
+    text: {
+      color: color.color8,
+      fontSize: 16,
+      fontWeight: "bold",
+      textTransform: "uppercase",
+    },
+  });
 
   const dotArr = [".", ".", "."];
 
@@ -38,25 +62,3 @@ export default DownloadIndicator = ({ downloading }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    position: "absolute",
-    top: 120, // Adjust as needed
-    right: 20, // Adjust as needed
-    backgroundColor: color.color4,
-    borderWidth: 3,
-    borderColor: color.color10,
-    padding: 6,
-    borderRadius: 25,
-    zIndex: 1000,
-    alignItems: "center",
-  },
-  text: {
-    color: color.color8,
-    fontSize: 16,
-    fontWeight: "bold",
-    textTransform: "uppercase",
-  },
-});

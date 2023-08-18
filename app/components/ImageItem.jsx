@@ -1,11 +1,9 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-import color from "../theme/colors";
 import LoadCursor from "./LoadCursor";
-import FastImage from "react-native-fast-image";
-import Icon from "./Icon";
 import IconButton from "./IconButton";
+import ThemeContext from "../theme/ThemeContext";
 
 export default function ImageItem({
   thumbnail,
@@ -21,6 +19,8 @@ export default function ImageItem({
 }) {
   const { navigate } = useNavigation();
   const [isLongPressing, setIsLongPressing] = useState(false);
+
+  const { color } = useContext(ThemeContext);
 
   const handleLongPress = () => {
     setTimeout(() => {
@@ -67,25 +67,21 @@ export default function ImageItem({
         <View
           style={{
             position: "absolute",
-            top: 7,
-            left: 7,
+            top: 10,
+            left: 10,
             zIndex: 10000,
           }}
         >
           <IconButton
-            name={
-              selected
-                ? "checkbox-blank-circle"
-                : "checkbox-blank-circle-outline"
-            }
+            name={selected ? "checkbox-blank" : "checkbox-blank-outline"}
             iconPack="MCI"
             size={20}
-            color={color.colorPrimary}
+            color={color.color9}
             onPress={() => onPressHandle(id)}
             style={{
               borderWidth: 1,
-              borderColor: color.colorPrimary,
-              borderRadius: 100,
+              borderColor: color.color9,
+              borderRadius: 5,
               textAlign: "center",
               textAlignVertical: "center",
             }}
@@ -110,5 +106,6 @@ const styles = StyleSheet.create({
     minHeight: 200,
     width: 120,
     margin: 5,
+    borderRadius: 10,
   },
 });

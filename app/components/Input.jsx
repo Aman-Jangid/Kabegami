@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import color from "../theme/colors";
 import { Animated, StyleSheet, TextInput, View } from "react-native";
 import IconButton from "./IconButton";
 

@@ -1,9 +1,8 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import color from "../theme/colors";
 import IconButton from "./IconButton";
 
-export default function TimeSetter() {
+export default function TimeSetter({ color }) {
   // minute => minute * 1000ms when storing in async storage
   const min = 1;
   const max = 60;
@@ -20,6 +19,45 @@ export default function TimeSetter() {
       setTime(1);
     }
   }, [time]);
+
+  const styles = StyleSheet.create({
+    container: {
+      borderWidth: 2,
+      borderColor: color.color5,
+      position: "absolute",
+      zIndex: 1010,
+      paddingBottom: 10,
+      paddingHorizontal: 10,
+      alignItems: "center",
+      alignSelf: "center",
+      top: "20%",
+      borderRadius: 10,
+      width: 180,
+      minHeight: 50,
+      backgroundColor: color.color2,
+    },
+    timerHeading: {
+      fontSize: 18,
+      color: color.color10,
+      fontWeight: "bold",
+      letterSpacing: 1.1,
+    },
+    timerContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingTop: 10,
+    },
+    inputStyle: {
+      paddingVertical: 2,
+      fontSize: 20,
+      fontWeight: "bold",
+      color: color.color18,
+      paddingHorizontal: 20,
+      backgroundColor: color.color3,
+      marginHorizontal: 10,
+      borderRadius: 5,
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -53,42 +91,3 @@ export default function TimeSetter() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    borderWidth: 2,
-    borderColor: color.color5,
-    position: "absolute",
-    zIndex: 1010,
-    paddingBottom: 10,
-    paddingHorizontal: 10,
-    alignItems: "center",
-    alignSelf: "center",
-    top: "20%",
-    borderRadius: 10,
-    width: 180,
-    minHeight: 50,
-    backgroundColor: color.color2,
-  },
-  timerHeading: {
-    fontSize: 18,
-    color: color.color10,
-    fontWeight: "bold",
-    letterSpacing: 1.1,
-  },
-  timerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingTop: 10,
-  },
-  inputStyle: {
-    paddingVertical: 2,
-    fontSize: 20,
-    fontWeight: "bold",
-    color: color.color18,
-    paddingHorizontal: 20,
-    backgroundColor: color.color3,
-    marginHorizontal: 10,
-    borderRadius: 5,
-  },
-});

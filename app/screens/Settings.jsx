@@ -1,28 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
 import keys from "../keys";
-import color, { switchToDarkMode, switchToLightMode } from "../theme/colors";
 import storage from "../services/storage";
 import Screen from "./Screen";
 import Button from "../components/Button";
 import BackButton from "../components/BackButton";
 import PathSelector from "../components/PathSelector";
 import SavingChanges from "../components/SavingChanges";
-import ButtonSelection from "../components/ButtonSelection";
 import ManageStorage from "../services/ManageStorage";
+import ThemeContext from "../theme/ThemeContext";
 
 export default function Settings() {
+  // context
+  const { color, toggleTheme } = useContext(ThemeContext);
+
   const [downloadHidden, setDownloadsHidden] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const [downloadDir, setDownloadDir] = useState("");
 
   const getButtonState = async () => {
     const currentDownloadsPath = await storage.getData(
       keys.CURRENT_DOWNLOADS_PATH
     );
-
+    const currentTheme = await storage.getData(keys.THEME);
+    setDarkMode(currentTheme === "dark" ? true : false);
     setDownloadDir(currentDownloadsPath);
 
     if (
@@ -41,14 +44,16 @@ export default function Settings() {
     }, 1000);
   };
 
-  const handleThemeChange = async () => {
-    if (darkMode) {
-      switchToDarkMode();
-      await storage.setData(keys.THEME, "dark");
-    } else {
-      switchToLightMode();
-      await storage.setData(keys.THEME, "light");
-    }
+  const setLightTheme = async () => {
+    toggleTheme("light");
+    setDarkMode(false);
+    await storage.setData(keys.THEME, "light");
+  };
+
+  const setDarkTheme = async () => {
+    toggleTheme("dark");
+    setDarkMode(true);
+    await storage.setData(keys.THEME, "dark");
   };
 
   const hideDownloads = async () => {
@@ -79,15 +84,54 @@ export default function Settings() {
     getButtonState();
   }, []);
 
-  useEffect(() => {
-    handleThemeChange();
-  }, [darkMode]);
+  const styles = StyleSheet.create({
+    container: {
+      backgroundColor: color.colorPrimary,
+      alignItems: "center",
+      height: "100%",
+      width: "100%",
+    },
+    setting: {
+      marginVertical: 15,
+      width: "100%",
+      justifyContent: "space-evenly",
+      flexDirection: "row",
+    },
+    settingText: {
+      width: "50%",
+      fontSize: 16,
+      color: color.color6,
+    },
+    buttonContainer: {
+      flexDirection: "row",
+      borderRadius: 10,
+      overflow: "hidden",
+    },
+    confirmButton: {
+      width: "100%",
+      alignItems: "center",
+      marginBottom: 15,
+    },
+    downloadsDir: {
+      width: "90%",
+      alignSelf: "center",
+      marginVertical: 10,
+      marginHorizontal: 7,
+      fontSize: 18,
+      borderRadius: 10,
+      padding: 5,
+      textAlignVertical: "top",
+      paddingHorizontal: 10,
+      backgroundColor: color.color3,
+      color: color.color7,
+    },
+  });
 
   return (
     <Screen>
       <View style={styles.container}>
         <BackButton goTo="Home" />
-        <PathSelector placeholder="kabegami directory" />
+        <PathSelector color={color} placeholder="kabegami directory" />
         <View style={styles.confirmButton}>
           <Button
             title="confirm directory"
@@ -130,14 +174,14 @@ export default function Settings() {
               title="Dark"
               color={darkMode ? color.color10 : color.color2}
               textColor={darkMode ? color.lightGrey : color.color10}
-              onPress={() => setDarkMode(true)}
+              onPress={setDarkTheme}
               border={false}
             />
             <Button
               title={"light"}
               color={darkMode ? color.color2 : color.color10}
               textColor={darkMode ? color.color10 : color.lightGrey}
-              onPress={() => setDarkMode(false)}
+              onPress={setLightTheme}
               border={false}
             />
           </View>
@@ -147,45 +191,3 @@ export default function Settings() {
     </Screen>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: color.colorPrimary,
-    alignItems: "center",
-    height: "100%",
-    width: "100%",
-  },
-  setting: {
-    marginVertical: 15,
-    width: "100%",
-    justifyContent: "space-evenly",
-    flexDirection: "row",
-  },
-  settingText: {
-    width: "50%",
-    fontSize: 16,
-    color: color.color6,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  confirmButton: {
-    width: "100%",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  downloadsDir: {
-    width: "90%",
-    alignSelf: "center",
-    marginVertical: 10,
-    marginHorizontal: 7,
-    fontSize: 18,
-    borderRadius: 10,
-    padding: 5,
-    textAlignVertical: "top",
-    paddingHorizontal: 10,
-    backgroundColor: color.color3,
-    color: color.color7,
-  },
-});

@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Animated, Keyboard, StyleSheet, View } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { Keyboard, StyleSheet, View } from "react-native";
 import Input from "../components/Input";
 import Button from "../components/Button";
-import color from "../theme/colors";
 import ButtonSelection from "../components/ButtonSelection";
 import LinkButton from "../components/LinkButton";
 import BackButton from "../components/BackButton";
@@ -11,6 +10,7 @@ import storage from "../services/storage";
 import keys from "../keys";
 import TextCarousel from "../components/TextCarousel";
 import SavingChanges from "../components/SavingChanges";
+import ThemeContext from "../theme/ThemeContext";
 
 // if api key is not available and nsfw is selected then
 // show visual error "API-KEY is required to access nsfw wallpapers"
@@ -20,17 +20,6 @@ const initialTags = ["hot", "anime", "cats", "cars", "nature"];
 const options = [
   { label: "Wallhaven.cc", value: "wallhaven" },
   { label: "That's all for now...", value: "wallhaven" },
-];
-
-const purities = [
-  { title: "sfw", color: color.color5, text: color.color8, value: "100" },
-  {
-    title: "sketchy",
-    color: color.color11,
-    text: color.color8,
-    value: "010",
-  },
-  { title: "nsfw", color: color.color10, text: color.color8, value: "001" },
 ];
 
 export default function Customize() {
@@ -197,11 +186,34 @@ export default function Customize() {
     }
   }, []);
 
+  const { color } = useContext(ThemeContext);
+
+  const styles = StyleSheet.create({
+    container: {
+      backgroundColor: color.colorPrimary,
+      alignItems: "center",
+      paddingHorizontal: 15,
+      height: "100%",
+      width: "100%",
+    },
+  });
+
+  const purities = [
+    { title: "sfw", color: color.color5, text: color.color4, value: "100" },
+    {
+      title: "sketchy",
+      color: color.color11,
+      text: color.color8,
+      value: "010",
+    },
+    { title: "nsfw", color: color.color10, text: color.color8, value: "001" },
+  ];
+
   return (
     <Screen>
       <View style={styles.container}>
         <BackButton goTo="Home" />
-        <TextCarousel items={options} />
+        <TextCarousel items={options} color={color} />
         <Input
           backgroundColor={color.color3}
           color={color.color7}
@@ -216,6 +228,7 @@ export default function Customize() {
         />
         {showLink && (
           <LinkButton
+            color={color}
             description="get an Api-key from the following provider to gain access to all features."
             title="open Wallhaven.cc"
             url={"https://www.wallhaven.cc/help/api"}
@@ -239,14 +252,15 @@ export default function Customize() {
           value={resolutions}
           handleChange={handleResolutionsInput}
         />
-        {/* <ButtonSelection
+        <ButtonSelection
+          color={color}
           KEY={keys.PURITY}
           options={purities}
           handleSelections={handleSelections}
           numberOfSelectable={purities.length}
           dependency={apiKey}
           showHelp={showHelp}
-        /> */}
+        />
         <Button
           title="confirm"
           color={color.color10}
@@ -260,12 +274,3 @@ export default function Customize() {
     </Screen>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: color.colorPrimary,
-    alignItems: "center",
-    paddingHorizontal: 15,
-    height: "100%",
-    width: "100%",
-  },
-});

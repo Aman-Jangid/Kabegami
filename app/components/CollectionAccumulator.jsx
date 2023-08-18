@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import color from "../theme/colors";
 import IconButton from "./IconButton";
 import uuid from "react-native-uuid";
 import TouchableListItem from "./TouchableListItem";
@@ -9,9 +8,50 @@ import keys from "../keys";
 import downloadImage from "../services/downloadImage";
 import ItemSeparator from "./ItemSeparator";
 
-export default function CollectionAccumulator({ hide, imageUrl }) {
+export default function CollectionAccumulator({ hide, imageUrl, color }) {
   const [collections, setCollections] = useState([]);
   const [selected, setSelected] = useState(null);
+
+  const styles = StyleSheet.create({
+    container: {
+      position: "absolute",
+      bottom: 200,
+      borderRadius: 15,
+      alignSelf: "center",
+      paddingHorizontal: 12,
+      zIndex: 1001,
+      width: 250,
+      height: 250,
+      backgroundColor: color.color19,
+      alignItems: "center",
+    },
+    flatlist: {
+      height: "100%",
+      width: "100%",
+      borderRadius: 10,
+    },
+    text: {
+      fontSize: 18,
+      alignSelf: "center",
+      fontWeight: "bold",
+      color: color.color8,
+      paddingVertical: 5,
+    },
+    listContainer: {
+      width: "100%",
+      height: 205,
+      backgroundColor: "rgba(0,0,0,0.1)",
+      alignSelf: "flex-start",
+      borderRadius: 5,
+      overflow: "hidden",
+    },
+    buttons: {
+      paddingTop: 10,
+      flexDirection: "row",
+      justifyContent: "space-evenly",
+      backgroundColor: color.color19,
+    },
+  });
 
   const handleSelection = (index) => {
     setSelected(index);
@@ -84,43 +124,3 @@ export default function CollectionAccumulator({ hide, imageUrl }) {
     </View>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    bottom: 200,
-    borderRadius: 15,
-    alignSelf: "center",
-    paddingHorizontal: 12,
-    zIndex: 1001,
-    width: 250,
-    height: 250,
-    backgroundColor: color.color19,
-    alignItems: "center",
-  },
-  flatlist: {
-    height: "100%",
-    width: "100%",
-    borderRadius: 10,
-  },
-  text: {
-    fontSize: 18,
-    alignSelf: "center",
-    fontWeight: "bold",
-    color: color.color8,
-    paddingVertical: 5,
-  },
-  listContainer: {
-    width: "100%",
-    height: 205,
-    backgroundColor: "rgba(0,0,0,0.1)",
-    alignSelf: "flex-start",
-    borderRadius: 5,
-    overflow: "hidden",
-  },
-  buttons: {
-    paddingTop: 10,
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    backgroundColor: color.color19,
-  },
-});

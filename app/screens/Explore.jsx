@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 import Screen from "./Screen";
@@ -8,9 +8,9 @@ import Loading from "../components/Loading";
 
 import getWallpapers from "../api/getWallpapers";
 import createURL from "../api/createURL";
-import color from "../theme/colors";
 import storage from "../services/storage";
 import keys from "../keys";
+import ThemeContext from "../theme/ThemeContext";
 
 export default function Explore() {
   const [wallpapers, setWallpapers] = useState();
@@ -20,6 +20,17 @@ export default function Explore() {
   const [fetching, setFetching] = useState(false);
   const [scrollToTop, setScrollToTop] = useState(false);
   const [purity, setPurity] = useState(null);
+
+  const { color } = useContext(ThemeContext);
+
+  const styles = StyleSheet.create({
+    container: {
+      backgroundColor: color.colorPrimary,
+      flex: 1,
+      height: "100%",
+      width: "100%",
+    },
+  });
 
   const getApiConfiguration = async () => {
     const value = await storage.getData(keys.PURITY);
@@ -87,6 +98,7 @@ export default function Explore() {
     <Screen>
       <View style={styles.container}>
         <Categories
+          color={color}
           selectedCategory={selectedCategory}
           selectCategory={selectCategory}
         />
@@ -104,11 +116,3 @@ export default function Explore() {
     </Screen>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: color.colorPrimary,
-    flex: 1,
-    height: "100%",
-    width: "100%",
-  },
-});

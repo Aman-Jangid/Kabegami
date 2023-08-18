@@ -3,15 +3,37 @@ import { NativeModules, StyleSheet, TextInput, View } from "react-native";
 
 import IconButton from "./IconButton";
 
-import color from "../theme/colors";
 import keys from "../keys";
 import storage from "../services/storage";
 import ManageStorage from "../services/ManageStorage";
 
-export default function PathSelector({ placeholder }) {
+export default function PathSelector({ placeholder, color }) {
   const [path, setPath] = useState(null);
 
   const { FileExplorerModule } = NativeModules;
+
+  const styles = StyleSheet.create({
+    inputContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      alignSelf: "center",
+      paddingHorizontal: 12,
+      width: "100%",
+    },
+    input: {
+      flex: 1,
+      alignSelf: "center",
+      marginVertical: 10,
+      marginHorizontal: 7,
+      fontSize: 18,
+      borderRadius: 10,
+      padding: 5,
+      textAlignVertical: "top",
+      paddingHorizontal: 10,
+      backgroundColor: color.color3,
+      color: color.color7,
+    },
+  });
 
   // get main directory
   const getMainDirectory = async () => {
@@ -122,25 +144,3 @@ export default function PathSelector({ placeholder }) {
     </View>
   );
 }
-const styles = StyleSheet.create({
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "center",
-    paddingHorizontal: 12,
-    width: "100%",
-  },
-  input: {
-    flex: 1,
-    alignSelf: "center",
-    marginVertical: 10,
-    marginHorizontal: 7,
-    fontSize: 18,
-    borderRadius: 10,
-    padding: 5,
-    textAlignVertical: "top",
-    paddingHorizontal: 10,
-    backgroundColor: color.color3,
-    color: color.color7,
-  },
-});

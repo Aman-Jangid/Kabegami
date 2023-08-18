@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import ImageFlatList from "../components/ImageFlatList";
-import color from "../theme/colors";
 import ImageButton from "../components/ImageButton";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import Screen from "./Screen";
 import storage from "../services/storage";
 import keys from "../keys";
 import IconButton from "../components/IconButton";
+import ThemeContext from "../theme/ThemeContext";
 
 export default function Favorites() {
   const isFocused = useIsFocused();
   const [wallpapers, setWallpapers] = useState([]);
   const [selections, setSelections] = useState([]);
   const [select, setSelect] = useState(false);
+
+  const { color } = useContext(ThemeContext);
 
   const getImages = async () => {
     const images = await storage.getData(keys.LIKED_IMAGES);
@@ -62,6 +64,44 @@ export default function Favorites() {
     }
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      backgroundColor: color.colorPrimary,
+      // paddingTop: 40,
+      flex: 1,
+      height: "100%",
+      width: "100%",
+    },
+    paths: {
+      flexDirection: "row",
+      gap: 5,
+      paddingHorizontal: 10,
+      width: "100%",
+      justifyContent: "space-evenly",
+    },
+    labelContainer: {
+      width: "100%",
+      flexDirection: "row",
+      alignItems: "center",
+      height: 45,
+    },
+    divider: {
+      marginRight: 10,
+      borderRadius: 50,
+      alignSelf: "center",
+      flex: 1,
+      height: 3,
+      backgroundColor: color.color9,
+      marginBottom: -5,
+    },
+    label: {
+      color: color.color9,
+      paddingHorizontal: 10,
+      fontSize: 20,
+      fontWeight: "bold",
+    },
+  });
+
   return (
     <Screen>
       <View style={styles.container}>
@@ -72,6 +112,7 @@ export default function Favorites() {
             title="collections"
             background={require("../assets/pictures/anime.jpg")}
             onPress={() => handleNavigation("Collections")}
+            color={color}
           />
           <ImageButton
             height={60}
@@ -79,6 +120,7 @@ export default function Favorites() {
             title="saved"
             background={require("../assets/pictures/new.jpg")}
             onPress={() => handleNavigation("SavedTab")}
+            color={color}
           />
         </View>
         <View style={styles.labelContainer}>
@@ -111,40 +153,3 @@ export default function Favorites() {
     </Screen>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: color.colorPrimary,
-    // paddingTop: 40,
-    flex: 1,
-    height: "100%",
-    width: "100%",
-  },
-  paths: {
-    flexDirection: "row",
-    gap: 5,
-    paddingHorizontal: 10,
-    width: "100%",
-    justifyContent: "space-evenly",
-  },
-  labelContainer: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    height: 45,
-  },
-  divider: {
-    marginRight: 10,
-    borderRadius: 50,
-    alignSelf: "center",
-    flex: 1,
-    height: 3,
-    backgroundColor: color.color9,
-    marginBottom: -5,
-  },
-  label: {
-    color: color.color9,
-    paddingHorizontal: 10,
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-});

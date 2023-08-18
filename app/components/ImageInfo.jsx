@@ -7,7 +7,6 @@ import {
   Linking,
   TouchableOpacity,
 } from "react-native";
-import color from "../theme/colors";
 import IconButton from "./IconButton";
 import uuid from "react-native-uuid";
 import Clipboard from "@react-native-clipboard/clipboard";
@@ -22,9 +21,87 @@ export default function ImageInfo({
   tags,
   handleSearching,
   fetchTags,
+  color,
 }) {
   const [showCopied, setShowCopied] = useState(false);
   const [changeIcon, setChangeIcon] = useState(false);
+
+  const styles = StyleSheet.create({
+    container: {
+      height: 250,
+      paddingHorizontal: 10,
+      alignItems: "center",
+      backgroundColor: color.color4,
+      overflow: "scroll",
+    },
+    properties: {
+      flexDirection: "row",
+      marginVertical: 10,
+      gap: 10,
+    },
+    colorItem: {
+      height: 30,
+      width: "19%",
+      borderRadius: 5,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    colorHex: {
+      fontWeight: "bold",
+      fontSize: 14,
+      paddingHorizontal: 5,
+    },
+    colors: {
+      justifyContent: "center",
+      flexDirection: "row",
+      gap: 5,
+      backgroundColor: "rgba(0,0,0,0.2)",
+      borderRadius: 10,
+      width: "100%",
+      paddingHorizontal: 10,
+      paddingVertical: 10,
+      marginVertical: 5,
+    },
+    label: {
+      fontWeight: "bold",
+      fontSize: 18,
+      color: color.color8,
+      paddingVertical: 5,
+      paddingHorizontal: 10,
+      borderRadius: 10,
+    },
+
+    linkContainer: {
+      width: "100%",
+      flexDirection: "row",
+      gap: 5,
+      paddingVertical: 5,
+      paddingHorizontal: 8,
+      backgroundColor: "rgba(0,0,0,0.2)",
+      borderRadius: 10,
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    url: {
+      fontWeight: "bold",
+      fontSize: 18,
+      color: color.color19,
+    },
+    link_button: {
+      backgroundColor: color.color19,
+      borderRadius: 10,
+      padding: 2,
+    },
+    tags: {
+      backgroundColor: "rgba(0,0,0,0.2)",
+      borderRadius: 10,
+      height: 50,
+      textAlignVertical: "center",
+      width: "100%",
+      paddingVertical: 5,
+      paddingHorizontal: 10,
+    },
+  });
 
   useEffect(() => {
     console.log("url changed...Fetching new tags.");
@@ -238,79 +315,3 @@ export default function ImageInfo({
     </>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    height: 250,
-    paddingHorizontal: 10,
-    alignItems: "center",
-    backgroundColor: color.color4,
-    overflow: "scroll",
-  },
-  properties: {
-    flexDirection: "row",
-    marginVertical: 10,
-    gap: 10,
-  },
-  colorItem: {
-    height: 30,
-    width: "19%",
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  colorHex: {
-    fontWeight: "bold",
-    fontSize: 14,
-    paddingHorizontal: 5,
-  },
-  colors: {
-    justifyContent: "center",
-    flexDirection: "row",
-    gap: 5,
-    backgroundColor: "rgba(0,0,0,0.2)",
-    borderRadius: 10,
-    width: "100%",
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    marginVertical: 5,
-  },
-  label: {
-    fontWeight: "bold",
-    fontSize: 18,
-    color: color.color8,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-  },
-
-  linkContainer: {
-    width: "100%",
-    flexDirection: "row",
-    gap: 5,
-    paddingVertical: 5,
-    paddingHorizontal: 8,
-    backgroundColor: "rgba(0,0,0,0.2)",
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  url: {
-    fontWeight: "bold",
-    fontSize: 18,
-    color: color.color19,
-  },
-  link_button: {
-    backgroundColor: color.color19,
-    borderRadius: 10,
-    padding: 2,
-  },
-  tags: {
-    backgroundColor: "rgba(0,0,0,0.2)",
-    borderRadius: 10,
-    height: 50,
-    textAlignVertical: "center",
-    width: "100%",
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-  },
-});
