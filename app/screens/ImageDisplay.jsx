@@ -210,6 +210,7 @@ export default function ImageDisplay({}) {
       <ScrollableImage
         uri={route.params.path}
         onPress={() => setShowImageInfo(false)}
+        local={route.params.local}
         width={route.params.local ? 1920 : route.params.info.width}
         height={route.params.local ? 1080 : route.params.info.height}
       />

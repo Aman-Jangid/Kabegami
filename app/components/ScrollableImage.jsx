@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
+  Image,
   ScrollView,
   StyleSheet,
   TouchableWithoutFeedback,
@@ -12,8 +13,11 @@ export default function ScrollableImage({
   width: originalWidth,
   height: originalHeight,
   onPress,
+  local,
 }) {
   const scrollViewRef = useRef(null);
+  const [localWidth, setLocalWidth] = useState(1920);
+  const [localHeight, setLocalHeight] = useState(1080);
 
   const { height: screenHeight, width: screenWidth } = Dimensions.get("screen");
 
@@ -21,40 +25,64 @@ export default function ScrollableImage({
   const width = originalWidth * scale;
 
   const scrollToMiddle = () => {
-    const contentWidth = width;
-
-    const scrollToX = contentWidth / 2;
+    const scrollToX = originalWidth / 5.5;
     scrollViewRef.current?.scrollTo({ x: scrollToX, animated: true });
   };
 
+  const [overscrolling, setOverscrolling] = useState(false);
+
+  const handleScroll = (event) => {
+    onPress();
+    const scrollY = event.nativeEvent.contentOffset.y;
+
+    if (scrollY < 0) {
+      setOverscrolling(true);
+    } else {
+      setOverscrolling(false);
+    }
+  };
+
   useEffect(() => {
+    console.log(overscrolling);
+  }, [overscrolling]);
+
+  useEffect(() => {
+    if (local) {
+      Image.getSize(uri, (width, height) => {
+        setLocalWidth(width);
+        setLocalHeight(height);
+      });
+    }
+
     scrollToMiddle();
   }, []);
 
   return (
-    <TouchableWithoutFeedback style={styles.container} onPress={onPress}>
+    <TouchableWithoutFeedback onPress={onPress}>
       <ScrollView
         ref={scrollViewRef}
-        contentContainerStyle={{ width: originalWidth }}
-        onScroll={onPress}
+        onScroll={handleScroll}
         horizontal
         showsHorizontalScrollIndicator={false}
         decelerationRate={"fast"}
+        overScrollMode="always"
+        scrollEventThrottle={16}
       >
-        {/* p9381e */}
         <FastImage
           source={{
             uri: uri,
             priority: FastImage.priority.high,
           }}
-          style={{ aspectRatio: originalWidth / 829 }}
+          style={{
+            aspectRatio: local
+              ? localWidth / localHeight
+              : originalWidth / originalHeight,
+            alignItems: "center",
+            overflow: "hidden",
+          }}
           resizeMode={FastImage.resizeMode.cover}
         />
       </ScrollView>
     </TouchableWithoutFeedback>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {},
-});

@@ -1,12 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import AppNavigation from "./app/routes/AppNavigation";
-import { PermissionsAndroid, View } from "react-native";
+import { PermissionsAndroid } from "react-native";
 import storage from "./app/services/storage";
 import keys from "./app/keys";
 import { AsyncProvider } from "./app/context/AsyncContext";
 import { ThemeProvider } from "./app/theme/ThemeContext";
+import RNFS from "react-native-fs";
+import folderInfo from "./app/services/folderInfo";
+import RNFetchBlob from "rn-fetch-blob";
 
 export default function App({}) {
   const getPermission = async () => {
@@ -66,7 +69,6 @@ export default function App({}) {
         <NavigationContainer>
           <AppNavigation />
         </NavigationContainer>
-        <StatusBar style="auto" />
       </AsyncProvider>
     </ThemeProvider>
   );

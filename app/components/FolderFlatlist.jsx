@@ -7,8 +7,10 @@ import Icon from "./Icon";
 export default function FolderFlatlist({
   data,
   color,
+  selected,
   handleAdd,
   onItemPress,
+  onItemLongPress,
 }) {
   const styles = StyleSheet.create({
     addCollection: {
@@ -31,14 +33,16 @@ export default function FolderFlatlist({
         if (item.title !== "add_new_collection") {
           return (
             <ImageButton
+              color={color}
               uri={item.collectionImage}
               title={item.title}
+              active={selected === item.path}
               width={"46%"}
               height={100}
               quantity={item.numberOfImages}
               collection
               onPress={() => onItemPress(item)}
-              onLongPress={() => console.log("longPressed")}
+              onLongPress={() => onItemLongPress(item.path)}
               position={item?.imagePosition}
             />
           );

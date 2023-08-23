@@ -60,7 +60,11 @@ export const ThemeProvider = ({ children }) => {
   const toggleTheme = (value) => {
     if (value === "dark") {
       setColor(dark);
-    } else setColor(light);
+      setTheme("dark");
+    } else {
+      setColor(light);
+      setTheme("light");
+    }
   };
 
   useEffect(() => {

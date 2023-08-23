@@ -4,6 +4,7 @@ import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import LoadCursor from "./LoadCursor";
 import IconButton from "./IconButton";
 import ThemeContext from "../theme/ThemeContext";
+import FastImage from "react-native-fast-image";
 
 export default function ImageItem({
   thumbnail,
@@ -45,7 +46,7 @@ export default function ImageItem({
             navigate("ImageDisplay", {
               path: url,
               local: true,
-              thumbs: { original: url },
+              thumbs: { large: url },
               id: url.split("-")[url.split("-").length - 1].replace(".jpg", ""),
             });
           } else {
@@ -53,7 +54,7 @@ export default function ImageItem({
             navigate("ImageDisplay", {
               path: url,
               info: info,
-              thumbs: { original: thumbnail },
+              thumbs: { large: thumbnail },
               id: id,
             });
           }
@@ -90,7 +91,7 @@ export default function ImageItem({
       )}
       <>
         {isLongPressing && <LoadCursor />}
-        <Image
+        <FastImage
           onLoad={() => setSource(thumbnail)}
           source={{
             uri: source,

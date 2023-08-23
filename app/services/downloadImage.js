@@ -9,7 +9,7 @@ export default downloadImage = async (url, path = null) => {
 
   const customDownloadPath =
     path || (await storage.getData(keys.CURRENT_DOWNLOADS_PATH));
-  // const customDownloadPath = path || RNFetchBlob.fs.dirs.DownloadDir;z
+  // const customDownloadPath = path || RNFetchBlob.fs.dirs.DownloadDir;
 
   RNFetchBlob.config({
     fileCache: true,

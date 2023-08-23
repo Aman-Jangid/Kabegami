@@ -20,16 +20,14 @@ export default function Downloaded() {
     const downloads = await storage.getData(keys.DOWNLOADS_PATH);
     const hiddenDownloads = await storage.getData(keys.HIDDEN_DOWNLOADS_PATH);
     getWallpapers([downloads, hiddenDownloads]);
-    // getWallpapers([directory]);
+    // getWallpapers(["/storage/emulated/0/Download"]);
   };
 
   const getWallpapers = async (dirs) => {
-    // const infoA = await Promise.all(
-    //   dirs.map(async (dir) => await folderInfo.get(dir))
-    // );
     const infoA = await folderInfo.get(dirs[0]);
     const infoB = await folderInfo.get(dirs[1]);
-
+    // const info = await folderInfo.get(dirs[0]);
+    // setData([...info]);
     setData([...infoA, ...infoB]);
   };
 

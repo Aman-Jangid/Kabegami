@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import Screen from "./Screen";
 import BackButton from "../components/BackButton";
 import storage from "../services/storage";
@@ -11,6 +11,14 @@ import folderInfo from "../services/folderInfo";
 import { useIsFocused } from "@react-navigation/native";
 import TimeSetter from "../components/TimeSetter";
 import ThemeContext from "../theme/ThemeContext";
+import RNFetchBlob from "rn-fetch-blob";
+import RNFS from "react-native-fs";
+import notifee, { AndroidColor, EventType } from "@notifee/react-native";
+
+import setWallpaper, {
+  setLocalWallpaper,
+  setWallpaperSlideshow,
+} from "../services/setWallpaper";
 
 export default function Collections({ navigation }) {
   const [collections, setCollections] = useState([
@@ -20,8 +28,10 @@ export default function Collections({ navigation }) {
   const [showTimeSetter, setShowTimeSetter] = useState(false);
   const [showCreator, setShowCreator] = useState(false);
   const [syncNow, setSyncNow] = useState(false);
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState("");
   const [time, setTime] = useState("");
+  const [base64Arr, setBase64Arr] = useState([]);
+  const [showSetSlideshow, setShowSetSlideshow] = useState(false);
 
   const { color } = useContext(ThemeContext);
 
@@ -136,6 +146,89 @@ export default function Collections({ navigation }) {
     setCollections(collectionsArr);
   };
 
+  const showNotification = async () => {
+    // Create a channel (required for Android)
+    const channelId = await notifee.createChannel({
+      id: "default",
+      name: "Default Channel",
+    });
+
+    notifee.displayNotification({
+      title: "Foreground Service Notification",
+      body: "Press the Quick Action to stop the service",
+      android: {
+        channelId,
+        asForegroundService: true,
+        style: { picture },
+        actions: [
+          // {
+          //   title: "Stop",
+          //   pressAction: {
+          //     id: "stop",
+          //   },
+          // },
+          // {
+          //   title: "Prev",
+          //   pressAction: {
+          //     id: "prev",
+          //   },
+          // },
+          {
+            title: "Next",
+            pressAction: {
+              id: "next",
+            },
+          },
+        ],
+      },
+    });
+
+    notifee.registerForegroundService((notification) => {
+      return new Promise(() => {
+        notifee.onForegroundEvent(async ({ type, detail }) => {
+          // if (detail.pressAction.id === "prev") {
+          //   await setWallpaper(
+          //     "https://th.wallhaven.cc/small/ex/ex9gwo.jpg",
+          //     "home"
+          //   );
+          // }
+          if (detail.pressAction.id === "next") {
+            await setWallpaper(
+              "https://th.wallhaven.cc/lg/jx/jxyopy.jpg",
+              "home"
+            );
+          }
+          // if (
+          //   type === EventType.ACTION_PRESS &&
+          //   detail.pressAction.id === "stop"
+          // ) {
+          //   await notifee.stopForegroundService();
+          // }
+        });
+      });
+    });
+  };
+
+  const getImageUriS = async () => {
+    showNotification();
+
+    // const path = RNFS.DownloadDirectoryPath;
+    // const path = selected;
+
+    // const paths = (await RNFS.readDir(path)).map((file) => file.path);
+
+    // console.log(paths);
+
+    // for (let i = 0; i < paths.length; i++) {
+    //   const base64 = await RNFetchBlob.fs.readFile(paths[i], "base64");
+    //   setBase64Arr((prevArr) => [...prevArr, base64]);
+    // }
+
+    // setWallpaperSlideshow([...base64Arr], 2000, "home");
+  };
+
+  useEffect(() => {}, [base64Arr]);
+
   const handlePress = async (item) => {
     // const index = collections.indexOf(item);
     const parentPath = await storage.getData(keys.COLLECTIONS_PATH);
@@ -144,6 +237,22 @@ export default function Collections({ navigation }) {
     const folderItems = await folderInfo.get(path);
     // console.log(folderItems);
     navigation.navigate("CollectionContents", { items: folderItems });
+  };
+
+  useEffect(() => {
+    if (selected) {
+      setShowSetSlideshow(true);
+    }
+  }, [selected]);
+
+  const handleLongPress = (path) => {
+    if (path === selected) {
+      setShowSetSlideshow(false);
+      setSelected(null);
+      return;
+    }
+
+    setSelected(path);
   };
 
   useEffect(() => {
@@ -164,59 +273,63 @@ export default function Collections({ navigation }) {
     setCollectionNamesAsync();
   }, [collections]);
 
-  // const isFocused =  useIsFocused()
-
-  // useEffect(()=>{
-
-  // },[])
-
   return (
     <Screen>
-      <View style={styles.container}>
-        {showCreator && (
-          <CollectionCreator
+      <TouchableWithoutFeedback
+        onPress={() => {
+          setShowTimeSetter(false);
+          setShowCreator(false);
+        }}
+        style={{ zIndex: 1000 }}
+      >
+        <View style={styles.container}>
+          {showCreator && (
+            <CollectionCreator
+              color={color}
+              handleExit={handleExit}
+              handleConfirm={handleConfirm}
+            />
+          )}
+          {showTimeSetter && <TimeSetter color={color} />}
+          <View style={styles.header}>
+            <BackButton goTo="Favorites" />
+            <IconButton
+              name="slideshow"
+              color={color.color9}
+              iconPack="MI"
+              size={28}
+              style={{ marginHorizontal: 5 }}
+              onPress={getImageUriS}
+              disabled={!showSetSlideshow}
+              disabledColor={color.color4}
+            />
+            <IconButton
+              name="timer-outline"
+              color={color.color9}
+              iconPack="II"
+              size={28}
+              style={{ marginHorizontal: 5 }}
+              onPress={openTimeSetter}
+            />
+            <IconButton
+              name="delete"
+              color={color.color9}
+              iconPack="ADI"
+              size={27}
+              style={{ marginHorizontal: 5 }}
+              onPress={handleEmpty}
+            />
+          </View>
+          <FolderFlatlist
             color={color}
-            handleExit={handleExit}
-            handleConfirm={handleConfirm}
-          />
-        )}
-        {showTimeSetter && <TimeSetter color={color} />}
-        <View style={styles.header}>
-          <BackButton goTo="Favorites" />
-          <IconButton
-            name="slideshow"
-            color={color.color9}
-            iconPack="MI"
-            size={28}
-            style={{ marginHorizontal: 5 }}
-            onPress={() => console.log("set image slideshow")}
-            disabled
-            disabledColor={color.color4}
-          />
-          <IconButton
-            name="timer-outline"
-            color={color.color9}
-            iconPack="II"
-            size={28}
-            style={{ marginHorizontal: 5 }}
-            onPress={openTimeSetter}
-          />
-          <IconButton
-            name="delete"
-            color={color.color9}
-            iconPack="ADI"
-            size={27}
-            style={{ marginHorizontal: 5 }}
-            onPress={handleEmpty}
+            data={collections}
+            selected={selected}
+            onItemPress={handlePress}
+            onItemLongPress={handleLongPress}
+            handleAdd={() => setShowCreator(true)}
           />
         </View>
-        <FolderFlatlist
-          color={color}
-          data={collections}
-          onItemPress={handlePress}
-          handleAdd={() => setShowCreator(true)}
-        />
-      </View>
+      </TouchableWithoutFeedback>
     </Screen>
   );
 }

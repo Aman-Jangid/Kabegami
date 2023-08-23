@@ -4,11 +4,13 @@ import ImageDisplay from "../screens/ImageDisplay";
 import Navigation from "./Navigation";
 import { useAsyncContext } from "../context/AsyncContext";
 import DownloadIndicator from "../components/DownloadIndicator";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import storage from "../services/storage";
 import keys from "../keys";
 import Welcome from "../screens/Welcome";
 import Loading from "../components/Loading";
+import { StatusBar } from "expo-status-bar";
+import ThemeContext from "../theme/ThemeContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +19,7 @@ export default function AppNavigation() {
   const [showLoading, setShowLoading] = useState(true);
 
   const { downloading } = useAsyncContext();
+  const { theme } = useContext(ThemeContext);
 
   const checkFirstRun = async () => {
     const value = await storage.getData(keys.DIRECTORY_PATH);
@@ -29,7 +32,6 @@ export default function AppNavigation() {
     checkFirstRun();
 
     setTimeout(() => {
-      console.log("first run -> ", firstRun);
       setShowLoading(false);
     }, 1000);
   }, []);
@@ -37,6 +39,7 @@ export default function AppNavigation() {
   return (
     <>
       <DownloadIndicator downloading={downloading} />
+      <StatusBar style={theme === "dark" ? "light" : "dark"} />
       {showLoading ? (
         <Loading source={require("../assets/animations/checking.json")} />
       ) : (

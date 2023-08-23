@@ -42,23 +42,6 @@ const ImageFlatList = ({
     setImageUrl(url);
   };
 
-  // useEffect(() => {
-  //   console.log("selectedItems -> ", selectedItems);
-  // }, [selectedItems]);
-
-  // const handleSelections = (item) => {
-  // const tempSelectedItems = [...selectedItems];
-
-  // if (tempSelectedItems.includes(item)) {
-  //   console.log("already includes");
-  //   const filteredItems = tempSelectedItems.filter((value) => value !== item);
-  //   setSelectedItems(filteredItems);
-  // } else {
-  //   tempSelectedItems.push(item);
-  //   setSelectedItems(tempSelectedItems);
-  // }
-  // };
-
   return (
     <>
       {optionsVisible && (
@@ -78,12 +61,13 @@ const ImageFlatList = ({
         contentContainerStyle={{
           alignSelf: data?.length > 2 ? "center" : "flex-start",
           paddingHorizontal: 10,
+          alignItems: "center",
         }}
         data={data}
         renderItem={({ item }) => (
           <ImageItem
             key={item.id}
-            thumbnail={item.thumbs.original}
+            thumbnail={item.thumbs.large}
             id={item.id}
             info={{
               category: item?.category || item.info.category,

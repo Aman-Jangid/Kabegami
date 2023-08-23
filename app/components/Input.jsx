@@ -68,7 +68,7 @@ export default function Input({
     <View style={styles.inputContainer}>
       <TextInput
         onChangeText={(value) => handleTextChange(value)}
-        style={[styles.input, { backgroundColor, color }]}
+        style={[styles.input, { backgroundColor, color, fontWeight: "bold" }]}
         multiline
         numberOfLines={lines}
         placeholder={placeholder}

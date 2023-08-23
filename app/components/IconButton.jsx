@@ -7,6 +7,8 @@ export default function IconButton({
   size,
   color,
   onPress,
+  onPressIn,
+  onPressOut,
   iconPack,
   style,
   disabled,
@@ -34,7 +36,12 @@ export default function IconButton({
   const Icon = IconPacks[iconPack];
 
   return (
-    <TouchableOpacity onPress={onPress} disabled={disabled}>
+    <TouchableOpacity
+      onPress={onPress}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      disabled={disabled}
+    >
       <View style={styles.buttonContainer}>
         <Icon
           name={name}

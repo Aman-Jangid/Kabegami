@@ -76,8 +76,8 @@ export default function WallpaperSet({
   });
 
   const setLocalImageAsWallpaper = async (uri, screen) => {
+    console.log(uri);
     const base64Image = await RNFetchBlob.fs.readFile(uri, "base64");
-
     await setLocalWallpaper(base64Image, screen);
   };
 
