@@ -16,25 +16,25 @@
 
 ### Future Addons
 
-**User Authentication and Profiles**
-  Allow users to create accounts, log in using various methods, and save preferences in a secure database.
+**User Authentication and Profiles** <br>
+> Allow users to create accounts, log in using various methods, and save preferences in a secure database.
 
-**Cloud Storage for Custom Wallpapers**
-  Enable users to upload and manage their own wallpapers stored in the cloud.
+**Cloud Storage for Custom Wallpapers** <br>
+> Enable users to upload and manage their own wallpapers stored in the cloud.
 
-**In-App Notifications**
-  Send notifications for new wallpaper releases, special collections, or user-specific updates.
+**In-App Notifications** <br>
+> Send notifications for new wallpaper releases, special collections, or user-specific updates.
 
-**Advanced Search and Filtering**
-  Offer search functionality with filters for color, resolution, category, and aspect ratio.
+**Advanced Search and Filtering** <br>
+> Offer search functionality with filters for color, resolution, category, and aspect ratio.
 
-**Add Support for more APIs like wallhaven**
-  Allow users to switch between different wallpaper APIs like alphacoders
+**Add Support for more APIs like wallhaven** <br>
+> Allow users to switch between different wallpaper APIs like alphacoders
 
-**Offline Mode with Caching**
-  Cache wallpapers locally to support offline browsing and sync user actions when online.
+**Offline Mode with Caching** <br>
+> Cache wallpapers locally to support offline browsing and sync user actions when online.
 
-**Automated Testing and CI/CD Integration**
-  Implement unit and integration tests with CI/CD pipelines for continuous delivery.
+**Automated Testing and CI/CD Integration** <br>
+> Implement unit and integration tests with CI/CD pipelines for continuous delivery.
 
 **Analytics and User Insights (maybe)**
