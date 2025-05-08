@@ -14,7 +14,7 @@
 <img src="https://github.com/user-attachments/assets/885228a0-e14c-4c8e-924f-02861ec9dfbc" width="200" alt="Screenshot_2024-08-03-11-15-18-142_com kabegami">
 </div>
 
-### Future Addons
+### Possible future addons 
 
 **User Authentication and Profiles** <br>
 > Allow users to create accounts, log in using various methods, and save preferences in a secure database.
@@ -22,19 +22,11 @@
 **Cloud Storage for Custom Wallpapers** <br>
 > Enable users to upload and manage their own wallpapers stored in the cloud.
 
-**In-App Notifications** <br>
-> Send notifications for new wallpaper releases, special collections, or user-specific updates.
-
 **Advanced Search and Filtering** <br>
 > Offer search functionality with filters for color, resolution, category, and aspect ratio.
 
 **Add Support for more APIs like wallhaven** <br>
 > Allow users to switch between different wallpaper APIs like alphacoders
 
-**Offline Mode with Caching** <br>
-> Cache wallpapers locally to support offline browsing and sync user actions when online.
-
 **Automated Testing and CI/CD Integration** <br>
 > Implement unit and integration tests with CI/CD pipelines for continuous delivery.
-
-**Analytics and User Insights (maybe)**
